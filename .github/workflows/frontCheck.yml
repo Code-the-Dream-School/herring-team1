@@ -1,0 +1,29 @@
+name: Check Code Formatting
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: "**"
+
+jobs:
+  # (React)
+  frontend:
+    name: Check React Code Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' 
+      - name: Change directory to front-end
+        run: cd front-end
+      - name: Install frontend dependencies
+        run: npm install
+      - name: Check formatting with Prettier
+        run: npm run prettier
+      - name: Run ESLint
+        run: npm run lint
