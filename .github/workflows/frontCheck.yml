@@ -15,15 +15,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' 
-      - name: Change directory to front-end
-        run: cd front-end
+          node-version: '20'
+
       - name: Install frontend dependencies
+        working-directory: front-end
         run: npm install
+
       - name: Check formatting with Prettier
+        working-directory: front-end
         run: npm run prettier
+
       - name: Run ESLint
+        working-directory: front-end
         run: npm run lint
