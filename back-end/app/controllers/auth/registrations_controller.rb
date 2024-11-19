@@ -2,7 +2,13 @@ class Auth::RegistrationsController < Devise::RegistrationsController
     respond_to :json
     skip_forgery_protection only: [:create]
 
+    before_action :configure_sign_up_params, only: [:create]
+
     private
+
+    def configure_sign_up_params
+      devise_parameter_sanitizer.permit(:sign_up, keys: [:isOrganization])
+    end
   
     def respond_with(resource, _opts = {})
       register_success && return if resource.persisted?

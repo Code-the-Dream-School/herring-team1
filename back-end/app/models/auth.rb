@@ -3,6 +3,7 @@ class Auth < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   validates :email, presence: true, uniqueness: true, email: true
   validates :password, password_strength: true
+  validates :isOrganization, inclusion: { in: [true, false] }
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
