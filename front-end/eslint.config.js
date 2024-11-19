@@ -40,7 +40,7 @@ export default [
       'react/jsx-no-useless-fragment': 'warn',
       'react/self-closing-comp': 'warn',
 
-      'no-console': 'warn',
+      // 'no-console': 'warn',
       'comma-dangle': ['error', 'only-multiline'],
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
       eqeqeq: 'error',
