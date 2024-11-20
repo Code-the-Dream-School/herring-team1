@@ -6,6 +6,7 @@ function App() {
   const [password, setPassword] = useState('');
   const [password_confirmation, setPassword_confirmation] = useState('');
   const [responseMessage, setResponseMessage] = useState(null);
+  const [isOrganization, setIsOrganization] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -22,6 +23,7 @@ function App() {
             email: email,
             password: password,
             password_confirmation: password_confirmation,
+            isOrganization: isOrganization,
           },
         }),
       });
@@ -61,6 +63,35 @@ function App() {
             required
           />
         </div>
+        <div>
+          <div>
+            <label>
+              <input
+                type="radio"
+                name="organizationType"
+                value="true"
+                checked={isOrganization === 'true'}
+                onChange={(e) => setIsOrganization(e.target.value)}
+                required
+              />
+              Organization
+            </label>
+          </div>
+          <div>
+            <label>
+              <input
+                type="radio"
+                name="organizationType"
+                value="false"
+                checked={isOrganization === 'false'}
+                onChange={(e) => setIsOrganization(e.target.value)}
+                required
+              />
+              Volunteer
+            </label>
+          </div>
+        </div>
+
         <button type="submit">Register</button>
       </form>
     </div>
