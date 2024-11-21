@@ -8,7 +8,7 @@ export default {
       },
     },
     fontFamily: {
-      text: ['Inria Sans', 'sans-serif'],
+      text: ['Poppins', 'sans-serif'],
     },
   },
   plugins: [],
