@@ -1,4 +1,3 @@
-import './App.css';
 import { useState } from 'react';
 
 function App() {
@@ -43,6 +42,7 @@ function App() {
 
   return (
     <div>
+      <h1 className="text-4xl text-blue-500 bg-red-500 p-4">Tailwind</h1>
       <h1>Care Connect</h1>
       {responseMessage && <p>{responseMessage}</p>}
       <form onSubmit={handleSubmit}>
