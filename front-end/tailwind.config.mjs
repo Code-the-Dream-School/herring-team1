@@ -7,6 +7,9 @@ export default {
         purple: '#8E78AA',
       },
     },
+    fontFamily: {
+      text: ['Inria Sans', 'sans-serif'],
+    },
   },
   plugins: [],
 };

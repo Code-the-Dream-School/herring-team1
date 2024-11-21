@@ -13,3 +13,9 @@ body {
   flex-direction: column;
   min-height: 100%;
 }
+
+@layer base {
+  body {
+    @apply font-text;
+  }
+}
