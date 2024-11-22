@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+import VolunteerProfile from '../pages/volunteer/VolunteerProfile.jsx';
+import Volunteering from '../pages/volunteer/Volunteering.jsx';
+import Favorites from '../pages/volunteer/Favorites.jsx';
 import defaultProfileImage from '../assets/images_default/profile_default.jpg';
 
 const volunteerDashboard = [
@@ -15,11 +18,11 @@ function VolunteerDashboard() {
   const renderContent = () => {
     switch (currentPage) {
       case 'Profile':
-        return <div>Your profile information goes here.</div>;
+        return <VolunteerProfile />;
       case 'Volunteering':
-        return <div>Here is a list of volunteering opportunities.</div>;
+        return <Volunteering />;
       case 'Favorites':
-        return <div>Your favorite organizations will appear here.</div>;
+        return <Favorites />;
       default:
         return <div>Select a page from the navigation.</div>;
     }
