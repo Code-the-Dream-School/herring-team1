@@ -21,12 +21,11 @@ class Auth::RegistrationsController < Devise::RegistrationsController
       response.set_header('X-CSRF-Token', form_authenticity_token)
       
       render json: { message: 'Signed up sucessfully.', 
-      user: {
-              id: resource.id,
-              email: resource.email,
-              isOrganization: resource.isOrganization
-            }
-      }, status: :created
+                     user: {
+                       id: resource.id,
+                       email: resource.email,
+                       isOrganization: resource.isOrganization
+                     } }, status: :created
     end
   
     def register_failed resource
