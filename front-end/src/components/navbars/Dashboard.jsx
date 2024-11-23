@@ -4,7 +4,6 @@ import { useAuth } from '../../context/useAuth.jsx';
 
 function Dashboard() {
   const { user } = useAuth();
-  console.log(user);
 
   return user.isOrganization ? <OrganizationDashboard /> : <VolunteerDashboard />;
 }

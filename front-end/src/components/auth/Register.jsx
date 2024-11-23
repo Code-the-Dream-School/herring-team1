@@ -38,13 +38,11 @@ function Register() {
       const data = await response.json();
       setResponseMessage('Registration successful!');
       navigate('/dashboard');
-      console.log(data);
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
     } catch (error) {
       console.error('Error:', error);
       setResponseMessage('Registration failed');
-      console.log(responseMessage);
     }
   };
   return (
