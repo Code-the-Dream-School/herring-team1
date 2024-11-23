@@ -36,7 +36,7 @@ function Login() {
       navigate('/dashboard');
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
-      console.log(data);
+      console.log(data.user);
     } catch (error) {
       console.error('Error:', error);
       setResponseMessage('Registration failed');

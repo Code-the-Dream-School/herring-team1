@@ -4,7 +4,6 @@ import { useAuth } from '../../context/useAuth.jsx';
 export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  console.log(user);
 
   const logoutUser = () => {
     localStorage.clear();

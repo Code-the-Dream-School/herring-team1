@@ -39,7 +39,6 @@ function Register() {
       setResponseMessage('Registration successful!');
       navigate('/dashboard');
       console.log(data);
-      sessionStorage.setItem('isOrganization', 'true');
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
     } catch (error) {

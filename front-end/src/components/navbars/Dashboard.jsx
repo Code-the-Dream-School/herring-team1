@@ -1,9 +1,12 @@
 import VolunteerDashboard from './VolunteerDashboard.jsx';
 import OrganizationDashboard from './OrganizationDashboard.jsx';
+import { useAuth } from '../../context/useAuth.jsx';
 
 function Dashboard() {
-  const isOrganizarion = JSON.parse(sessionStorage.getItem('isOrganization'));
-  return isOrganizarion ? <OrganizationDashboard /> : <VolunteerDashboard />;
+  const { user } = useAuth();
+  console.log(user);
+
+  return user.isOrganization ? <OrganizationDashboard /> : <VolunteerDashboard />;
 }
 
 export default Dashboard;
