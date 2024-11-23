@@ -12,32 +12,29 @@ export default function Header() {
   };
 
   return (
-    <header className="flex justify-between items-center px-8 py-4 bg-main shadow-md">
-      <h1 className="text-xl font-bold">Care Connect</h1>
-      <nav id="nav" className="flex space-x-4">
-        <NavLink
-          to="/"
-          className={({ isActive }) =>
-            `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-gray-200'}`
-          }
-        >
-          Home
+    <nav className="bg-background flex items-center justify-between px-6 py-4 sticky top-0 z-10 w-full">
+      <div className="flex items-center space-x-1">
+        <NavLink to="/" className="text-gray-800 hover:text-purple">
+          <img
+            src="src/assets/careclogo.png"
+            alt="Logo Connect Care"
+            className="h-16 w-auto transform hover:scale-110"
+          />
         </NavLink>
-        <NavLink
-          to="/#mission"
-          className={({ isActive }) =>
-            `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-light_grey'}`
-          }
-        >
+      </div>
+
+      <div className="flex space-x-6">
+        <NavLink to="/#mission" className="text-gray-800 hover:text-purple font-bold">
           Our Mission
         </NavLink>
-        <NavLink
-          to="/search"
-          className={({ isActive }) =>
-            `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-light_grey'}`
-          }
-        >
-          Find Oppotunities
+        <NavLink to="/#volunteers" className="text-gray-800 hover:text-purple font-bold">
+          Volunteers
+        </NavLink>
+        <NavLink to="/#organizations" className="text-gray-800 hover:text-purple font-bold">
+          Organizations
+        </NavLink>
+        <NavLink to="/search" className="text-gray-800 hover:text-purple font-bold">
+          Find Opportunities
         </NavLink>
         {user ? (
           <>
@@ -69,7 +66,7 @@ export default function Header() {
             Login
           </NavLink>
         )}
-      </nav>
-    </header>
+      </div>
+    </nav>
   );
 }
