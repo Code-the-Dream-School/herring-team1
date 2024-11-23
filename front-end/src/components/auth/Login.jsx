@@ -5,6 +5,7 @@ import { useAuth } from '../../context/useAuth.jsx';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [responseMessage, setResponseMessage] = useState(null);
   const navigate = useNavigate();
   const { setUser } = useAuth();
@@ -70,13 +71,16 @@ function Login() {
       </div>
 
       <div className="flex justify-between pt-7">
-        <button type="submit" className="w-2/5 px-4 py-2 text-xl bg-orange text-white rounded-md hover:bg-orange-600">
+        <button
+          type="submit"
+          className="w-2/5 px-4 py-2 sm:text-xl bg-orange text-white rounded-md hover:bg-orange-600"
+        >
           Login
         </button>
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="w-2/5 px-4 py-2 text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+          className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
         >
           Cancel
         </button>

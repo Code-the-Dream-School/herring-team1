@@ -6,6 +6,7 @@ function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password_confirmation, setPassword_confirmation] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [responseMessage, setResponseMessage] = useState(null);
   const [isOrganization, setIsOrganization] = useState(false);
   const navigate = useNavigate();
@@ -83,8 +84,8 @@ function Register() {
           className="w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
       </div>
-      <div className="flex items-center justify-between md:p-5">
-        <label className="flex items-center text-xl">
+      <div className="flex items-center justify-between md:p-5 flex-wrap">
+        <label className="flex items-center sm:text-xl">
           <input
             type="radio"
             className="mr-2 size-4 border-gray-300 text-gray-600 focus:ring-gray-600"
@@ -96,7 +97,7 @@ function Register() {
           />
           Organization
         </label>
-        <label className="flex items-center text-xl">
+        <label className="flex items-center sm:text-xl">
           <input
             type="radio"
             className="mr-2"
@@ -111,13 +112,16 @@ function Register() {
       </div>
 
       <div className="flex justify-between">
-        <button type="submit" className="w-2/5 px-4 py-2 text-xl bg-orange text-white rounded-md hover:bg-orange-600">
+        <button
+          type="submit"
+          className="w-2/5 px-4 py-2 sm:text-xl bg-orange text-white rounded-md hover:bg-orange-600"
+        >
           Register
         </button>
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="w-2/5 px-4 py-2 text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+          className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
         >
           Cancel
         </button>

@@ -24,7 +24,7 @@ export default function Header() {
           Home
         </NavLink>
         <NavLink
-          to="/mission"
+          to="/#mission"
           className={({ isActive }) =>
             `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-light_grey'}`
           }
