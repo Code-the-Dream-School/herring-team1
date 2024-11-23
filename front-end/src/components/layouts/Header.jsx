@@ -15,7 +15,7 @@ export default function Header() {
   return (
     <header className="flex justify-between items-center px-8 py-4 bg-main shadow-md">
       <h1 className="text-xl font-bold">Care Connect</h1>
-      <nav className="flex space-x-4">
+      <nav id="nav" className="flex space-x-4">
         <NavLink
           to="/"
           className={({ isActive }) =>

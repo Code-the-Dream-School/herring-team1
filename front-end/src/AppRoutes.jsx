@@ -7,7 +7,7 @@ import Header from './components/layouts/Header.jsx';
 import Footer from './components/layouts/Footer.jsx';
 import SearchPage from './components/search/SearchPage.jsx';
 import TeamPage from './components/pages/TeamPage.jsx';
-import Dashboard from './components/pages/Dashboard.jsx';
+import Dashboard from './components/navbars/Dashboard.jsx';
 import Auth from './components/auth/Auth.jsx';
 
 function AppRoutes() {
