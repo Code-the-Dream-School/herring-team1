@@ -37,7 +37,7 @@ function VolunteerDashboard() {
             src={userProfileImage || defaultProfileImage}
             alt="Profile"
           />
-          <label className="absolute bottom-0 right-0 bg-black text-white rounded-full p-3 cursor-pointer hover:bg-purple-600">
+          <label className="absolute bottom-0 right-0 bg-black text-white rounded-full p-3 cursor-pointer hover:bg-purple">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

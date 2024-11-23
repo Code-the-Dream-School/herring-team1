@@ -37,9 +37,7 @@ function OrganizationDashboard() {
           <div key={index} className="flex items-center justify-center">
             <div className="flex items-center justify-center" style={{ minHeight: '40px', minWidth: '250px' }}>
               <span
-                className={`cursor-pointer ${
-                  currentPage === item.text ? 'text-purple font-bold' : 'text-gray-800 font-normal'
-                }`}
+                className={`cursor-pointer ${currentPage === item.text ? 'text-purple font-bold' : 'font-normal'}`}
                 style={{ textAlign: 'center' }}
                 onClick={() => setCurrentPage(item.text)}
               >
