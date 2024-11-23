@@ -34,6 +34,7 @@ function Register() {
       const data = await response.json();
       setResponseMessage('Registration successful!');
       console.log(data);
+      // sessionStorage.setItem('isOrganization', 'true');
     } catch (error) {
       console.error('Error:', error);
       setResponseMessage('Registration failed');

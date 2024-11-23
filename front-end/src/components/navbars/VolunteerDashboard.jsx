@@ -63,7 +63,7 @@ function VolunteerDashboard() {
               {volunteerDashboard.map((item, index) => (
                 <li
                   key={index}
-                  className={`mt-2 cursor-pointer  ${currentPage === item.text ? 'text-purple font-bold' : 'text-black'}`}
+                  className={`mt-2 cursor-pointer  ${currentPage === item.text ? 'text-purple font-bold' : 'text-gray-800'}`}
                   onClick={() => setCurrentPage(item.text)}
                 >
                   <span>{item.text}</span>
