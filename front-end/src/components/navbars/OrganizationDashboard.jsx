@@ -47,7 +47,7 @@ function OrganizationDashboard() {
               </span>
             </div>
             {index < organizationDashboard.length - 1 && (
-              <div className="border-l border-gray-500 mx-4" style={{ height: '30px' }}></div>
+              <div className="border-l border-gray-500 mx-4" style={{ height: '30px' }} />
             )}
           </div>
         ))}
