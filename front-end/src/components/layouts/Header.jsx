@@ -54,7 +54,7 @@ export default function Header() {
             <NavLink
               to="/dashboard"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-light_grey'}`
+                `px-4 py-2 rounded-md font-medium ${isActive ? 'w-[110px] h-[30px] text-white bg-purple hover:bg-gray-400 font-bold flex items-center justify-center rounded-md' : 'text-gray-700 hover:bg-light_grey'}`
               }
             >
               My Dashboard
@@ -63,7 +63,7 @@ export default function Header() {
               to="/auth/login"
               onClick={logoutUser}
               className={({ isActive }) =>
-                `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-light_grey'}`
+                `px-4 py-2 rounded-md font-medium ${isActive ? 'w-[110px] h-[30px] text-white bg-purple hover:bg-gray-400 font-bold flex items-center justify-center rounded-md' : 'text-gray-700 hover:bg-light_grey'}`
               }
             >
               Logout
@@ -73,7 +73,7 @@ export default function Header() {
           <NavLink
             to="/auth/login"
             className={({ isActive }) =>
-              `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-light_grey'}`
+              `px-4 py-2 rounded-md font-medium ${isActive ? 'w-[110px] h-[30px] text-white bg-purple hover:bg-gray-400 font-bold flex items-center justify-center rounded-md' : 'text-gray-700 hover:bg-light_grey'}`
             }
           >
             Login
@@ -130,7 +130,7 @@ export default function Header() {
                 <NavLink
                   to="/dashboard"
                   className={({ isActive }) =>
-                    `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-light_grey'}`
+                    `px-4 py-2 rounded-md font-medium ${isActive ? 'w-[110px] h-[30px] text-white bg-purple hover:bg-gray-400 font-bold flex items-center justify-center rounded-md' : 'text-gray-700 hover:bg-light_grey'}`
                   }
                 >
                   My Dashboard
@@ -139,7 +139,7 @@ export default function Header() {
                   to="/auth/login"
                   onClick={logoutUser}
                   className={({ isActive }) =>
-                    `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-light_grey'}`
+                    `px-4 py-2 rounded-md font-medium ${isActive ? 'w-[110px] h-[30px] text-white bg-purple hover:bg-gray-400 font-bold flex items-center justify-center rounded-md' : 'text-gray-700 hover:bg-light_grey'}`
                   }
                 >
                   Logout
@@ -149,7 +149,7 @@ export default function Header() {
               <NavLink
                 to="/auth/login"
                 className={({ isActive }) =>
-                  `px-4 py-2 rounded-md font-medium ${isActive ? 'bg-purple text-white' : 'text-gray-700 hover:bg-light_grey'}`
+                  `px-4 py-2 rounded-md font-medium ${isActive ? 'w-[110px] h-[30px] text-white bg-purple hover:bg-gray-400 font-bold flex items-center justify-center rounded-md' : 'text-gray-700 hover:bg-light_grey'}`
                 }
               >
                 Login
