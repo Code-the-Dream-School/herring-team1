@@ -47,13 +47,6 @@ export default [
       'import/no-unresolved': 'error',
       'import/extensions': ['error', 'always', { js: 'never' }],
       'import/no-duplicates': 'warn',
-      'import/order': [
-        'error',
-        {
-          groups: [['builtin', 'external'], 'internal', 'parent', 'sibling', 'index'],
-          'newlines-between': 'always',
-        },
-      ],
     },
   },
 ];
