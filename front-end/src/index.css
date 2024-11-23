@@ -17,5 +17,10 @@ body {
 @layer base {
   body {
     @apply font-text bg-background text-gray-800;
+    scroll-behavior: smooth;
+  }
+
+  .text-small {
+    font-size: 0.85rem;
   }
 }
