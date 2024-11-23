@@ -16,6 +16,6 @@ body {
 
 @layer base {
   body {
-    @apply font-text;
+    @apply font-text bg-background text-gray-800;
   }
 }
