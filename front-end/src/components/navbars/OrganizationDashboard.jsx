@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import InfoPage from '../pages/organization/InfoPage.jsx';
 import Application from '../pages/organization/Application.jsx';
-import ApprovedVolunteer from '../pages/organization/ApproveVolunteer.jsx';
+import ApprovedVolunteer from '../pages/organization/ApprovedVolunteer.jsx';
 import Request from '../pages/organization/Requests.jsx';
 
 const organizationDashboard = [
