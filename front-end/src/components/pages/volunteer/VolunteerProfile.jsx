@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { states } from '../../../data/states';
+
 function VolunteerProfile() {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -17,59 +19,6 @@ function VolunteerProfile() {
   });
 
   const [originalData, setOriginalData] = useState(formData);
-
-  const states = [
-    'AL',
-    'AK',
-    'AZ',
-    'AR',
-    'CA',
-    'CO',
-    'CT',
-    'DE',
-    'FL',
-    'GA',
-    'HI',
-    'ID',
-    'IL',
-    'IN',
-    'IA',
-    'KS',
-    'KY',
-    'LA',
-    'ME',
-    'MD',
-    'MA',
-    'MI',
-    'MN',
-    'MS',
-    'MO',
-    'MT',
-    'NE',
-    'NV',
-    'NH',
-    'NJ',
-    'NM',
-    'NY',
-    'NC',
-    'ND',
-    'OH',
-    'OK',
-    'OR',
-    'PA',
-    'RI',
-    'SC',
-    'SD',
-    'TN',
-    'TX',
-    'UT',
-    'VT',
-    'VA',
-    'WA',
-    'WV',
-    'WI',
-    'WY',
-  ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -219,19 +168,22 @@ function VolunteerProfile() {
             </button>
             <button
               onClick={handleCancel}
-              className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton hover:bg-orangeButton hover:text-white"
+              className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg"
             >
               Cancel
             </button>
           </>
         ) : (
           <>
-            <button onClick={handleEdit} className="px-4 py-2 bg-orangeButton text-white rounded hover:orangeButton">
+            <button
+              onClick={handleEdit}
+              className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
+            >
               Edit
             </button>
             <button
               onClick={handleDelete}
-              className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton hover:bg-orangeButton hover:text-white"
+              className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg"
             >
               Detele
             </button>
