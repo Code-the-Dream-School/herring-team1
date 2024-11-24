@@ -1,11 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/useAuth.jsx';
 
 function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password_confirmation, setPassword_confirmation] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [responseMessage, setResponseMessage] = useState(null);
   const [isOrganization, setIsOrganization] = useState(false);
+  const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,82 +38,95 @@ function Register() {
 
       const data = await response.json();
       setResponseMessage('Registration successful!');
-      console.log(data);
-      sessionStorage.setItem('isOrganization', 'true');
+      navigate('/dashboard');
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user);
     } catch (error) {
       console.error('Error:', error);
       setResponseMessage('Registration failed');
     }
   };
   return (
-    <div>
-      <h1>Care Connect</h1>
-      {responseMessage && <p>{responseMessage}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="email" className="block font-medium">
+          Email
+        </label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+      </div>
+      <div>
+        <label htmlFor="email" className="block font-medium">
+          Password
+        </label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+      </div>
+      <div>
+        <label htmlFor="email" className="block font-medium">
+          Confirm Password
+        </label>
+        <input
+          type="password"
+          value={password_confirmation}
+          onChange={(e) => setPassword_confirmation(e.target.value)}
+          required
+          className="w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+      </div>
+      <div className="flex items-center justify-between md:p-5 flex-wrap">
+        <label className="flex items-center sm:text-xl">
           <input
-            className="border border-black"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="radio"
+            className="mr-2 size-4 border-gray-300 text-gray-600 focus:ring-gray-600"
+            name="organizationType"
+            value="true"
+            checked={isOrganization === 'true'}
+            onChange={(e) => setIsOrganization(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Password:</label>
+          Organization
+        </label>
+        <label className="flex items-center sm:text-xl">
           <input
-            className="border border-black"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            type="radio"
+            className="mr-2"
+            name="organizationType"
+            value="false"
+            checked={isOrganization === 'false'}
+            onChange={(e) => setIsOrganization(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            className="border border-black"
-            type="password"
-            value={password_confirmation}
-            onChange={(e) => setPassword_confirmation(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <div>
-            <label>
-              <input
-                className="border border-black"
-                type="radio"
-                name="organizationType"
-                value="true"
-                checked={isOrganization === 'true'}
-                onChange={(e) => setIsOrganization(e.target.value)}
-                required
-              />
-              Organization
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                className="border border-black"
-                type="radio"
-                name="organizationType"
-                value="false"
-                checked={isOrganization === 'false'}
-                onChange={(e) => setIsOrganization(e.target.value)}
-                required
-              />
-              Volunteer
-            </label>
-          </div>
-        </div>
+          Volunteer
+        </label>
+      </div>
 
-        <button type="submit">Register</button>
-      </form>
-    </div>
+      <div className="flex justify-between">
+        <button
+          type="submit"
+          className="w-2/5 px-4 py-2 sm:text-xl bg-orange text-white rounded-md hover:bg-orange-600"
+        >
+          Register
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }
 

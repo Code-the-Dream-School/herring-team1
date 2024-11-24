@@ -8,6 +8,7 @@ import Footer from './components/layouts/Footer.jsx';
 import SearchPage from './components/search/SearchPage.jsx';
 import TeamPage from './components/pages/TeamPage.jsx';
 import Dashboard from './components/navbars/Dashboard.jsx';
+import Auth from './components/auth/Auth.jsx';
 import NotFound from './components/pages/NotFound.jsx';
 
 function AppRoutes() {
@@ -17,8 +18,10 @@ function AppRoutes() {
       <Routes>
         {/* <Route path="*" element={<NotFound />} /> */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/auth" element={<Auth />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
         <Route path="/search" element={<SearchPage />} />
         <Route path="/team" element={<TeamPage />} />
         <Route path="/dashboard" element={<Dashboard />} />

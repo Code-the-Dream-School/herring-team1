@@ -20,7 +20,12 @@ class Auth::RegistrationsController < Devise::RegistrationsController
       cookies["CSRF-TOKEN"] = form_authenticity_token
       response.set_header('X-CSRF-Token', form_authenticity_token)
       
-      render json: { message: 'Signed up sucessfully.' }, status: :created
+      render json: { message: 'Signed up sucessfully.', 
+                     user: {
+                       id: resource.id,
+                       email: resource.email,
+                       isOrganization: resource.isOrganization
+                     } }, status: :created
     end
   
     def register_failed resource
