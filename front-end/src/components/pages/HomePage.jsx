@@ -40,8 +40,8 @@ function HomePage() {
       </div>
 
       {/* Mission section*/}
-      <div className="py-12 bg-background">
-        <div className="text-center mb-12">
+      <div className="py-16">
+        <div className="text-center mb-16">
           <h2 id="mission" className="font-bold text-gray-800 sm:text-sm md:text-lg lg:text-2xl">
             Our Mission
           </h2>
@@ -91,8 +91,8 @@ function HomePage() {
       </div>
 
       {/* Volunteers Section */}
-      <div className="py-12 bg-background">
-        <div className="text-center mb-12">
+      <div className="py-12">
+        <div className="text-center mb-16">
           <h2 id="volunteers" className="font-bold text-gray-800 sm:text-sm md:text-lg lg:text-2xl">
             For Volunteers
           </h2>
@@ -128,8 +128,8 @@ function HomePage() {
       </div>
 
       {/* Organization Section */}
-      <div className="py-12 bg-background mt-12 mb-12">
-        <div className="text-center mb-12">
+      <div className="py-12 mt-12 mb-12">
+        <div className="text-center mb-16">
           <h2 id="organizations" className="font-bold text-gray-800 sm:text-sm md:text-lg lg:text-2xl">
             For Organizations
           </h2>
