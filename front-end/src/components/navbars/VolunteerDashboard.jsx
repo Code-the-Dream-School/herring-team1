@@ -29,11 +29,11 @@ function VolunteerDashboard() {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row w-full flex-grow sm:justify-around mb-4">
-      <div className="flex flex-col w-1/4">
-        <div className="relative w-60 mx-auto mt-10 p-3">
+    <div className="flex flex-col md:flex-row w-full flex-grow sm:justify-around mb-4">
+      <div className="flex flex-col w-full sm:w-1/4">
+        <div className="relative items-center xs:w-40 sm:w-60 mx-auto mt-20">
           <img
-            className="h-full w-full border rounded-[20px] object-cover"
+            className="w-full h-auto border rounded-[20px] object-cover"
             src={userProfileImage || defaultProfileImage}
             alt="Profile"
           />
@@ -56,14 +56,16 @@ function VolunteerDashboard() {
             />
           </label>
         </div>
-        <p className="flex justify-center items-center text-xs">Member since ...</p>
-        <div>
-          <nav className="ml-20 mt-10">
-            <ul>
+        <p className="text-center text-xs mt-2 mb-10">Member since ...</p>
+        <div className="w-full">
+          <nav className="flex flex-col sm:m-10 lg:m-20">
+            <ul className="w-full">
               {volunteerDashboard.map((item, index) => (
                 <li
                   key={index}
-                  className={`mt-2 cursor-pointer  ${currentPage === item.text ? 'text-purple font-bold' : 'text-gray-800'}`}
+                  className={`py-2 cursor-pointer sm:text-left xs:text-center ${
+                    currentPage === item.text ? 'text-purple font-bold' : 'text-gray-800'
+                  }`}
                   onClick={() => setCurrentPage(item.text)}
                 >
                   <span>{item.text}</span>
@@ -73,7 +75,7 @@ function VolunteerDashboard() {
           </nav>
         </div>
       </div>
-      <div className="w-2/3">{renderContent()}</div>
+      <div className="w-full md:w-2/3">{renderContent()}</div>
     </div>
   );
 }
