@@ -61,7 +61,7 @@ function VolunteerProfile() {
           <p>{formData.skills}</p>
         </div>
       )}
-      <div className="mt-6 flex space-x-4">
+      <div className="mt-6 flex space-x-4 xs:justify-center md:justify-start">
         {isEditing ? (
           <>
             <button
