@@ -46,7 +46,7 @@ function VolunteerProfile() {
       {isEditing ? (
         <VolunteerProfileEditForm formData={formData} handleInputChange={handleInputChange} />
       ) : (
-        <div>
+        <div className="md:mt-6">
           <label className="block text-sm font-bold">Name</label>
           <p>
             {formData.firstName} {formData.lastName}
