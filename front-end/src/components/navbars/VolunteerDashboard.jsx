@@ -31,7 +31,7 @@ function VolunteerDashboard() {
   return (
     <div className="flex flex-col md:flex-row w-full flex-grow sm:justify-around mb-4">
       <div className="flex flex-col w-full sm:w-1/4">
-        <div className="relative items-center xs:w-40 sm:w-60 mx-auto mt-20">
+        <div className="relative items-center xs:w-40 xl:w-60 mx-auto mt-20">
           <img
             className="w-full h-auto border rounded-[20px] object-cover"
             src={userProfileImage || defaultProfileImage}

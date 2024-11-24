@@ -108,8 +108,6 @@ VolunteerProfileEditForm.propTypes = {
     skills: PropTypes.string,
   }).isRequired,
   handleInputChange: PropTypes.func.isRequired,
-  handleCancel: PropTypes.func.isRequired,
-  setIsEditing: PropTypes.func.isRequired,
 };
 
 export default VolunteerProfileEditForm;
