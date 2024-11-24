@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 function Footer() {
   const isHomePage = window.location.pathname === '/';
   return (
-    <footer className="bg-purple text-white text-center py-4 mt-auto">
+    <footer className="bg-light_purple text-white text-center py-4 mt-auto">
       <div className="container text-small mx-auto px-4">
         <div className="flex justify-center space-x-6 mb-4">
           <a href="#nav" className="hover:underline text-white">
