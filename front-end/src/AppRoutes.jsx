@@ -9,6 +9,7 @@ import SearchPage from './components/search/SearchPage.jsx';
 import TeamPage from './components/pages/TeamPage.jsx';
 import Dashboard from './components/navbars/Dashboard.jsx';
 import Auth from './components/auth/Auth.jsx';
+import NotFound from './components/pages/NotFound.jsx';
 
 function AppRoutes() {
   return (
@@ -24,6 +25,7 @@ function AppRoutes() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/team" element={<TeamPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </BrowserRouter>
