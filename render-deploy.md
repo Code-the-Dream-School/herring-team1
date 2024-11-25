@@ -251,7 +251,7 @@ herring-team1 repository and the herring1 project.  For language, select Ruby.
 Select the branch you just pushed.  Next you have to specify the build command.
 In our case, this is a little complicated.  As follows:
 ```shell
-cd front-end && npm install && npm run build && cd ../back-end && bin/bundle install && bin/rails db:migrate
+cd front-end && npm install --only=prod && npm install vite && npm run build && cd ../back-end && bin/bundle config without development test && bin/bundle install && bin/rails db:migrate
 ```
 You also have to specify the start command:
 ```shell
