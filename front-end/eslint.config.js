@@ -45,7 +45,7 @@ export default [
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
       eqeqeq: 'error',
       'import/no-unresolved': 'error',
-      'import/extensions': ['error', 'always', { js: 'never' }],
+      'import/extensions': ['error', 'always', { js: 'never', mjs: 'never' }],
       'import/no-duplicates': 'warn',
     },
   },
