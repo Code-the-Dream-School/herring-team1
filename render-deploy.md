@@ -121,32 +121,20 @@ Next, you edit the `back-end/config/database.yml` as follows:
 ```yml
 default: &default
   adapter: postgresql
+  encoding: utf8
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
 
 development:
   <<: *default
-development:
-  adapter: postgresql
-  encoding: utf8
   database: herring1-dev
-  pool: 5
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-development:
-  adapter: postgresql
-  encoding: utf8
-  database: herring1-dev
-  pool: 5
-
-production:
-  <<: *default
-  url: <%= Rails.application.credentials.renderpostgres[:prod_uri] %>
-  sslmode: "require"
+  database: herring1-test
 ```
 We're not ready for the production one at this point, because
 the production one will poitn to a Postgres instance on Render.com,
@@ -241,10 +229,43 @@ RAILS_ENV=production bin/rails server
 Again, test that you can register a user.  Then do a git restore on
 `config/production.env` to undo your temporary change.
 
+There is one more thing you need to do to make Render.com happy.  The
+project uses Ruby 3.2.1.  For some reason, Render.com wants a `.ruby_version`
+file in the root of the project.  The one in the back-end folder doesn't
+suffice.  So copy that file into the root.
+
 ## Step 4: Creating the Render Service
 
 These are all the changes you need to deploy to Render.com.  Render.com
 deploys from your Github repository.  So, add and commit your changes
-and push your branch.  
+and push your branch.
 
+Then, go back to the Render.com dashboard, and click on the `+ New` again.
+This time, you specify a web service.  If your repository is public, you
+can point Render.com at that repository.  If not, you select Git Provider
+and, after Render.com cranks for a while, it lets you choose one.  You may
+have to click on the credentials pulldown to set up the connection.  (I
+can't remember the exact steps here.  It's pretty easy for public repositories,
+but a little more complicated for private ones.)  Then, select the
+herring-team1 repository and the herring1 project.  For language, select Ruby.
+Select the branch you just pushed.  Next you have to specify the build command.
+In our case, this is a little complicated.  As follows:
+```shell
+cd front-end && npm install && npm run build && cd ../back-end && bin/bundle install && bin/rails db:migrate
+```
+You also have to specify the start command:
+```shell
+cd back-end && bin/rails server
+```
+Finally, you need some environment variables:
+```
+VITE_REACT_URL=/
+RAILS_ENV=production
+RAILS_MASTER_KEY= ...
+```
+The value you need for the RAILS_MASTER_KEY is in back-end/config/master.key.  That's
+the encryption key for the credentials.yml.enc.
+
+After you do that, click on `Deploy Web Service`.  This takes a few minutes, especially
+on the free plan.  Eventually, it gives you a URL to try.  Test it out!
 
