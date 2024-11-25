@@ -99,6 +99,10 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    dotenv (3.1.4)
+    dotenv-rails (3.1.4)
+      dotenv (= 3.1.4)
+      railties (>= 6.1)
     drb (2.2.1)
     email_validator (2.2.4)
       activemodel
@@ -274,6 +278,7 @@ DEPENDENCIES
   bootsnap
   debug
   devise (~> 4.9)
+  dotenv-rails
   email_validator (~> 2.2)
   pg
   puma (>= 5.0)

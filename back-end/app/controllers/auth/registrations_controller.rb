@@ -12,7 +12,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
-      handle_volunteer_creation(resource) # Создаем запись в таблице Volunteer
+      handle_volunteer_creation(resource)
       register_success(resource)
     else
       register_failed(resource)
@@ -20,7 +20,6 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def handle_volunteer_creation(resource)
-    # Проверяем, что пользователь не является организацией
     unless resource.isOrganization
       Volunteer.create!(
         auth_id: resource.id,
