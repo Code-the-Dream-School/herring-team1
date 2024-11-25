@@ -1,5 +1,5 @@
 class VolunteersController < ApplicationController
-    before_action :find_volunteer, only: [:show, :update]
+    before_action :find_volunteer, only: [:show, :update, :destroy]
   
     # GET all volunteers
     def index
@@ -22,6 +22,14 @@ class VolunteersController < ApplicationController
         end
     end
 
+    # DELETE volunteer
+    def destroy
+        if @volunteer.destroy
+        render json: { message: "Volunteer deleted successfully" }, status: :ok
+        else
+        render json: { error: "Failed to delete volunteer" }, status: :unprocessable_entity
+        end
+    end
     private
   
     # Find volunteer by ID
