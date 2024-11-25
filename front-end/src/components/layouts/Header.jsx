@@ -52,9 +52,6 @@ export default function Header() {
           <>
             <NavLink
               to="/dashboard"
-              // className={({ isActive }) =>
-              //   `px-4 py-2 rounded-md font-medium ${isActive ? 'w-[110px] h-[30px] text-white bg-purple hover:bg-gray-400 font-bold flex items-center justify-center rounded-md' : 'text-gray-700 hover:bg-light_grey'}`
-              // }
             >
               <img
                 src="/src/assets/profile-user.png"
@@ -102,22 +99,19 @@ export default function Header() {
 
           <div className="flex flex-col space-y-4 mt-6">
             <a
-              href
-              to="/#mission"
+              href="/#mission"
               className="text-gray-800 font-bold py-2 px-4 hover:bg-purple-100 hover:text-purple rounded"
             >
               Our Mission
             </a>
             <a
-              href
-              to="/#volunteers"
+              href="/#volunteers"
               className="text-gray-800 font-bold py-2 px-4 hover:bg-purple-100 hover:text-purple rounded"
             >
               Volunteers
             </a>
             <a
-              href
-              to="/#organizations"
+              href="/#organizations"
               className="text-gray-800 font-bold py-2 px-4 hover:bg-purple-100 hover:text-purple rounded"
             >
               Organizations
