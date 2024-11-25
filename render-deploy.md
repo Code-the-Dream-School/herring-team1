@@ -148,14 +148,16 @@ production:
   url: <%= Rails.application.credentials.renderpostgres[:prod_uri] %>
   sslmode: "require"
 ```
-The production one will point to a Postgres instance on Render.com.
-Of course, we haven't created that one yet, so this won't work
-until we do.  But the dev and test databases should now work.  Let's see
-if they do.  Do a `bin/rails db:migrate` to create the development database
-and load the schema.  Then start the server and see if you can
-register a user.  Then stop the server, and do `bin/rails db:migrate RAILS_ENV=test`
-to create the test database and load the schema.  Then start the server again, 
-with `bin/rails server RAILS_ENV=test` to bring up the Rails server in test mode,
+We're not ready for the production one at this point, because
+the production one will poitn to a Postgres instance on Render.com,
+and we haven't created that one yet.
+The dev and test databases should now work.  Do a `bin/rails db:create`
+to create them.
+if they do.Do a `bin/rails db:migrate` to create the development database schema.
+Then start the server and see if you can
+register a user.  Then stop the server, and do `RAILS_ENV=test bin/rails db:migrate`
+to load the schema into the test database.  Then start the server again, 
+with `RAILS_ENV=test bin/rails server` to bring up the Rails server in test mode,
 and verify that you can register a user.  If all is working, you have converted
 the application to Postgres ... except, of course, for production.
 
@@ -210,17 +212,39 @@ the production database as described in the database.yml.  THere are actually
 two secrets in the credentials.yml.enc that your service uses.  The other is
 the secret_key_base, which is used for the credentials that Devise generates.
 
+Now, add these lines to the `config/database.yml`.
+```yml
+
+production:
+  <<: *default
+  url: <%= Rails.application.credentials.renderpostgres[:prod_uri] %>
+  sslmode: "require"
+```
+You are referencing the entry you created in the credentials.yml.enc.
+
 To test, stop the Rails server, if it is running, and load the schema into
 the production database as follows
 ```shell
-bin/rails db:migrate RAILS_ENV=production
+RAILS_ENV=production bin/rails db:migrate
 ```
+We want to run the rails server locally, as if it were in production mode.
+However, production mode requires SSL.  So edit `config/production.env`, and
+comment out the line that says:
+```ruby
+config.force_ssl = true
+```
+This is a *temporary* change, just for testing!
 Then start the rails server in production mode, as follows:
 ```shell
-bin/rails server RAILS_ENV=production
+RAILS_ENV=production bin/rails server
 ```
-Again, test that you can register a user.
+Again, test that you can register a user.  Then do a git restore on
+`config/production.env` to undo your temporary change.
 
 ## Step 4: Creating the Render Service
+
+These are all the changes you need to deploy to Render.com.  Render.com
+deploys from your Github repository.  So, add and commit your changes
+and push your branch.  
 
 
