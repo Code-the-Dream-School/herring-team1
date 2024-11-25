@@ -152,6 +152,7 @@ GEM
     parser (3.3.6.0)
       ast (~> 2.4.1)
       racc
+    pg (1.5.9)
     psych (5.2.0)
       stringio
     puma (6.4.3)
@@ -231,15 +232,6 @@ GEM
       rubocop-ast (>= 1.31.1, < 2.0)
     ruby-progressbar (1.13.0)
     securerandom (0.3.2)
-    sqlite3 (2.2.0-aarch64-linux-gnu)
-    sqlite3 (2.2.0-aarch64-linux-musl)
-    sqlite3 (2.2.0-arm-linux-gnu)
-    sqlite3 (2.2.0-arm-linux-musl)
-    sqlite3 (2.2.0-arm64-darwin)
-    sqlite3 (2.2.0-x86-linux-gnu)
-    sqlite3 (2.2.0-x86-linux-musl)
-    sqlite3 (2.2.0-x86_64-linux-gnu)
-    sqlite3 (2.2.0-x86_64-linux-musl)
     stringio (3.1.2)
     strong_password (0.0.10)
     thor (1.3.2)
@@ -274,12 +266,12 @@ DEPENDENCIES
   debug
   devise (~> 4.9)
   email_validator (~> 2.2)
+  pg
   puma (>= 5.0)
   rack-cors
   rails (~> 7.1.4)
   rubocop (~> 1.68)
   rubocop-github (~> 0.20.0)
-  sqlite3 (>= 1.4)
   strong_password (~> 0.0.10)
   tzinfo-data
 
