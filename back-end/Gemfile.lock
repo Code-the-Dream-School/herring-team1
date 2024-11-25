@@ -152,6 +152,7 @@ GEM
     parser (3.3.6.0)
       ast (~> 2.4.1)
       racc
+    pg (1.5.9)
     psych (5.2.0)
       stringio
     puma (6.4.3)
@@ -274,6 +275,7 @@ DEPENDENCIES
   debug
   devise (~> 4.9)
   email_validator (~> 2.2)
+  pg
   puma (>= 5.0)
   rack-cors
   rails (~> 7.1.4)
