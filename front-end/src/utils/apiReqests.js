@@ -1,15 +1,6 @@
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_REACT_URL;
 
-axios.defaults.withCredentials = true;
-
-const csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
-if (csrfMetaTag) {
-  axios.defaults.headers.common['X-CSRF-Token'] = csrfMetaTag.getAttribute('content');
-} else {
-  console.warn('CSRF meta tag not found. Ensure it is included in the HTML layout.');
-}
-
 export const register = async (email, password, confirmPassword, isOrganization) => {
   try {
     const response = await axios.post(`${API_BASE_URL}auth`, {
