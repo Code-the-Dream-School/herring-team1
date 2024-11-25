@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.jsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // import { logout } from '../../utils/apiReqests';
 
 export default function Header() {
@@ -23,8 +23,22 @@ export default function Header() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
-    <nav className="bg-background flex items-center justify-between px-6 py-4 sticky top-0 z-10 w-full">
+    <nav className="bg-background flex items-center justify-between px-6 py-4 sticky top-0 z-20 w-full">
       <div className="flex items-center space-x-1">
         <NavLink to="/" className="text-gray-800 hover:text-purple">
           <img
@@ -87,7 +101,7 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="fixed inset-x-0 top-0 bg-white z-20 flex flex-col items-center pt-6 pb-10 shadow-lg rounded-b-lg w-full max-h-120">
+        <div className="fixed inset-x-0 top-0 bg-white z-30 flex flex-col items-center pt-6 pb-10 shadow-lg rounded-b-lg w-full max-h-120">
           <button className="absolute top-4 right-4 focus:outline-none" onClick={toggleMenu}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +115,7 @@ export default function Header() {
             </svg>
           </button>
 
-          <div className="flex flex-col space-y-4 mt-6">
+          <div className="z-30 flex flex-col space-y-4 mt-6">
             <a
               href="/#mission"
               className="text-gray-800 font-bold py-2 px-4 hover:bg-purple-100 hover:text-purple rounded"
