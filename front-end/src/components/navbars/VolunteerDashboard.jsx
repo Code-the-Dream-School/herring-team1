@@ -30,7 +30,7 @@ function VolunteerDashboard() {
 
   return (
     <div className="flex flex-col md:flex-row w-full flex-grow sm:justify-around mb-4">
-      <div className="flex flex-col w-full sm:w-1/4">
+      <div className="flex flex-col w-full md:w-1/4">
         <div className="relative items-center xs:w-40 xl:w-60 mx-auto mt-20">
           <img
             className="w-full h-auto border rounded-[20px] object-cover"
@@ -63,7 +63,7 @@ function VolunteerDashboard() {
               {volunteerDashboard.map((item, index) => (
                 <li
                   key={index}
-                  className={`py-2 cursor-pointer sm:text-left xs:text-center ${
+                  className={`py-2 cursor-pointer md:text-left xs:text-center ${
                     currentPage === item.text ? 'text-purple font-bold' : 'text-gray-800'
                   }`}
                   onClick={() => setCurrentPage(item.text)}
