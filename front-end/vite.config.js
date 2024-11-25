@@ -14,4 +14,7 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    outDir: '../back-end/public', 
+  },
 });
