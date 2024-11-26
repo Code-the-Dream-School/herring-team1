@@ -15,20 +15,20 @@ class VolunteersController < ApplicationController
 
     # UPDATE volunteer
     def update
-        if @volunteer.update(volunteer_params)
+      if @volunteer.update(volunteer_params)
         render json: { message: "Volunteer updated successfully", volunteer: @volunteer }, status: :ok
-        else
+      else
         render json: { error: "Failed to update volunteer", details: @volunteer.errors.full_messages }, status: :unprocessable_entity
-        end
+      end
     end
 
     # DELETE volunteer
     def destroy
-        if @volunteer.destroy
+      if @volunteer.destroy
         render json: { message: "Volunteer deleted successfully" }, status: :ok
-        else
+      else
         render json: { error: "Failed to delete volunteer" }, status: :unprocessable_entity
-        end
+      end
     end
     private
   
@@ -41,6 +41,6 @@ class VolunteersController < ApplicationController
 
     # Params for update
     def volunteer_params
-        params.require(:volunteer).permit(:first_name, :last_name, :address, :city, :state, :zip_code, :phone, :email, :about, :services, :profile_img)
+      params.require(:volunteer).permit(:name, :email, :phone)
     end
   end
