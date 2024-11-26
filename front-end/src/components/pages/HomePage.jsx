@@ -15,7 +15,7 @@ function HomePage() {
           </div>
 
           <div className="space-x-8 justify-end items-end pr-8 pb-8 hidden sm:flex">
-            <Link to="/login">
+            <Link to="/auth/login">
               <button
                 className="bg-orangeButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
     w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
@@ -25,7 +25,7 @@ function HomePage() {
                 Become a Volunteer
               </button>
             </Link>
-            <Link to="/login">
+            <Link to="/auth/login">
               <button
                 className="bg-yellowButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
     w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
@@ -113,7 +113,7 @@ function HomePage() {
               assistance. Helping others is proven to boost happiness and provide a sense of purpose, making a positive
               impact on your own life.
             </p>
-            <Link to="/login">
+            <Link to="/auth/login">
               <button
                 className="bg-orangeButton text-gray-800  font-bold rounded-lg transition hover:bg-gray-400
     w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
@@ -143,7 +143,7 @@ function HomePage() {
               of support. Collaborating with dedicated volunteers can enhance your services, foster community
               connections, and create a lasting positive impact for both your organization and those you serve.
             </p>
-            <Link to="/login">
+            <Link to="/auth/login">
               <button
                 className="bg-yellowButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
     w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
