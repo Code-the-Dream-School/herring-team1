@@ -16,9 +16,9 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const logout = () => setUser(null);
+  const deleteUser = () => setUser(null);
 
-  return <AuthContext.Provider value={{ user, setUser, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, setUser, deleteUser }}>{children}</AuthContext.Provider>;
 };
 
 AuthProvider.propTypes = {
