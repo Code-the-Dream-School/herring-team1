@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'; // Импорт иконки из Heroicons
 
 const SearchPage = () => {
   const hardcodedOrganizations = [
@@ -36,29 +37,22 @@ const SearchPage = () => {
         {/* Search Section */}
         <h4>Find volunteer opportunities</h4>
         <div className="bg-light_purple min-h-[20vh] flex flex-col justify-center items-center p-4">
-          {/* <h1 className="text-2xl font-bold text-white mb-4">Search for Organizations</h1> */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-            <input
-              type="text"
-              placeholder="search by services"
-              className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300"
-            />
-            <input
-              type="text"
-              placeholder="search by zip code"
-              className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300"
-            />
-            <input
-              type="text"
-              placeholder="search by keyword"
-              className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300"
-            />
+            {['search by services', 'search by zip code', 'search by keyword'].map((placeholder, index) => (
+              <div key={index} className="relative">
+                <input
+                  type="text"
+                  placeholder={placeholder}
+                  className="p-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300 w-full"
+                />
+                <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" />
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Organization Cards Section */}
         <div className="p-6">
-          {/* <h2 className="text-xl font-semibold text-gray-800 mb-4">Available Organizations</h2> */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {hardcodedOrganizations.map((org) => (
               <div key={org.id} className="bg-white p-4 rounded-lg shadow-lg relative">
@@ -85,7 +79,6 @@ const SearchPage = () => {
                   )}
                 </button>
                 <h3 className="text-lg font-bold">{org.name}</h3>
-                {/* Organization Logo Placeholder */}
                 <div className="w-16 h-16 bg-gray-200 rounded-full mb-4 flex items-center justify-center text-gray-500">
                   LOGO
                 </div>
