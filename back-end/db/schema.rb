@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_25_013056) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_27_210555) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "addresses", force: :cascade do |t|
+    t.string "address", limit: 200, null: false
+    t.string "city", limit: 100, null: false
+    t.string "state", limit: 50, null: false
+    t.string "zip_code", limit: 10, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "auths", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -25,6 +34,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_013056) do
     t.boolean "isOrganization", default: false, null: false
     t.index ["email"], name: "index_auths_on_email", unique: true
     t.index ["reset_password_token"], name: "index_auths_on_reset_password_token", unique: true
+  end
+
+  create_table "organizations", force: :cascade do |t|
+    t.bigint "auth_id", null: false
+    t.string "name", limit: 150, null: false
+    t.string "website", limit: 100
+    t.string "phone", limit: 15
+    t.string "description", limit: 255
+    t.string "mission", limit: 255
+    t.bigint "address_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["address_id"], name: "index_organizations_on_address_id"
+    t.index ["auth_id"], name: "index_organizations_on_auth_id"
   end
 
   create_table "volunteers", force: :cascade do |t|
@@ -44,4 +67,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_25_013056) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "organizations", "addresses"
+  add_foreign_key "organizations", "auths"
 end
