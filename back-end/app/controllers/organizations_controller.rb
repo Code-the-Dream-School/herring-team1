@@ -1,3 +1,4 @@
+# OrganizationsController handles actions related to managing organizations.
 class OrganizationsController < ApplicationController
   before_action :set_organization, only: %i[show edit update destroy]
 
@@ -46,6 +47,6 @@ class OrganizationsController < ApplicationController
     params.require(:organization).permit(
       :auth_id, :name, :website, :description, :mission, :logo,
       addresses_attributes: [:address, :city, :state, :zip_code]
-      )
+    )
   end
 end

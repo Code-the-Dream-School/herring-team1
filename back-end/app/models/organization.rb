@@ -1,3 +1,4 @@
+# Organization model represents an organization in the system.
 class Organization < ApplicationRecord
   belongs_to :auth
   has_many :addresses, dependent: :destroy

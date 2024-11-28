@@ -1,3 +1,4 @@
+# CreateOrganizations migration creates the organizations table in the database.
 class CreateOrganizations < ActiveRecord::Migration[7.1]
   def change
     create_table :organizations do |t|

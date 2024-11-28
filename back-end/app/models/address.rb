@@ -1,3 +1,4 @@
+# Address model represents the addresses associated with an organization.
 class Address < ApplicationRecord
   belongs_to :organization, optional: true
   belongs_to :volunteer, optional: true
