@@ -5,7 +5,7 @@ Rails.application.routes.draw do
                 registrations: 'auth/registrations'
               }
 
-resources :organizations
+  resources :organizations
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

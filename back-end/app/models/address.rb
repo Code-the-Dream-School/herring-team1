@@ -1,5 +1,6 @@
 class Address < ApplicationRecord
-  belongs_to :organization 
+  belongs_to :organization, optional: true
+  belongs_to :volunteer, optional: true
 
   validates :address, presence: true, length: { maximum: 200 }
   validates :city, presence: true, length: { maximum: 100 }

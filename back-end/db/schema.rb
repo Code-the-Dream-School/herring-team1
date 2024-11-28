@@ -19,8 +19,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_27_210555) do
     t.string "city", limit: 100, null: false
     t.string "state", limit: 50, null: false
     t.string "zip_code", limit: 10, null: false
+    t.bigint "organization_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["address"], name: "index_addresses_on_address"
+    t.index ["organization_id"], name: "index_addresses_on_organization_id"
+    t.index ["zip_code"], name: "index_addresses_on_zip_code"
   end
 
   create_table "auths", force: :cascade do |t|
@@ -43,10 +47,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_27_210555) do
     t.string "phone", limit: 15
     t.string "description", limit: 255
     t.string "mission", limit: 255
-    t.bigint "address_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["address_id"], name: "index_organizations_on_address_id"
     t.index ["auth_id"], name: "index_organizations_on_auth_id"
   end
 
@@ -67,6 +69,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_27_210555) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "organizations", "addresses"
+  add_foreign_key "addresses", "organizations"
   add_foreign_key "organizations", "auths"
 end

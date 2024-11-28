@@ -3,6 +3,7 @@ class OrganizationsController < ApplicationController
 
   def index
     @organizations = Organization.all
+    @organization.addresses.build
     render json: @organizations
   end
 
@@ -35,11 +36,16 @@ class OrganizationsController < ApplicationController
 
   private
 
+  # Set the organization for show, edit, update, and destroy actions
   def set_organization
     @organization = Organization.find(params[:id])
   end
 
+  # Permit the necessary parameters, including nested addresses
   def organization_params
-    params.require(:organization).permit(:auth_id, :name, :website, :description, :mission, :address_id, :logo)
+    params.require(:organization).permit(
+      :auth_id, :name, :website, :description, :mission, :logo,
+      addresses_attributes: [:address, :city, :state, :zip_code]
+      )
   end
 end
