@@ -19,13 +19,13 @@ function NotFound() {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-background relative">
+    <div className="flex flex-col md:flex-row min-h-screen bg-background relative overflow-hidden">
       {/* Left section for image and 404 */}
       <div className="relative w-full md:w-1/2 h-64 md:h-full overflow-hidden flex items-center justify-center order-1 md:order-none">
         <img
-          src="src\\components\\assets\\images_default\\404-1.jpg"
-          alt="Sad elderly lady"
-          className={`w-full h-full object-cover transition-opacity duration-[10000ms] ${
+          src="src\assets\404-4.jpg"
+          alt="a couple of elderly people on the beach"
+          className={`max-w-full max-h-full object-cover transition-opacity duration-[10000ms] ${
             imageHidden ? 'opacity-0' : 'opacity-100'
           }`}
         />
@@ -35,7 +35,7 @@ function NotFound() {
               show404 ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
             }`}
           >
-            <span className="text-[6rem] sm:text-[10rem] md:text-[15rem] lg:text-[20rem]">404</span>
+            <span className="text-[5rem] sm:text-[7rem] md:text-[10rem] lg:text-[15rem] xl:text-[20rem]">404</span>
           </div>
         )}
       </div>

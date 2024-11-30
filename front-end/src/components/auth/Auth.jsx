@@ -7,7 +7,7 @@ function Auth() {
   return (
     <main className="bg-main flex-grow flex justify-center p-6">
       <div className="w-full xs:max-w-xs md:max-w-lg md:p-8">
-        <div className="relative flex justify-center sm:px-2 mb-6">
+        <div className="flex justify-center sm:px-2 mb-6">
           <Link
             to="/auth/register"
             className={`w-1/2 p-4 shadow-lg font-title font-medium border-b-2 rounded-2xl text-2xl transition flex justify-center items-center
