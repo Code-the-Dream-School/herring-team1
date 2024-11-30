@@ -3,20 +3,20 @@ class VolunteersController < ApplicationController
   
     # GET all volunteers
     def index
-      @volunteers = Volunteer.all
-      render json: @volunteers
+      @volunteers = Volunteer.includes(:addresses).all
+      render json: @volunteers.as_json(include: :addresses)
     end
   
     # GET one volunteer
     def show
-      render json: @volunteer
+      render json: @volunteer.as_json(include: :addresses)
     end
   
 
     # UPDATE volunteer
     def update
         if @volunteer.update(volunteer_params)
-        render json: { message: "Volunteer updated successfully", volunteer: @volunteer }, status: :ok
+        render json: { message: "Volunteer updated successfully", volunteer: @volunteer.as_json(include: :addresses) }, status: :ok
         else
         render json: { error: "Failed to update volunteer", details: @volunteer.errors.full_messages }, status: :unprocessable_entity
         end
@@ -41,6 +41,6 @@ class VolunteersController < ApplicationController
 
     # Params for update
     def volunteer_params
-        params.require(:volunteer).permit(:first_name, :last_name, :address, :city, :state, :zip_code, :phone, :email, :about, :services, :profile_img)
+        params.require(:volunteer).permit(:first_name, :last_name, :email, :about, :services, :profile_img, addresses_attributes: [:id, :address, :city, :state, :zip_code, :_destroy] )
     end
   end
