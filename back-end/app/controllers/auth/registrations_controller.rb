@@ -20,12 +20,13 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def handle_volunteer_creation(resource)
-    unless resource.isOrganization
-      Volunteer.create!(
-        auth_id: resource.id,
-        email: resource.email
-      )
-    end
+    return if resource.isOrganization
+
+    Volunteer.create!(
+      auth_id: resource.id,
+      email: resource.email
+    )
+    
   end
 
   def register_success(resource)
