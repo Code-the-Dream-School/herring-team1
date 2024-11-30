@@ -1,5 +1,7 @@
 class VolunteersController < ApplicationController
     before_action :find_volunteer, only: [:show, :update, :destroy]
+    before_action :authorize_volunteer, only: [:update, :destroy]
+
   
     # GET all volunteers
     def index
@@ -31,6 +33,13 @@ class VolunteersController < ApplicationController
         end
     end
     private
+
+    # Authorize volunteer actions
+    def authorize_volunteer
+      unless @volunteer.auth_id == current_auth.id
+        render json: { error: "You are not authorized to perform this action" }, status: :forbidden
+      end
+    end
   
     # Find volunteer by ID
     def find_volunteer
