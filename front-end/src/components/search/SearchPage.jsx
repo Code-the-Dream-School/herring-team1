@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'; // Импорт иконки из Heroicons
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 
 const SearchPage = () => {
   const hardcodedOrganizations = [
