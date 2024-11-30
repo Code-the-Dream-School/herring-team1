@@ -4,7 +4,7 @@ function OrganizationForm() {
   const navigate = useNavigate();
   return (
     <div className="max-w-4xl mx-auto p-8 bg-background rounded-lg">
-      <p className="text-gray-800 text-left mb-8">
+      <p className="text-gray-900 text-sm mb-8 md:text-md xl:text-lg ">
         Let volunteers know more about your organization &#39;s mission and primary cause areas to help them connect
         with you.
       </p>
@@ -86,16 +86,21 @@ function OrganizationForm() {
                 <img
                   src="src/assets/profile_default.jpg"
                   alt="Organization Logo"
-                  className="w-32 h-32 mb-6 object-cover border rounded-lg shadow-md"
+                  className="w-32 h-32 mb-2 object-cover border rounded-lg shadow-md"
                 />
               </div>
-              <label htmlFor="organizationLogo" className="block text-gray-800  text-small">
-                Upload organization logo
-              </label>
-              <input type="file" id="logo" className="w-full border-gray-300 border rounded-lg p-2" />
+              <div className="mt-2 flex justify-center">
+                <label
+                  htmlFor="logo"
+                  className="cursor-pointer inline-block bg-gray-300 text-gray-800 text-sm px-4 py-2 rounded-md shadow-md hover:shadow-md hover:shadow-gray-400"
+                >
+                  Upload Logo
+                </label>
+                <input type="file" id="logo" className="hidden" />
+              </div>
             </div>
             <div>
-              <label htmlFor="website" className="block text-gray-800  text-small">
+              <label htmlFor="website" className="block text-gray-800  text-small mt-6 lg:mt-28 xl:mt-28">
                 Organization website
               </label>
               <input
