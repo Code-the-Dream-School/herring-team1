@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.jsx';
 import { useState, useEffect } from 'react';
-// import { logout } from '../../utils/apiReqests';
+import { logout } from '../../utils/apiReqests';
 
 export default function Header() {
   const { user, deleteUser } = useAuth();
@@ -10,7 +10,7 @@ export default function Header() {
 
   const logoutUser = async () => {
     try {
-      // await logout();
+      await logout();
       localStorage.clear();
       deleteUser();
       navigate('/auth/login');
