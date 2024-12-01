@@ -41,7 +41,7 @@ class OrganizationsController < ApplicationController
       render json: { message: "Organization deleted successfully." }, status: :ok
     else
       render json: { error: "Failed to delete organization" }, status: :unprocessable_entity
-    end  
+    end
   end
 
   private
