@@ -25,6 +25,7 @@ module SetCookiePartitionFlag
     set_header 'set-cookie', add_cookie_to_header(cookie_header, key, value)
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
   def add_cookie_to_header(header, key, value)
     case value
     when Hash
@@ -66,10 +67,13 @@ module SetCookiePartitionFlag
       raise ArgumentError, "Unrecognized cookie header value. Expected String, Array, or nil, got #{header.inspect}"
     end
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
 
+  # rubocop:disable Naming/MethodParameterName
   def escape(s)
     URI.encode_www_form_component(s)
   end
+  # rubocop:enable Naming/MethodParameterName
 end
 
 module Rack
