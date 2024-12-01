@@ -1,127 +1,141 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import { registerSchema } from '../../schemas';
 import { useAuth } from '../../context/useAuth.jsx';
+import { register } from '../../utils/apiReqests';
 
 function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [password_confirmation, setPassword_confirmation] = useState('');
-  const [responseMessage, setResponseMessage] = useState(null);
-  const [isOrganization, setIsOrganization] = useState(false);
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const onSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
-      const url_root = import.meta.env.VITE_REACT_URL;
-      const response = await fetch(`${url_root}auth`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          auth: {
-            email: email,
-            password: password,
-            password_confirmation: password_confirmation,
-            isOrganization: isOrganization,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setResponseMessage('Registration successful!');
+      const response = await register(values.email, values.password, values.confirmPassword, values.isOrganization);
+      const auth = response.data;
+      localStorage.setItem('user', JSON.stringify(auth.user));
+      localStorage.setItem('x_csrf_token', response.headers.get('x-csrf-token'));
+      setUser(auth.user);
       navigate('/dashboard');
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setUser(data.user);
     } catch (error) {
       console.error('Error:', error);
-      setResponseMessage('Registration failed');
+      setErrors({ submit: error.message || 'Registration failed' });
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  const { values, errors, touched, isSubmitting, handleBlur, handleChange, handleSubmit } = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      isOrganization: false,
+    },
+    validationSchema: registerSchema,
+    onSubmit,
+  });
+
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label htmlFor="email" className="block font-medium">
           Email
         </label>
         <input
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          id="email"
+          name="email"
+          value={values.email}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className={`w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 ${
+            touched.email && errors.email ? 'border-red-500' : 'focus:ring-purple-500'
+          }`}
         />
+        {touched.email && errors.email && <div className="text-red-500 text-sm">{errors.email}</div>}
       </div>
+
       <div>
-        <label htmlFor="email" className="block font-medium">
+        <label htmlFor="password" className="block font-medium">
           Password
         </label>
         <input
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          id="password"
+          name="password"
+          value={values.password}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className={`w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 ${
+            touched.password && errors.password ? 'border-red-500' : 'focus:ring-purple-500'
+          }`}
         />
+        {touched.password && errors.password && <div className="text-red-500 text-sm">{errors.password}</div>}
       </div>
+
       <div>
-        <label htmlFor="email" className="block font-medium">
+        <label htmlFor="password_confirmation" className="block font-medium">
           Confirm Password
         </label>
         <input
           type="password"
-          value={password_confirmation}
-          onChange={(e) => setPassword_confirmation(e.target.value)}
-          required
-          className="w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          id="confirmPassword"
+          name="confirmPassword"
+          value={values.confirmPassword}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className={`w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 ${
+            touched.confirmPassword && errors.confirmPassword ? 'border-red-500' : 'focus:ring-purple-500'
+          }`}
         />
+        {touched.confirmPassword && errors.confirmPassword && (
+          <div className="text-red-500 text-sm">{errors.confirmPassword}</div>
+        )}
       </div>
-      <div className="flex items-center justify-between md:p-5">
-        <label className="flex items-center text-xl">
+
+      <div className="flex items-center justify-between md:p-5 flex-wrap">
+        <label className="flex items-center sm:text-xl">
           <input
             type="radio"
-            className="mr-2 size-4 border-gray-300 text-gray-600 focus:ring-gray-600"
-            name="organizationType"
-            value="true"
-            checked={isOrganization === 'true'}
-            onChange={(e) => setIsOrganization(e.target.value)}
-            required
+            name="isOrganization"
+            value={true}
+            checked={values.isOrganization === true}
+            onChange={() => handleChange({ target: { name: 'isOrganization', value: true } })}
+            className="mr-2 border-gray-300 text-gray-600 focus:ring-gray-600"
           />
           Organization
         </label>
-        <label className="flex items-center text-xl">
+        <label className="flex items-center sm:text-xl">
           <input
             type="radio"
-            className="mr-2"
-            name="organizationType"
-            value="false"
-            checked={isOrganization === 'false'}
-            onChange={(e) => setIsOrganization(e.target.value)}
-            required
+            name="isOrganization"
+            value={false}
+            checked={values.isOrganization === false}
+            onChange={() => handleChange({ target: { name: 'isOrganization', value: false } })}
+            className="mr-2 border-gray-300 text-gray-600 focus:ring-gray-600"
           />
           Volunteer
         </label>
       </div>
 
       <div className="flex justify-between">
-        <button type="submit" className="w-2/5 px-4 py-2 text-xl bg-orange text-white rounded-md hover:bg-orange-600">
-          Register
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-2/5 px-4 py-2 sm:text-xl bg-orange text-white rounded-md hover:bg-orange-600 disabled:bg-gray-400"
+        >
+          {isSubmitting ? 'Loading...' : 'Register'}
         </button>
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="w-2/5 px-4 py-2 text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+          className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
         >
           Cancel
         </button>
       </div>
+
+      {errors.submit && <div className="text-red-500 text-sm mt-2">{errors.submit}</div>}
     </form>
   );
 }

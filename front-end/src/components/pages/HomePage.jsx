@@ -15,7 +15,7 @@ function HomePage() {
           </div>
 
           <div className="space-x-8 justify-end items-end pr-8 pb-8 hidden sm:flex">
-            <Link to="/login">
+            <Link to="/auth/login">
               <button
                 className="bg-orangeButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
     w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
@@ -25,7 +25,7 @@ function HomePage() {
                 Become a Volunteer
               </button>
             </Link>
-            <Link to="/login">
+            <Link to="/auth/login">
               <button
                 className="bg-yellowButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
     w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
@@ -40,8 +40,8 @@ function HomePage() {
       </div>
 
       {/* Mission section*/}
-      <div className="py-12 bg-background">
-        <div className="text-center mb-12">
+      <div className="py-16">
+        <div className="text-center mb-16">
           <h2 id="mission" className="font-bold text-gray-800 sm:text-sm md:text-lg lg:text-2xl">
             Our Mission
           </h2>
@@ -91,8 +91,8 @@ function HomePage() {
       </div>
 
       {/* Volunteers Section */}
-      <div className="py-12 bg-background">
-        <div className="text-center mb-12">
+      <div className="py-12">
+        <div className="text-center mb-16">
           <h2 id="volunteers" className="font-bold text-gray-800 sm:text-sm md:text-lg lg:text-2xl">
             For Volunteers
           </h2>
@@ -113,7 +113,7 @@ function HomePage() {
               assistance. Helping others is proven to boost happiness and provide a sense of purpose, making a positive
               impact on your own life.
             </p>
-            <Link to="/login">
+            <Link to="/auth/login">
               <button
                 className="bg-orangeButton text-gray-800  font-bold rounded-lg transition hover:bg-gray-400
     w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
@@ -128,8 +128,8 @@ function HomePage() {
       </div>
 
       {/* Organization Section */}
-      <div className="py-12 bg-background mt-12 mb-12">
-        <div className="text-center mb-12">
+      <div className="py-12 mt-12 mb-12">
+        <div className="text-center mb-16">
           <h2 id="organizations" className="font-bold text-gray-800 sm:text-sm md:text-lg lg:text-2xl">
             For Organizations
           </h2>
@@ -143,7 +143,7 @@ function HomePage() {
               of support. Collaborating with dedicated volunteers can enhance your services, foster community
               connections, and create a lasting positive impact for both your organization and those you serve.
             </p>
-            <Link to="/login">
+            <Link to="/auth/login">
               <button
                 className="bg-yellowButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
     w-full sm:w-[150px] md:w-[250px] lg:w-[300px]

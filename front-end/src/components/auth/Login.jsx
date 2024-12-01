@@ -1,86 +1,95 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useFormik } from 'formik';
+import { loginSchema } from '../../schemas';
 import { useAuth } from '../../context/useAuth.jsx';
+import { login } from '../../utils/apiReqests';
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [responseMessage, setResponseMessage] = useState(null);
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const onSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
-      const url_root = import.meta.env.VITE_REACT_URL;
-      const response = await fetch(`${url_root}auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          auth: {
-            email: email,
-            password: password,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setResponseMessage('Registration successful!');
+      const response = await login(values.email, values.password);
+      const auth = response.data;
+      localStorage.setItem('user', JSON.stringify(auth.user));
+      localStorage.setItem('x_csrf_token', response.headers.get('x-csrf-token'));
+      setUser(auth.user);
       navigate('/dashboard');
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setUser(data.user);
     } catch (error) {
       console.error('Error:', error);
-      setResponseMessage('Registration failed');
+      setErrors({ submit: error.message || 'Login failed' });
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  const { values, errors, touched, isSubmitting, handleBlur, handleChange, handleSubmit } = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: loginSchema,
+    onSubmit,
+  });
+
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label htmlFor="email" className="block font-medium">
           Email
         </label>
         <input
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          id="email"
+          name="email"
+          value={values.email}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className={`w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 ${
+            touched.email && errors.email ? 'border-red-500' : 'focus:ring-purple-500'
+          }`}
         />
+        {touched.email && errors.email && <div className="text-red-500 text-sm">{errors.email}</div>}
       </div>
+
       <div>
-        <label htmlFor="email" className="block font-medium">
+        <label htmlFor="password" className="block font-medium">
           Password
         </label>
         <input
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          id="password"
+          name="password"
+          value={values.password}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className={`w-full p-4 border shadow-lg rounded-xl focus:outline-none focus:ring-2 ${
+            touched.password && errors.password ? 'border-red-500' : 'focus:ring-purple-500'
+          }`}
         />
+        {touched.password && errors.password && <div className="text-red-500 text-sm">{errors.password}</div>}
       </div>
 
       <div className="flex justify-between pt-7">
-        <button type="submit" className="w-2/5 px-4 py-2 text-xl bg-orange text-white rounded-md hover:bg-orange-600">
-          Login
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-2/5 px-4 py-2 sm:text-xl bg-orange text-white rounded-md hover:bg-orange-600 disabled:bg-gray-400"
+        >
+          {isSubmitting ? 'Loading...' : 'Login'}
         </button>
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="w-2/5 px-4 py-2 text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+          className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
         >
           Cancel
         </button>
       </div>
+
+      {/* Global form error */}
+      {errors.submit && <div className="text-red-500 text-sm mt-2">{errors.submit}</div>}
     </form>
   );
 }
