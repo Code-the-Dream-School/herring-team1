@@ -73,7 +73,7 @@ export default function Header() {
             <NavLink to="/dashboard">
               <img
                 src="/src/assets/profile-user.png"
-                alt="Logo Connect Care"
+                alt="User profile icon"
                 className="h-6 w-6 transform hover:scale-110"
               />
             </NavLink>
