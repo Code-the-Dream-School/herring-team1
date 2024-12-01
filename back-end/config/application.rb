@@ -24,6 +24,7 @@ module SetCookiePartitionFlag
     cookie_header = get_header 'set-cookie'
     set_header 'set-cookie', add_cookie_to_header(cookie_header, key, value)
   end
+
   def add_cookie_to_header(header, key, value)
     case value
     when Hash
@@ -31,9 +32,9 @@ module SetCookiePartitionFlag
       path    = "; path=#{value[:path]}"       if value[:path]
       max_age = "; max-age=#{value[:max_age]}" if value[:max_age]
       expires = "; expires=#{value[:expires].httpdate}" if value[:expires]
-      secure = "; secure"  if value[:secure]
-      partitioned = "; partitioned"  if value[:partitioned]
-      httponly = "; HttpOnly" if (value.key?(:httponly) ? value[:httponly] : value[:http_only])
+      secure = "; secure" if value[:secure]
+      partitioned = "; partitioned" if value[:partitioned]
+      httponly = "; HttpOnly" if value.key?(:httponly) ? value[:httponly] : value[:http_only]
       same_site =
         case value[:same_site]
         when false, nil
@@ -49,7 +50,7 @@ module SetCookiePartitionFlag
         end
       value = value[:value]
     end
-    value = [value] unless Array === value
+    value = [value] unless value.is_a?(Array)
 
     cookie = "#{escape(key)}=#{value.map { |v| escape v }.join('&')}#{domain}" \
       "#{path}#{max_age}#{expires}#{secure}#{partitioned}#{httponly}#{same_site}"
@@ -65,28 +66,44 @@ module SetCookiePartitionFlag
       raise ArgumentError, "Unrecognized cookie header value. Expected String, Array, or nil, got #{header.inspect}"
     end
   end
+
   def escape(s)
     URI.encode_www_form_component(s)
   end
 end
-module Rack::Response::Helpers
-  prepend SetCookiePartitionFlag
+
+module Rack
+  module Response
+    module Helpers
+      prepend SetCookiePartitionFlag
+    end
+  end
 end
 
-module SendSessionForLocalHost # We need to be able to send a secure cookie in non-SSL cases
+# We need to be able to send a secure cookie in non-SSL cases
+module SendSessionForLocalHost
   # In particular, for localhost, or as typically deployed in production, where a proxy
   # handles the SSL.  This "monkeypatch" is not safe for cases where the server is neither
   # behind such a proxy or on localhost.
+
   private
-  def security_matches?(request,options)
+
+  def security_matches?(request, options)
     @assume_ssl ||= @default_options.delete(:assume_ssl)
     return true unless options[:secure]
+
     request.ssl? || @assume_ssl == true  
   end 
 end
 
-class Rack::Session::Abstract::Persisted
-  prepend SendSessionForLocalHost
+module Rack
+  module Session
+    module Abstract
+      class Persisted
+        prepend SendSessionForLocalHost
+      end
+    end
+  end
 end
 
 module RestRails
@@ -117,6 +134,6 @@ module RestRails
     config.middleware.use ActionDispatch::Session::CookieStore
     # this will send secure cookies without SSL
     config.middleware.use ActionDispatch::Session::CookieStore, same_site: :None, 
-    secure: true, partitioned: true, assume_ssl: true
+                                                                secure: true, partitioned: true, assume_ssl: true
   end
 end
