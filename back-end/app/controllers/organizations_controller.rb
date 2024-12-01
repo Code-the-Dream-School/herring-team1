@@ -1,17 +1,20 @@
 # OrganizationsController handles actions related to managing organizations.
 class OrganizationsController < ApplicationController
-  before_action :set_organization, only: %i[show edit update destroy]
+  before_action :set_organization, only: %i[show update destroy]
 
+  # GET all organizations
   def index
-    @organizations = Organization.all
-    @organization.addresses.build
-    render json: @organizations
+    @organizations = Organization.includes(:addresses).all
+    @organizations.each { |org| org.addresses.build }
+    render json: @organizations.as_json(include: :addresses)
   end
 
+  # GET one organization
   def show
-    render json: @organization
+    render json: @organization.as_json(include: :addresses)
   end
 
+  # POST - create organization
   def create
     @organization = Organization.new(organization_params)
 
@@ -22,17 +25,23 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  # UPDATE organization
   def update
     if @organization.update(organization_params)
+      @organization = Organization.find(params[:id])
       render json: @organization
     else
       render json: { errors: @organization.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
+  # DELETE organization
   def destroy
-    @organization.destroy
-    render json: { message: "Organization deleted successfully." }
+    if @organization.destroy
+      render json: { message: "Organization deleted successfully." }, status: :ok
+    else
+      render json: { error: "Failed to delete organization" }, status: :unprocessable_entity
+    end  
   end
 
   private
@@ -46,7 +55,7 @@ class OrganizationsController < ApplicationController
   def organization_params
     params.require(:organization).permit(
       :auth_id, :name, :website, :description, :mission, :logo,
-      addresses_attributes: [:address, :city, :state, :zip_code]
+      addresses_attributes: [:id, :address, :city, :state, :zip_code, :_destroy]
     )
   end
 end
