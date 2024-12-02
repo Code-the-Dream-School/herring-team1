@@ -54,7 +54,7 @@ class OrganizationsController < ApplicationController
   # Permit the necessary parameters, including nested addresses
   def organization_params
     params.require(:organization).permit(
-      :auth_id, :name, :website, :description, :mission, :logo,
+      :auth_id, :name, :website, :phone, :description, :mission, :logo,
       addresses_attributes: [:id, :address, :city, :state, :zip_code, :_destroy]
     )
   end
