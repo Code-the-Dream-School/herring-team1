@@ -1,3 +1,4 @@
+# OrganizationsController handles the CRUD operations for organizations.
 class OrganizationsController < ApplicationController
   before_action :set_organization, only: %i[show update destroy]
 
