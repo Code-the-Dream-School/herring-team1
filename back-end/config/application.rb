@@ -77,7 +77,7 @@ module SetCookiePartitionFlag
 end
 
 module Rack
-  module Response
+  class Response
     module Helpers
       prepend SetCookiePartitionFlag
     end
