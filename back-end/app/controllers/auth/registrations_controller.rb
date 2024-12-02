@@ -30,7 +30,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def register_success(resource)
-    cookies["CSRF-TOKEN"] = form_authenticity_token
+    cookies["CSRF-TOKEN"] = { value: form_authenticity_token, secure: true, same_site: :None, partitioned: true }
     response.set_header('X-CSRF-Token', form_authenticity_token)
 
     render json: { 
