@@ -5,7 +5,6 @@ class OrganizationsController < ApplicationController
   # GET all organizations
   def index
     @organizations = Organization.includes(:addresses).all
-    @organizations.each { |org| org.addresses.build }
     render json: @organizations.as_json(include: :addresses)
   end
 
@@ -48,7 +47,7 @@ class OrganizationsController < ApplicationController
 
   # Set the organization for show, edit, update, and destroy actions
   def set_organization
-    @organization = Organization.find(params[:id])
+    @organization = Organization.includes(:addresses).find(params[:id])
   end
 
   # Permit the necessary parameters, including nested addresses
