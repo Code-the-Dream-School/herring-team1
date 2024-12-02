@@ -10,6 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+# rubocop:disable Metrics/BlockLength, Layout/CommentIndentation
 ActiveRecord::Schema[7.1].define(version: 2024_12_02_025445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,7 +24,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_025445) do
     t.bigint "addressable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index %w[addressable_type addressable_id], name: "index_addresses_on_addressable"
+    t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
   end
 
   create_table "auths", force: :cascade do |t|
@@ -66,4 +67,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_025445) do
   end
 
   add_foreign_key "organizations", "auths"
+# rubocop:enable Metrics/BlockLength, Layout/CommentIndentation
 end
