@@ -2,7 +2,7 @@ class Auth::SessionsController < Devise::SessionsController
     respond_to :json
     skip_forgery_protection only: [:create]
   
-    def destroy 
+    def destroy
       @logged_in_auth = current_auth
       super 
     end
@@ -11,7 +11,7 @@ class Auth::SessionsController < Devise::SessionsController
   
     def respond_with(resource, _opts = {})
       if !resource.id.nil?
-        cookies["CSRF-TOKEN"] = form_authenticity_token
+        cookies["CSRF-TOKEN"] = { value: form_authenticity_token, secure: true, same_site: :None, partitioned: true }
         response.set_header('X-CSRF-Token', form_authenticity_token)
         
         render json: { 
@@ -34,6 +34,10 @@ class Auth::SessionsController < Devise::SessionsController
     end
   
     def log_out_success
+      # Rails.logger.info "Logging out user with ID: #{current_auth}"
+      # cookies.delete(:_session_id, domain: :all, path: '/')
+      # cookies.delete('CSRF-TOKEN', domain: :all, path: '/')
+      # response.set_header('X-CSRF-Token', '')
       render json: { message: "You are logged out." }, status: :ok
     end
   

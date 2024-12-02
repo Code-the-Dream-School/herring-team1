@@ -52,8 +52,9 @@ gem "email_validator", "~> 2.2"
 
 gem "strong_password", "~> 0.0.10"
 
+gem "rack", "2.2.8.1"
 gem 'rack-cors'
-
+gem "rack-session", "1.0.2"
 
 gem "rubocop", "~> 1.68", require: false
 

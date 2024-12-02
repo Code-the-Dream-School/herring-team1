@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_30_211234) do
+# rubocop:disable Metrics/BlockLength, Layout/CommentIndentation
+ActiveRecord::Schema[7.1].define(version: 2024_11_25_013056) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -65,4 +66,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_30_211234) do
   end
 
   add_foreign_key "organizations", "auths"
+# rubocop:enable Metrics/BlockLength, Layout/CommentIndentation
 end
