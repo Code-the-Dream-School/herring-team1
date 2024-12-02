@@ -10,7 +10,9 @@ class Auth::SessionsController < Devise::SessionsController
     private
   
     def respond_with(resource, _opts = {})
-      if !resource.id.nil?
+      if resource.id.nil?
+        render json: { message: 'Authentication failed.'}, status: :unauthorized
+      else
         cookies["CSRF-TOKEN"] = { value: form_authenticity_token, secure: true, same_site: :None, partitioned: true }
         response.set_header('X-CSRF-Token', form_authenticity_token)
         
@@ -22,8 +24,6 @@ class Auth::SessionsController < Devise::SessionsController
             isOrganization: resource.isOrganization
           }
         }, status: :created
-      else
-        render json: { message: 'Authentication failed.'}, status: :unauthorized
       end
     end
   
