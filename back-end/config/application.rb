@@ -58,7 +58,7 @@ module SetCookiePartitionFlag
     value = [value] unless value.is_a?(Array)
 
     cookie = "#{escape(key)}=#{value.map { |v| escape v }.join('&')}#{domain}" \
-      "#{path}#{max_age}#{expires}#{secure}#{partitioned}#{httponly}#{same_site}"
+             "#{path}#{max_age}#{expires}#{secure}#{partitioned}#{httponly}#{same_site}"
 
     case header
     when nil, ''
@@ -123,7 +123,7 @@ module RestRails
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w(assets tasks))
+    config.autoload_lib(ignore: ['assets', 'tasks'])
 
     # Configuration for the application, engines, and railties goes here.
     #

@@ -23,7 +23,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_025445) do
     t.bigint "addressable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
+    t.index %w[addressable_type addressable_id], name: "index_addresses_on_addressable"
   end
 
   create_table "auths", force: :cascade do |t|
