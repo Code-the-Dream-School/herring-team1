@@ -1,3 +1,4 @@
+# This controller handles search operations.
 class SearchController < ApplicationController
   # check if record not found
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
@@ -31,7 +32,7 @@ class SearchController < ApplicationController
     # check if service is blank
     return render json: { error: 'service is required' }, status: :bad_request if service.blank?
 
-    @organizations =Organization.where('services @> ?',"{#{service}}") 
+    @organizations = Organization.where('services @> ?', "{#{service}}")
     render json: @organizations
   end
 
