@@ -1,15 +1,16 @@
+# AddressesController handles the CRUD operations for addresses.
 class AddressesController < ApplicationController
   before_action :set_address, only: [:show, :update, :destroy]
 
   # GET /addresses
   def index
-    if params[:organization_id].present?
-      @addresses = Address.where(addressable_id: params[:organization_id], addressable_type: 'Organization')
-    elsif params[:volunteer_id].present?
-      @addresses = Address.where(addressable_id: params[:volunteer_id], addressable_type: 'Volunteer')
-    else
-      @addresses = Address.all
-    end
+    @addresses = if params[:organization_id].present?
+                   @addresses = Address.where(addressable_id: params[:organization_id], addressable_type: 'Organization')
+                 elsif params[:volunteer_id].present?
+                   @addresses = Address.where(addressable_id: params[:volunteer_id], addressable_type: 'Volunteer')
+                 else
+                   Address.all
+                 end
     render json: @addresses
   end
 
