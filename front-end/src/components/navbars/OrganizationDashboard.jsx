@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
-import InfoPage from '../pages/organization/InfoPage.jsx';
+// import InfoPage from '../pages/organization/InfoPage.jsx';
 import Application from '../pages/organization/Application.jsx';
 import ApprovedVolunteer from '../pages/organization/ApprovedVolunteer.jsx';
 import Request from '../pages/organization/Requests.jsx';
+import OrganizationForm from '../pages/organization/OrganizationForm.jsx';
 
 const organizationDashboard = [
   { text: 'Organization information', link: '/organization' },
@@ -18,7 +19,7 @@ function OrganizationDashboard() {
   const renderContent = () => {
     switch (currentPage) {
       case 'Organization information':
-        return <InfoPage />;
+        return <OrganizationForm />;
       case 'Requests':
         return <Request />;
       case 'Approved Volunteers':
