@@ -10,7 +10,7 @@ function CreateRequest({ onSave, editingIndex, requests, onEditRequest }) {
     if (editingIndex !== null) {
       setIsModalOpen(true);
     }
-  }, [editingIndex, requests]); //, requests
+  }, [editingIndex, requests]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -19,7 +19,7 @@ function CreateRequest({ onSave, editingIndex, requests, onEditRequest }) {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    onEditRequest(null); //, handleOpenModal
+    onEditRequest(null);
   };
 
   const handleSave = async (newRequest) => {

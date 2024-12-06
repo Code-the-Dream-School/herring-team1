@@ -21,9 +21,7 @@ function Request() {
   };
 
   const handleEditRequest = (index) => {
-    if (index !== null) {
-      setEditingIndex(index);
-    }
+    setEditingIndex(index);
   };
 
   const handleRemoveRequest = (index) => {
