@@ -1,0 +1,75 @@
+/* The overlay background */
+.overlayModal {
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1050;
+  display: flex;
+  hight: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalHeader {
+  padding: 0;
+  position: relative;
+  background-color: #8e78aa;
+}
+
+.modalContent {
+  background: #faf0e6;
+  width: 70%;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modalHeader .btn-close {
+  font-size: 1.875rem;
+  cursor: pointer;
+  position: absolute;
+}
+
+.modalBody {
+  padding: 1rem;
+}
+
+.btnSuccess {
+  background-color: #25b39e;
+}
+
+.btnSuccess:hover {
+  background-color: #55d6be;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  /* For tablets and smaller screens */
+  .modalContent {
+    width: 90%;
+    max-width: none;
+  }
+
+  .modalHeader .btn-close {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* For phones */
+  .modalContent {
+    width: 95%;
+  }
+
+  .modalHeader .btn-close {
+    font-size: 1.25rem;
+  }
+}
