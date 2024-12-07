@@ -76,7 +76,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
           value={formData.service}
           onChange={handleChange}
           className="w-full text-sm border-gray-300 border rounded-lg"
-          placeholder="Enter service name"
+          placeholder="Service name"
         >
           <span className="block text-sm font-bold mb-1">Service</span>
         </InputWithLabel>
@@ -91,12 +91,12 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
           className="form-select w-full text-sm border-gray-300 border rounded-lg p-2"
           placeholder="Enter your request"
         >
-          <span className="block text-sm font-bold mb-1">Request</span>
+          <span className="block text-sm mb-1">Request</span>
         </InputWithLabel>
         {errors.service && <div className="text-red-500 text-sm">{errors.request}</div>}
       </div>
       <div className="mt-3">
-        <label htmlFor="description" className="block text-gray-800 text-sm font-bold mb-1">
+        <label htmlFor="description" className="block text-gray-800 text-sm mb-1">
           Description
         </label>
         <textarea
@@ -105,11 +105,12 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
           value={formData.description}
           onChange={handleChange}
           className="w-full text-sm border-gray-300 border rounded-lg p-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none"
+          placeholder="Add description (optional)"
           rows="4"
         />
       </div>
       <div className="mt-3 flex items-center">
-        <label htmlFor="status" className="block text-gray-800 text-sm font-bold mb-1 mr-2">
+        <label htmlFor="status" className="block text-gray-800 text-sm mb-1 mr-2">
           Status
         </label>
         <select
@@ -118,7 +119,6 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
           value={formData.status}
           onChange={handleChange}
           className="text-sm bg-white border-gray-300 border rounded-lg p-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none"
-          placeholder="Provide a description (optional)"
         >
           <option value="Select status">Select status</option>
           <option value="Open">Open</option>
