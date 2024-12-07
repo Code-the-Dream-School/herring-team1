@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import CreateRequest from './modal/CreateRequest.jsx';
+import CreateRequest from './modal/requestForm/CreateRequest.jsx';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import RequestList from './RequestList.jsx';
 
