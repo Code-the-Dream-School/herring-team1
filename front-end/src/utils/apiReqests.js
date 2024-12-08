@@ -31,7 +31,6 @@ export const login = async (email, password) => {
   }
 };
 
-// TODO: FIX this cors error
 export const logout = async () => {
   const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
 
@@ -45,8 +44,7 @@ export const logout = async () => {
       },
       withCredentials: true,
     });
-    console.log('Before cookie reset:', response.status);
-    if (response.ok) {
+    if (response.status === 200) {
       document.cookie = `CSRF-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
       document.cookie = '_session_id=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
     }
