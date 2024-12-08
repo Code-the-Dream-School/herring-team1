@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_08_154330) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_08_183318) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -49,8 +49,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_154330) do
   end
 
   create_table "organizations", force: :cascade do |t|
-    t.bigint "auth_id", null: false
-    t.string "name", limit: 150, null: false
+    t.integer "auth_id"
+    t.string "name", limit: 150
     t.string "website", limit: 100
     t.string "phone", limit: 15
     t.string "description", limit: 255
@@ -74,7 +74,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_154330) do
     t.integer "request_status_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "organization_id", null: false
     t.index ["org_service_id"], name: "index_requests_on_org_service_id"
+    t.index ["organization_id"], name: "index_requests_on_organization_id"
   end
 
   create_table "services", force: :cascade do |t|
@@ -100,4 +102,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_154330) do
   add_foreign_key "org_services", "services"
   add_foreign_key "organizations", "auths"
   add_foreign_key "requests", "org_services"
+  add_foreign_key "requests", "organizations"
 end

@@ -9,9 +9,12 @@ Rails.application.routes.draw do
     member do
       get :available_services
     end
+    resources :requests, only: [:index, :show, :create, :update, :destroy]
   end
+
   resources :volunteers, only: [:index, :show, :update, :destroy]
   resources :addresses, only: [:index, :show, :create, :update, :destroy]
+  resources :requests, only: [:index, :show]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
