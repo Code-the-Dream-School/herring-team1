@@ -5,7 +5,11 @@ Rails.application.routes.draw do
                 registrations: 'auth/registrations'
               }
 
-  resources :organizations
+  resources :organizations do
+    member do
+      get :available_services
+    end
+  end
   resources :volunteers, only: [:index, :show, :update, :destroy]
   resources :addresses, only: [:index, :show, :create, :update, :destroy]
 

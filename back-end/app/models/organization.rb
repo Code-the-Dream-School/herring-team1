@@ -2,6 +2,8 @@
 class Organization < ApplicationRecord
   belongs_to :auth
   has_many :addresses, as: :addressable, dependent: :destroy
+  has_many :org_services, dependent: :destroy
+  has_many :services, through: :org_services
   # has_one_attached :logo
 
   accepts_nested_attributes_for :addresses, allow_destroy: true
