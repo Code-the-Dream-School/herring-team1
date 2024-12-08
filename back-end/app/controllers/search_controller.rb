@@ -1,47 +1,71 @@
-# This controller handles search operations.
+# This controller handles search operations. It provides three methods to search organizations by zip code, keyword, and services.
 class SearchController < ApplicationController
-  # check if record not found
+  # Handle exceptions
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from ActiveRecord::StatementInvalid, with: :invalid_query
 
-  # search_by_zip_code using address model
+  # Search organizations by zip code
   def search_by_zip_code
     zip_code = params[:zip_code]
-    # check if zip_code is blank
-    return render json: { error: 'zip_code is required' }, status: :bad_request if zip_code.blank?
+    return render_bad_request('zip_code is required') if zip_code.blank?
 
-    @addresses = Address.where(zip_code: zip_code).includes(:organization)
-    @organizations = @addresses.map(&:organization).compact
+    addresses = Address.where(zip_code: zip_code)
+    organizations = filter_organizations(addresses)
 
-    render json: @organizations
+    
+
+    render_organizations(organizations)
+
   end
 
-  # search_by_keyword using organization model
+
+  # Search organizations by keyword
   def search_by_keyword
     keyword = params[:keyword]
-    # check if keyword is blank
-    return render json: { error: 'keyword is required' }, status: :bad_request if keyword.blank?
+    return render_bad_request('keyword is required') if keyword.blank?
 
-    @organizations = Organization.where('name LIKE ? OR description LIKE ?', "%#{keyword}%", "%#{keyword}%")
-    render json: @organizations
+    organizations = Organization.where('name LIKE ? OR description LIKE ?', "%#{keyword}%", "%#{keyword}%")
+    render_organizations(organizations)
   end
 
-  # search_by_services using organization model
+  # Search organizations by services
   def search_by_services
     service = params[:service]
-    # check if service is blank
-    return render json: { error: 'service is required' }, status: :bad_request if service.blank?
+    return render_bad_request('service is required') if service.blank?
 
-    @organizations = Organization.where('services @> ?', "{#{service}}")
-    render json: @organizations
+    organizations = Organization.where('services @> ?', "{#{service}}")
+    render_organizations(organizations)
   end
 
   private
 
+  # Filter organizations from addresses
+  def filter_organizations(addresses)
+    addresses.select { |address| address.addressable_type == 'Organization' }
+             .map(&:addressable)
+             .uniq
+  end
+
+  # Render organizations or handle case if no organizations found
+  def render_organizations(organizations)
+    if organizations.empty?
+      render json: { error: 'No organizations found' }, status: :not_found
+    else
+      render json: organizations
+    end
+  end
+
+  # Render bad request error with a custom message
+  def render_bad_request(message)
+    render json: { error: message }, status: :bad_request
+  end
+
+  # Handle ActiveRecord::RecordNotFound exceptions
   def record_not_found
     render json: { error: 'Record not found' }, status: :not_found
   end
 
+  # Handle invalid query errors
   def invalid_query
     render json: { error: 'Invalid query' }, status: :bad_request
   end
