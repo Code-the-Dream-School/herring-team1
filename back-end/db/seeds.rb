@@ -9,21 +9,21 @@
 #   end
 
 Service.create([
-    { name: 'Food service' }, 
-    { name: 'Transportation' }, 
-    { name: 'Education' }, 
-    { name: 'Sports&Recreation' }, 
-    { name: 'Attractions' }, 
-    { name: 'Housing&Facilities' }, 
-    { name: 'Legal&Advocacy' }, 
-    { name: 'Hobbies&Crafts' }, 
-    { name: 'Arts&Culture' }, 
-    { name: 'Health&Medicine' }
-])
+                 { name: 'Food service' },
+                 { name: 'Transportation' },
+                 { name: 'Education' },
+                 { name: 'Sports&Recreation' },
+                 { name: 'Attractions' },
+                 { name: 'Housing&Facilities' },
+                 { name: 'Legal&Advocacy' },
+                 { name: 'Hobbies&Crafts' },
+                 { name: 'Arts&Culture' },
+                 { name: 'Health&Medicine' }
+               ])
 
 RequestStatus.create([
-  { request_status_name: 'open' },
-  { request_status_name: 'in-progress' },
-  { request_status_name: 'closed' },
-  { request_status_name: 'canceled' }
-])
+                       { request_status_name: 'open' },
+                       { request_status_name: 'in-progress' },
+                       { request_status_name: 'closed' },
+                       { request_status_name: 'canceled' }
+                     ])

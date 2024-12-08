@@ -16,34 +16,32 @@ class OrganizationsController < ApplicationController
   # POST - create organization
   def create
     @organization = Organization.new(organization_params.except(:service_ids))
-  
-    if @organization.save    
+
+    if @organization.save
       if params[:organization][:service_ids].present?
-        org_services = params[:organization][:service_ids].map do |service_id|
+        params[:organization][:service_ids].map do |service_id|
           OrgService.create(organization: @organization, service_id: service_id)
         end
       end
-  
+
       render json: @organization.as_json(include: { org_services: { include: :service } }), status: :created
     else
       render json: { errors: @organization.errors.full_messages }, status: :unprocessable_entity
     end
   end
-  
 
   # UPDATE organization
   def update
     if @organization.update(organization_params.except(:service_ids))
+      current_service_ids = @organization.org_services.pluck(:service_id)
+      service_ids_to_add = params[:organization][:service_ids] - current_service_ids
+      service_ids_to_remove = current_service_ids - params[:organization][:service_ids]
 
-      if params[:organization][:service_ids].present?
-        @organization.org_services.destroy_all
-
-        org_services = params[:organization][:service_ids].map do |service_id|
-          org_service = OrgService.create(organization: @organization, service_id: service_id)
-        end
-      else     
-        @organization.org_services.destroy_all   
+      service_ids_to_add.each do |service_id|
+        OrgService.create(organization: @organization, service_id: service_id)
       end
+
+      @organization.org_services.where(service_id: service_ids_to_remove).destroy_all
 
       @organization.reload
       render json: @organization.as_json(include: { org_services: { include: :service } }), status: :ok
@@ -51,8 +49,6 @@ class OrganizationsController < ApplicationController
       render json: { errors: @organization.errors.full_messages }, status: :unprocessable_entity
     end
   end
-
-
 
   # DELETE organization
   def destroy
@@ -83,7 +79,7 @@ class OrganizationsController < ApplicationController
     params.require(:organization).permit(
       :auth_id, :name, :website, :phone, :description, :mission, :logo, :email,
       addresses_attributes: [:id, :address, :city, :state, :zip_code, :_destroy],
-      service_ids: [] 
+      service_ids: []
     )
   end
 end
