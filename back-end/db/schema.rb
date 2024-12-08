@@ -49,8 +49,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_08_154330) do
   end
 
   create_table "organizations", force: :cascade do |t|
-    t.bigint "auth_id", null: false
-    t.string "name", limit: 150, null: false
+    t.integer "auth_id"
+    t.string "name", limit: 150
     t.string "website", limit: 100
     t.string "phone", limit: 15
     t.string "description", limit: 255
