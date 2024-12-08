@@ -84,3 +84,4 @@ class OrganizationsController < ApplicationController
     )
   end
 end
+# rubocop:enable Metrics/AbcSize
