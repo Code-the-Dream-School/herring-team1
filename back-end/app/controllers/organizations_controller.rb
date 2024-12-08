@@ -1,4 +1,5 @@
 # OrganizationsController handles the CRUD operations for organizations.
+# rubocop:disable Metrics/AbcSize
 class OrganizationsController < ApplicationController
   before_action :set_organization, only: %i[show update destroy]
 
