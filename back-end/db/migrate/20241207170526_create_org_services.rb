@@ -1,7 +1,5 @@
 # db/migrate/20241207170526_create_org_services.rb
-# This migration creates the `org_services` table, which links organizations
-# with the services they provide.
-
+# Migration to create the org_services table, joining organizations and services
 class CreateOrgServices < ActiveRecord::Migration[7.1]
   def change
     create_table :org_services do |t|
