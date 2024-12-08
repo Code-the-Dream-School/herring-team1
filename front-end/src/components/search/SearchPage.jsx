@@ -2,33 +2,55 @@ import { useState } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 
 const SearchPage = () => {
-  const hardcodedOrganizations = [
-    {
-      id: 1,
-      name: 'Helping Hands',
-      request: 'Clothes donation',
-      services: ['Donation Center', 'Clothing Assistance'],
-    },
-    {
-      id: 2,
-      name: 'Food Bank',
-      request: 'Volunteer drivers needed',
-      services: ['Food Distribution', 'Logistics'],
-    },
-    {
-      id: 3,
-      name: 'Animal Shelter',
-      request: 'Pet care volunteers',
-      services: ['Animal Care', 'Adoption Services'],
-    },
-  ];
-
+  const [searchByServices, setSearchByServices] = useState('');
+  const [searchByZip, setSearchByZip] = useState('');
+  const [searchByKeyword, setSearchByKeyword] = useState('');
+  const [organizations, setOrganizations] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const toggleFavorite = (id) => {
     setFavorites((prevFavorites) =>
       prevFavorites.includes(id) ? prevFavorites.filter((favId) => favId !== id) : [...prevFavorites, id]
     );
+  };
+
+  const handleSearch = async (type) => {
+    setLoading(true);
+    setError(null);
+    let url = '';
+    let queryParam = '';
+
+    switch (type) {
+      case 'services':
+        url = '/search/services';
+        queryParam = searchByServices;
+        break;
+      case 'zip':
+        url = '/search/zip';
+        queryParam = searchByZip;
+        break;
+      case 'keyword':
+        url = '/search/keyword';
+        queryParam = searchByKeyword;
+        break;
+      default:
+        return;
+    }
+
+    try {
+      const response = await fetch(`${url}?${type}=${encodeURIComponent(queryParam)}`);
+      if (!response.ok) {
+        throw new Error('Search failed');
+      }
+      const data = await response.json();
+      setOrganizations(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,23 +60,56 @@ const SearchPage = () => {
         <h4>Find volunteer opportunities</h4>
         <div className="bg-light_purple min-h-[20vh] flex flex-col justify-center items-center p-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-            {['search by services', 'search by zip code', 'search by keyword'].map((placeholder, index) => (
-              <div key={index} className="relative">
-                <input
-                  type="text"
-                  placeholder={placeholder}
-                  className="p-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300 w-full"
-                />
-                <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" />
-              </div>
-            ))}
+            <div className="relative">
+              <input
+                type="text"
+                value={searchByServices}
+                onChange={(e) => setSearchByServices(e.target.value)}
+                placeholder="Search by services"
+                className="p-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300 w-full"
+              />
+              <MagnifyingGlassIcon
+                onClick={() => handleSearch('services')}
+                className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              />
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchByZip}
+                onChange={(e) => setSearchByZip(e.target.value)}
+                placeholder="Search by zip code"
+                className="p-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300 w-full"
+              />
+              <MagnifyingGlassIcon
+                onClick={() => handleSearch('zip')}
+                className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              />
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchByKeyword}
+                onChange={(e) => setSearchByKeyword(e.target.value)}
+                placeholder="Search by keyword"
+                className="p-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300 w-full"
+              />
+              <MagnifyingGlassIcon
+                onClick={() => handleSearch('keyword')}
+                className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              />
+            </div>
           </div>
         </div>
+
+        {/* Loading and Error Messages */}
+        {loading && <p>Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
         {/* Organization Cards Section */}
         <div className="p-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {hardcodedOrganizations.map((org) => (
+            {organizations.map((org) => (
               <div key={org.id} className="bg-white p-4 rounded-lg shadow-lg relative">
                 {/* Heart Icon for Favorites */}
                 <button
@@ -82,10 +137,6 @@ const SearchPage = () => {
                 <div className="w-16 h-16 bg-gray-200 rounded-full mb-4 flex items-center justify-center text-gray-500">
                   LOGO
                 </div>
-
-                <p className="text-sm text-gray-700">
-                  <span className="font-bold">Request:</span> {org.request}
-                </p>
                 <p className="text-sm text-gray-700">
                   <span className="font-bold">Services:</span> {org.services.join(', ')}
                 </p>
