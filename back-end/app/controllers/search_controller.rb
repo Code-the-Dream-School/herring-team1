@@ -19,7 +19,7 @@ class SearchController < ApplicationController
   def search_by_keyword
     keyword = params[:keyword]
     return render_bad_request('keyword is required') if keyword.blank?
-    
+
     organizations = Organization.where('name LIKE ? OR description LIKE ?', "%#{keyword}%", "%#{keyword}%")
     render_organizations(organizations)
   end
