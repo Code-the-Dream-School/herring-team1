@@ -2,6 +2,8 @@ class ApplicationController < ActionController::Base
     include ExceptionHandler
     protect_from_forgery with: :exception
     before_action :set_cors_headers
+    
+    rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_authenticity_token
 
     def set_cors_headers
         allowed_origins = ['http://127.0.0.1:5173', 'http://localhost:5173']
@@ -15,5 +17,12 @@ class ApplicationController < ActionController::Base
         headers['Access-Control-Allow-Headers'] = 'Origin, Content-Type, Accept, Authorization, X-Requested-With'
         headers['Access-Control-Allow-Credentials'] = 'true'
       end
-      
+
+      private
+
+      def handle_invalid_authenticity_token
+        render json: { 
+          message: "This action is only available to logged-in users." 
+        }, status: :unauthorized
+      end      
 end

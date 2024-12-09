@@ -40,6 +40,8 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def register_success(resource)
+    related_entity = resource.isOrganization ? Organization.find_by(auth_id: resource.id) : Volunteer.find_by(auth_id: resource.id)
+
     cookies["CSRF-TOKEN"] = { value: form_authenticity_token, secure: true, same_site: :None, partitioned: true }
     response.set_header('X-CSRF-Token', form_authenticity_token)
 
@@ -48,7 +50,8 @@ class Auth::RegistrationsController < Devise::RegistrationsController
       user: {
         id: resource.id,
         email: resource.email,
-        isOrganization: resource.isOrganization
+        isOrganization: resource.isOrganization,
+        related_entity_id: related_entity&.id || nil 
       } 
     }, status: :created
   end

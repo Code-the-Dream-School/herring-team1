@@ -7,6 +7,7 @@ class RequestsController < ApplicationController
   before_action :set_organization, only: [:create, :show, :update, :destroy]
   before_action :set_org_service, only: [:create]
   before_action :set_request, only: [:show, :update, :destroy]
+  before_action :authorize_request_owner, only: [:update, :destroy]
 
   # GET /requests
   def index
@@ -44,11 +45,6 @@ class RequestsController < ApplicationController
 
   # PUT/PATCH  /organizations/:id/requests/:id
   def update
-    if @organization && @request.organization_id != @organization.id
-      render json: { error: 'Request does not belong to this organization' }, status: :forbidden
-      return
-    end
-
     if @request.update(request_params)
       render json: @request, status: :ok, include: { org_service: { include: :service }, request_status: {} }
     else
@@ -58,11 +54,6 @@ class RequestsController < ApplicationController
 
   # DELETE /organizations/:id/requests/:id
   def destroy
-    if @organization && @request.organization_id != @organization.id
-      render json: { error: 'Request does not belong to this organization' }, status: :forbidden
-      return
-    end
-
     if @request.destroy
       render json: { message: 'Request successfully deleted' }, status: :ok
     else
@@ -83,6 +74,12 @@ class RequestsController < ApplicationController
 
   def set_org_service
     @org_service = OrgService.find_by(service_id: params[:request][:org_service_id])
+  end
+
+  def authorize_request_owner
+    return if @request.organization_id == @organization&.id
+
+    render json: { error: 'Request does not belong to this organization' }, status: :forbidden
   end
 
   def default_status
