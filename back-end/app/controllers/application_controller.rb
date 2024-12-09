@@ -18,11 +18,11 @@ class ApplicationController < ActionController::Base
         headers['Access-Control-Allow-Credentials'] = 'true'
       end
 
-      private
+  private
 
-      def handle_invalid_authenticity_token
-        render json: { 
-          message: "This action is only available to logged-in users." 
-        }, status: :unauthorized
-      end      
+    def handle_invalid_authenticity_token
+      render json: { 
+        message: "This action is only available to logged-in users." 
+      }, status: :unauthorized
+    end      
 end

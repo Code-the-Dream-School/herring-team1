@@ -1,8 +1,6 @@
 # This controller manages requests, including creating, showing, updating,
 # and deleting requests. It supports operations for both organizations and public users.
 
-# rubocop:disable Metrics/AbcSize
-
 class RequestsController < ApplicationController
   before_action :set_organization, only: [:create, :show, :update, :destroy]
   before_action :set_org_service, only: [:create]
@@ -90,4 +88,3 @@ class RequestsController < ApplicationController
     params.require(:request).permit(:title, :description, :org_service_id, :organization_id)
   end
 end
-# rubocop:enable Metrics/AbcSize

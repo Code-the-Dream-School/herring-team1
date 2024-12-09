@@ -2,7 +2,7 @@
 # rubocop:disable Metrics/AbcSize
 class OrganizationsController < ApplicationController
   include AuthenticationCheck
-  
+
   before_action :is_auth_logged_in, except: [:index, :show]
   before_action :set_organization, only: %i[show update destroy]
   before_action :authorize_organization, only: [:update, :destroy]

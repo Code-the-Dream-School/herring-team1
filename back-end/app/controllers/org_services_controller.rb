@@ -1,7 +1,7 @@
 # OrgServicesController handles the CRUD operations for OrgServices
 class OrgServicesController < ApplicationController
   include AuthenticationCheck
-  
+
   before_action :is_auth_logged_in
   before_action :set_organization
 
