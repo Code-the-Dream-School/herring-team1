@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { loginSchema } from '../../schemas';
 import { useAuth } from '../../context/useAuth.jsx';
-import { login } from '../../utils/apiReqests';
+import { login, getVolunteerById } from '../../utils/apiReqests';
 
 function Login() {
   const navigate = useNavigate();
@@ -14,6 +14,16 @@ function Login() {
       const auth = response.data;
       localStorage.setItem('user', JSON.stringify(auth.user));
       localStorage.setItem('x_csrf_token', response.headers.get('x-csrf-token'));
+      let dataToDisplay;
+
+      if (!auth.user.isOrganization) {
+        dataToDisplay = await getVolunteerById(auth.user.related_entity_id);
+      } else {
+        console.info('Organization logged in');
+      }
+
+      console.log('Data', dataToDisplay);
+
       setUser(auth.user);
       navigate('/dashboard');
     } catch (error) {

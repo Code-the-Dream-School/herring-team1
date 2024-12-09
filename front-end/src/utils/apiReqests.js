@@ -53,3 +53,16 @@ export const logout = async () => {
     console.error('Logout error:', error);
   }
 };
+
+export const getVolunteerById = async (id) => {
+  try {
+    const response = await axios.get(`http://127.0.0.1:3000/volunteers/${id}`, {
+      headers: {
+        'x-csrf-token': localStorage.getItem('x_csrf_token'),
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
