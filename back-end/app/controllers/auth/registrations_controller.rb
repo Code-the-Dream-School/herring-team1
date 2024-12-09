@@ -12,11 +12,21 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
+      handle_organization_creation(resource)
       handle_volunteer_creation(resource)
       register_success(resource)
     else
       register_failed(resource)
     end
+  end
+
+  def handle_organization_creation(resource)
+    return unless resource.isOrganization?
+  
+    Organization.create!(
+      auth_id: resource.id,
+      email: resource.email
+    )
   end
 
   def handle_volunteer_creation(resource)
