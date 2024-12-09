@@ -9,8 +9,16 @@ class RequestsController < ApplicationController
 
   # GET /requests
   def index
-    @requests = Request.all
-    render json: @requests
+    if params[:organization_id]
+      @organization = Organization.find_by(id: params[:organization_id])
+      render json: { error: 'Organization not found' }, status: :not_found and return unless @organization
+
+      @requests = @organization.requests
+    else
+      @requests = Request.all
+    end
+
+    render json: @requests, include: { org_service: { include: :service }, request_status: {} }
   end
 
   # GET /requests/:id
