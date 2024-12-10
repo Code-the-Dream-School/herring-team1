@@ -7,15 +7,15 @@ class SearchController < ApplicationController
       return
     end
 
-    organizations = Organization.all   
-    organizations = filter_by_zip_code(organizations) if zip_code.present? 
-    organizations = filter_by_keyword(organizations) if keyword.present?    
+    organizations = Organization.all
+    organizations = filter_by_zip_code(organizations) if zip_code.present?
+    organizations = filter_by_keyword(organizations) if keyword.present?
     organizations = filter_by_service(organizations) if service.present?
 
     # Check if any organizations were found, if not, render an error
     if organizations.empty?
       render_error('No search results found', :not_found)
-    else      
+    else
       render_organizations(organizations.uniq)
     end
   end
@@ -28,16 +28,14 @@ class SearchController < ApplicationController
   end
 
   # Filter organizations by zip code
-  def filter_by_zip_code(organizations)    
-    addresses = Address.where(zip_code: zip_code)    
-   
+  def filter_by_zip_code(organizations)
+    addresses = Address.where(zip_code: zip_code)
     return organizations.none if addresses.empty?
 
     # Get organization ids associated with the found addresses
     organization_ids = addresses.select { |address| address.addressable_type == 'Organization' }
                                 .map(&:addressable_id)
-                                .uniq    
-    
+                                .uniq
     organizations.where(id: organization_ids)
   end
 
