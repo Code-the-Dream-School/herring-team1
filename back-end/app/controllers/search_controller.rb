@@ -1,68 +1,89 @@
-# This controller handles search operations. It provides three methods to search organizations by zip code, keyword, and services.
+# This controller is responsible for searching organizations by zip code, keyword, and service.
 class SearchController < ApplicationController
-  # Handle exceptions
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
-  rescue_from ActiveRecord::StatementInvalid, with: :invalid_query
-
-  # Search organizations by zip code
-  def search_by_zip_code
+  def search
     zip_code = params[:zip_code]
-    return render_bad_request('zip_code is required') if zip_code.blank?
-
-    addresses = Address.where(zip_code: zip_code)
-    organizations = filter_organizations(addresses)
-
-    render_organizations(organizations)
-  end
-
-  # Search organizations by keyword
-  def search_by_keyword
     keyword = params[:keyword]
-    return render_bad_request('keyword is required') if keyword.blank?
-
-    organizations = Organization.where('name LIKE ? OR description LIKE ?', "%#{keyword}%", "%#{keyword}%")
-    render_organizations(organizations)
-  end
-
-  # Search organizations by services
-  def search_by_services
     service = params[:service]
-    return render_bad_request('service is required') if service.blank?
 
-    organizations = Organization.where('services @> ?', "{#{service}}")
-    render_organizations(organizations)
+    # Проверка: указан хотя бы один параметр
+    if zip_code.blank? && keyword.blank? && service.blank?
+      return render_error('At least one search parameter is required', :bad_request)
+    end
+
+    organizations = Organization.all
+
+    # Поиск по почтовому индексу
+    if zip_code.present?
+      addresses = Address.where(zip_code: zip_code)
+      if addresses.empty?
+        return render_error("No organizations found for zip code: #{zip_code}", :not_found)
+      end
+      organizations = organizations.where(id: filter_organization_ids(addresses))
+    end
+
+    # Поиск по ключевому слову
+    if keyword.present?
+      organizations = organizations.where(
+        'name ILIKE :keyword OR description ILIKE :keyword OR id IN (:service_org_ids)',
+        keyword: "%#{keyword}%",
+        service_org_ids: org_ids_by_service_keyword(keyword)
+      )
+    end
+
+    # Поиск по сервису
+    if service.present?
+      organizations = organizations.joins(:org_services).where(org_services: { service_id: service })
+      if organizations.empty?
+        return render_error("No organizations found offering service: #{service}", :not_found)
+      end
+    end
+
+    render_organizations(organizations.uniq)
   end
 
   private
 
-  # Filter organizations from addresses
-  def filter_organizations(addresses)
+  # ID организаций по почтовому индексу
+  def filter_organization_ids(addresses)
     addresses.select { |address| address.addressable_type == 'Organization' }
-             .map(&:addressable)
+             .map(&:addressable_id)
              .uniq
   end
 
-  # Render organizations or handle case if no organizations found
+  # ID организаций, предоставляющих услуги, совпадающие с ключевым словом
+  def org_ids_by_service_keyword(keyword)
+    Service.where('name ILIKE ?', "%#{keyword}%").includes(:org_services).map do |service|
+      service.org_services.pluck(:organization_id)
+    end.flatten.uniq
+  end
+
+  # Форматирование данных организаций
   def render_organizations(organizations)
     if organizations.empty?
-      render json: { error: 'No organizations found' }, status: :not_found
+      render_error('No organizations found', :not_found)
     else
-      render json: organizations
+      render json: organizations.map { |org| format_organization(org) }
     end
   end
 
-  # Render bad request error with a custom message
-  def render_bad_request(message)
-    render json: { error: message }, status: :bad_request
+  # Ошибка
+  def render_error(message, status)
+    render json: { error: message }, status: status
   end
 
-  # Handle ActiveRecord::RecordNotFound exceptions
-  def record_not_found
-    render json: { error: 'Record not found' }, status: :not_found
+  # Форматирование JSON для организации
+  def format_organization(org)
+    {
+      name: org.name,
+      request: org.description,
+      logo: org.logo.attached? ? org.logo.url : 'placeholder_logo_url',
+      services: org.org_services.map { |os| service_name(os.service_id) }
+    }
   end
 
-  # Handle invalid query errors
-  def invalid_query
-    render json: { error: 'Invalid query' }, status: :bad_request
+  # Название услуги по ID
+  def service_name(service_id)
+    service = Service.find_by(id: service_id)
+    service ? service.name : 'Unknown service'
   end
 end

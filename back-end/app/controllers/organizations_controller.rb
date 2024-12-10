@@ -1,7 +1,11 @@
 # OrganizationsController handles the CRUD operations for organizations.
 # rubocop:disable Metrics/AbcSize
 class OrganizationsController < ApplicationController
+  include AuthenticationCheck
+
+  before_action :is_auth_logged_in, except: [:index, :show]
   before_action :set_organization, only: %i[show update destroy]
+  before_action :authorize_organization, only: [:update, :destroy]
 
   # GET all organizations
   def index
@@ -15,21 +19,21 @@ class OrganizationsController < ApplicationController
   end
 
   # POST - create organization
-  def create
-    @organization = Organization.new(organization_params.except(:service_ids))
+  # def create
+  #   @organization = Organization.new(organization_params.except(:service_ids))
 
-    if @organization.save
-      if params[:organization][:service_ids].present?
-        params[:organization][:service_ids].map do |service_id|
-          OrgService.create(organization: @organization, service_id: service_id)
-        end
-      end
+  #   if @organization.save
+  #     if params[:organization][:service_ids].present?
+  #       params[:organization][:service_ids].map do |service_id|
+  #         OrgService.create(organization: @organization, service_id: service_id)
+  #       end
+  #     end
 
-      render json: @organization.as_json(include: { org_services: { include: :service } }), status: :created
-    else
-      render json: { errors: @organization.errors.full_messages }, status: :unprocessable_entity
-    end
-  end
+  #     render json: @organization.as_json(include: { org_services: { include: :service } }), status: :created
+  #   else
+  #     render json: { errors: @organization.errors.full_messages }, status: :unprocessable_entity
+  #   end
+  # end
 
   # UPDATE organization
   def update
@@ -73,6 +77,13 @@ class OrganizationsController < ApplicationController
   # Set the organization for show, edit, update, and destroy actions
   def set_organization
     @organization = Organization.includes(:addresses).find(params[:id])
+  end
+
+  # Authorize organization actions
+  def authorize_organization
+    return if @organization.auth_id == current_auth.id
+
+    render json: { error: "You are not authorized to perform this action" }, status: :forbidden
   end
 
   # Permit the necessary parameters, including nested addresses
