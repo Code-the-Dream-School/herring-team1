@@ -66,11 +66,11 @@ class SearchController < ApplicationController
       service.org_services.pluck(:organization_id)
     end.flatten.uniq
   end
- 
+
   def render_organizations(organizations)
     render json: organizations.map { |org| format_organization(org) }
   end
-  
+
   def format_organization(org)
     {
       name: org.name,
