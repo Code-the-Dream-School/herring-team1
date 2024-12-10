@@ -1,70 +1,78 @@
-# This controller is responsible for searching organizations by zip code, keyword, and service.
+# This controller is responsible for handling search requests by zipcode, keywords and services
 class SearchController < ApplicationController
   def search
-    zip_code = params[:zip_code]
-    keyword = params[:keyword]
-    service = params[:service]
-
-    # Check for at least one search parameter
-    return render_error('At least one search parameter is required', :bad_request) if zip_code.blank? && keyword.blank? && service.blank?
-
-    organizations = Organization.all
-
-    # Zip code search
-    if zip_code.present?
-      addresses = Address.where(zip_code: zip_code)
-      return render_error("No organizations found for zip code: #{zip_code}", :not_found) if addresses.empty?
-
-      organizations = organizations.where(id: filter_organization_ids(addresses))
+    # Check if all parameters are blank
+    if params_blank?
+      render_error('At least one search parameter is required', :bad_request)
+      return
     end
 
-    # Keyword search
-    if keyword.present?
-      organizations = organizations.where(
-        'name ILIKE :keyword OR description ILIKE :keyword OR id IN (:service_org_ids)',
-        keyword: "%#{keyword}%",
-        service_org_ids: org_ids_by_service_keyword(keyword)
-      )
-    end
+    organizations = Organization.all   
+    organizations = filter_by_zip_code(organizations) if zip_code.present? 
+    organizations = filter_by_keyword(organizations) if keyword.present?    
+    organizations = filter_by_service(organizations) if service.present?
 
-    # Service search
-    if service.present?
-      organizations = organizations.joins(:org_services).where(org_services: { service_id: service })
-      return render_error("No organizations found offering service: #{service}", :not_found) if organizations.empty?
+    # Check if any organizations were found, if not, render an error
+    if organizations.empty?
+      render_error('No search results found', :not_found)
+    else      
+      render_organizations(organizations.uniq)
     end
-
-    render_organizations(organizations.uniq)
   end
 
   private
 
-  # ID organizations by address
+  # Check if all search parameters are missing
+  def params_blank?
+    zip_code.blank? && keyword.blank? && service.blank?
+  end
+
+  # Filter organizations by zip code
+  def filter_by_zip_code(organizations)    
+    addresses = Address.where(zip_code: zip_code)    
+   
+    return organizations.none if addresses.empty?
+
+    # Get organization ids associated with the found addresses
+    organization_ids = addresses.select { |address| address.addressable_type == 'Organization' }
+                                .map(&:addressable_id)
+                                .uniq    
+    
+    organizations.where(id: organization_ids)
+  end
+
+  # Filter organizations by keyword
+  def filter_by_keyword(organizations)
+    organizations.where(
+      'name ILIKE :keyword OR description ILIKE :keyword OR id IN (:service_org_ids)',
+      keyword: "%#{keyword}%",
+      service_org_ids: org_ids_by_service_keyword(keyword)
+    )
+  end
+
+  # Filter organizations by service
+  def filter_by_service(organizations)
+    organizations.joins(:org_services).where(org_services: { service_id: service })
+  end
+
+  # Extract organization IDs from addresses linked to organizations
   def filter_organization_ids(addresses)
     addresses.select { |address| address.addressable_type == 'Organization' }
              .map(&:addressable_id)
              .uniq
   end
 
-  # ID organizations by service keyword
+  # Get organization IDs by matching service keywords
   def org_ids_by_service_keyword(keyword)
     Service.where('name ILIKE ?', "%#{keyword}%").includes(:org_services).map do |service|
       service.org_services.pluck(:organization_id)
     end.flatten.uniq
   end
-
+ 
   def render_organizations(organizations)
-    if organizations.empty?
-      render_error('No organizations found', :not_found)
-    else
-      render json: organizations.map { |org| format_organization(org) }
-    end
+    render json: organizations.map { |org| format_organization(org) }
   end
-
-  # Error response
-  def render_error(message, status)
-    render json: { error: message }, status: status
-  end
-
+  
   def format_organization(org)
     {
       name: org.name,
@@ -77,5 +85,24 @@ class SearchController < ApplicationController
   def service_name(service_id)
     service = Service.find_by(id: service_id)
     service ? service.name : 'Unknown service'
+  end
+
+  # Retrieve zip_code parameter
+  def zip_code
+    params[:zip_code]
+  end
+
+  # Retrieve keyword parameter
+  def keyword
+    params[:keyword]
+  end
+
+  # Retrieve service parameter
+  def service
+    params[:service]
+  end
+
+  def render_error(message, status)
+    render json: { error: message }, status: status
   end
 end
