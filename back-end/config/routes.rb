@@ -1,3 +1,4 @@
+# This file contains the routing configuration for the application.
 Rails.application.routes.draw do
   devise_for :auth, path: 'auth', path_names: { sign_in: 'login', sign_out: 'logout' },
              controllers: {
@@ -16,7 +17,6 @@ Rails.application.routes.draw do
   resources :addresses, only: [:index, :show, :create, :update, :destroy]
   resources :requests, only: [:index, :show]
 
-  # Универсальный маршрут для поиска
+  # Universal search
   get '/search', to: 'search#search'
-
 end

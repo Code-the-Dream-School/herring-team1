@@ -5,23 +5,20 @@ class SearchController < ApplicationController
     keyword = params[:keyword]
     service = params[:service]
 
-    # Проверка: указан хотя бы один параметр
-    if zip_code.blank? && keyword.blank? && service.blank?
-      return render_error('At least one search parameter is required', :bad_request)
-    end
+    # Check for at least one search parameter
+    return render_error('At least one search parameter is required', :bad_request) if zip_code.blank? && keyword.blank? && service.blank?
 
     organizations = Organization.all
 
-    # Поиск по почтовому индексу
+    # Zip code search
     if zip_code.present?
       addresses = Address.where(zip_code: zip_code)
-      if addresses.empty?
-        return render_error("No organizations found for zip code: #{zip_code}", :not_found)
-      end
+      return render_error("No organizations found for zip code: #{zip_code}", :not_found) if addresses.empty?
+
       organizations = organizations.where(id: filter_organization_ids(addresses))
     end
 
-    # Поиск по ключевому слову
+    # Keyword search
     if keyword.present?
       organizations = organizations.where(
         'name ILIKE :keyword OR description ILIKE :keyword OR id IN (:service_org_ids)',
@@ -30,12 +27,10 @@ class SearchController < ApplicationController
       )
     end
 
-    # Поиск по сервису
+    # Service search
     if service.present?
       organizations = organizations.joins(:org_services).where(org_services: { service_id: service })
-      if organizations.empty?
-        return render_error("No organizations found offering service: #{service}", :not_found)
-      end
+      return render_error("No organizations found offering service: #{service}", :not_found) if organizations.empty?
     end
 
     render_organizations(organizations.uniq)
@@ -43,21 +38,20 @@ class SearchController < ApplicationController
 
   private
 
-  # ID организаций по почтовому индексу
+  # ID organizations by address
   def filter_organization_ids(addresses)
     addresses.select { |address| address.addressable_type == 'Organization' }
              .map(&:addressable_id)
              .uniq
   end
 
-  # ID организаций, предоставляющих услуги, совпадающие с ключевым словом
+  # ID organizations by service keyword
   def org_ids_by_service_keyword(keyword)
     Service.where('name ILIKE ?', "%#{keyword}%").includes(:org_services).map do |service|
       service.org_services.pluck(:organization_id)
     end.flatten.uniq
   end
 
-  # Форматирование данных организаций
   def render_organizations(organizations)
     if organizations.empty?
       render_error('No organizations found', :not_found)
@@ -66,12 +60,11 @@ class SearchController < ApplicationController
     end
   end
 
-  # Ошибка
+  # Error response
   def render_error(message, status)
     render json: { error: message }, status: status
   end
 
-  # Форматирование JSON для организации
   def format_organization(org)
     {
       name: org.name,
@@ -81,7 +74,6 @@ class SearchController < ApplicationController
     }
   end
 
-  # Название услуги по ID
   def service_name(service_id)
     service = Service.find_by(id: service_id)
     service ? service.name : 'Unknown service'
