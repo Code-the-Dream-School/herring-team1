@@ -19,7 +19,6 @@ function Login() {
         const volunteer = await getVolunteerById(auth.user.related_entity_id);
         setVolunteerData(volunteer);
       }
-
       setUser(auth.user);
       navigate('/dashboard');
     } catch (error) {

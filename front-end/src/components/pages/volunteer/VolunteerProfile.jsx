@@ -3,46 +3,67 @@ import { useAuth } from '../../../context/useAuth.jsx';
 import VolunteerProfileEditForm from './VolunteerProfileEditForm.jsx';
 
 function VolunteerProfile() {
-  const { volunteerData } = useAuth();
+  const { volunteerData, setVolunteerData } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  console.log('Volunteer', volunteerData);
 
   const [formData, setFormData] = useState({
-    firstName: 'Joe',
-    lastName: 'Williams',
-    address: '123 Main St',
-    city: 'New York',
-    state: 'NY',
-    zipCode: '10001',
-    phone: '123-456-7890',
-    email: 'joe.williams@example.com',
-    about: 'Volunteer with 5 years of experience.',
-    skills: 'Teamwork, Communication, Leadership',
+    firstName: volunteerData?.first_name || '',
+    lastName: volunteerData?.last_name || '',
+    phone: volunteerData?.phone || '',
+    email: volunteerData?.email || '',
+    about: volunteerData?.about || '',
+    addresses: volunteerData?.addresses?.[0] || {
+      address: '',
+      city: '',
+      state: '',
+      zip_code: '',
+    },
   });
-
-  const [originalData, setOriginalData] = useState(formData);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      addresses: name in prev.addresses ? { ...prev.addresses, [name]: value } : prev.addresses,
+      [name]: name in prev.addresses ? prev[name] : value,
     }));
   };
 
   const handleCancel = () => {
-    setFormData(originalData);
+    setFormData({
+      firstName: volunteerData?.first_name || '',
+      lastName: volunteerData?.last_name || '',
+      phone: volunteerData?.phone || '',
+      email: volunteerData?.email || '',
+      about: volunteerData?.about || '',
+      addresses: volunteerData?.addresses?.[0] || {
+        address: '',
+        city: '',
+        state: '',
+        zip_code: '',
+      },
+    });
+    setIsEditing(false);
+  };
+
+  const handleSave = () => {
+    setVolunteerData((prev) => ({
+      ...prev,
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      phone: formData.phone,
+      email: formData.email,
+      about: formData.about,
+      addresses: [formData.addresses],
+    }));
     setIsEditing(false);
   };
 
   const handleEdit = () => {
-    setOriginalData(formData);
     setIsEditing(true);
   };
 
-  const handleDelete = () => {
-    console.info('Delete your profile.');
-  };
   return (
     <div className="p-14">
       {isEditing ? (
@@ -59,7 +80,8 @@ function VolunteerProfile() {
           <p>{volunteerData.email}</p>
           <label className="block text-sm font-bold">Address</label>
           <p>
-            {formData.address}, {formData.city}, {formData.state}, {formData.zipCode}{' '}
+            {volunteerData.addresses?.[0]?.address || ''}, {volunteerData.addresses?.[0]?.city || ''},{' '}
+            {volunteerData.addresses?.[0]?.state || ''}, {volunteerData.addresses?.[0]?.zip_code || ''}
           </p>
           <label className="block text-sm font-bold">About</label>
           <p>{volunteerData.about}</p>
@@ -69,7 +91,7 @@ function VolunteerProfile() {
         {isEditing ? (
           <>
             <button
-              onClick={() => setIsEditing(false)}
+              onClick={handleSave}
               className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
             >
               Save
@@ -88,12 +110,6 @@ function VolunteerProfile() {
               className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
             >
               Edit
-            </button>
-            <button
-              onClick={handleDelete}
-              className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg"
-            >
-              Detele
             </button>
           </>
         )}
