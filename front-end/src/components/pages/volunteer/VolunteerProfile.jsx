@@ -51,16 +51,18 @@ function VolunteerProfile() {
         <div className="md:mt-6">
           <label className="block text-sm font-bold">Name</label>
           <p>
-            {formData.firstName} {formData.lastName}
+            {volunteerData.first_name} {volunteerData.last_name}
           </p>
+          <label className="block text-sm font-bold">Phone</label>
+          <p>{volunteerData.phone}</p>
+          <label className="block text-sm font-bold">Email</label>
+          <p>{volunteerData.email}</p>
           <label className="block text-sm font-bold">Address</label>
           <p>
             {formData.address}, {formData.city}, {formData.state}, {formData.zipCode}{' '}
           </p>
           <label className="block text-sm font-bold">About</label>
-          <p>{formData.about}</p>
-          <label className="block text-sm font-bold">Skills</label>
-          <p>{formData.skills}</p>
+          <p>{volunteerData.about}</p>
         </div>
       )}
       <div className="mt-6 flex space-x-4 xs:justify-center md:justify-start">
