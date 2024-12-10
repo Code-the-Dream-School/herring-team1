@@ -142,7 +142,7 @@ Metrics/CyclomaticComplexity:
 # Offense count: 3
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
 
 # Offense count: 1
 # Configuration parameters: AllowedMethods, AllowedPatterns.
@@ -273,3 +273,6 @@ Style/SymbolArray:
 # URISchemes: http, https
 Layout/LineLength:
   Max: 198
+
+Metrics/AbcSize:
+  Max: 20

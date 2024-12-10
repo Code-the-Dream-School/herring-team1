@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_02_025445) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_10_012919) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "addresses", force: :cascade do |t|
     t.string "address", null: false
@@ -23,7 +51,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_025445) do
     t.bigint "addressable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index %w[addressable_type addressable_id], name: "index_addresses_on_addressable"
+    t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
   end
 
   create_table "auths", force: :cascade do |t|
@@ -39,9 +67,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_025445) do
     t.index ["reset_password_token"], name: "index_auths_on_reset_password_token", unique: true
   end
 
+  create_table "org_services", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "service_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_org_services_on_organization_id"
+    t.index ["service_id"], name: "index_org_services_on_service_id"
+  end
+
   create_table "organizations", force: :cascade do |t|
-    t.bigint "auth_id", null: false
-    t.string "name", limit: 150, null: false
+    t.integer "auth_id"
+    t.string "name", limit: 150
     t.string "website", limit: 100
     t.string "phone", limit: 15
     t.string "description", limit: 255
@@ -50,6 +87,30 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_025445) do
     t.datetime "updated_at", null: false
     t.string "email"
     t.index ["auth_id"], name: "index_organizations_on_auth_id"
+  end
+
+  create_table "request_statuses", force: :cascade do |t|
+    t.string "request_status_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "requests", force: :cascade do |t|
+    t.string "title"
+    t.string "description"
+    t.bigint "org_service_id", null: false
+    t.integer "request_status_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "organization_id", null: false
+    t.index ["org_service_id"], name: "index_requests_on_org_service_id"
+    t.index ["organization_id"], name: "index_requests_on_organization_id"
+  end
+
+  create_table "services", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "volunteers", force: :cascade do |t|
@@ -65,5 +126,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_025445) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "org_services", "organizations"
+  add_foreign_key "org_services", "services"
   add_foreign_key "organizations", "auths"
+  add_foreign_key "requests", "org_services"
+  add_foreign_key "requests", "organizations"
 end
