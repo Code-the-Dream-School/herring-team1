@@ -1,9 +1,11 @@
 import { useState } from 'react';
-
+import { useAuth } from '../../../context/useAuth.jsx';
 import VolunteerProfileEditForm from './VolunteerProfileEditForm.jsx';
 
 function VolunteerProfile() {
+  const { volunteerData } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  console.log('Volunteer', volunteerData);
 
   const [formData, setFormData] = useState({
     firstName: 'Joe',

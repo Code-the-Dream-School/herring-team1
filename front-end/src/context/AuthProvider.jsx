@@ -8,6 +8,8 @@ export const AuthProvider = ({ children }) => {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
+  const [volunteerData, setVolunteerData] = useState(null);
+
   useEffect(() => {
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
@@ -16,9 +18,16 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const deleteUser = () => setUser(null);
+  const deleteUser = () => {
+    setUser(null);
+    setVolunteerData(null);
+  };
 
-  return <AuthContext.Provider value={{ user, setUser, deleteUser }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, setUser, deleteUser, volunteerData, setVolunteerData }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 AuthProvider.propTypes = {
