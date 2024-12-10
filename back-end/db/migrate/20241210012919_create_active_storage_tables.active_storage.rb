@@ -1,15 +1,15 @@
 class CreateActiveStorageTables < ActiveRecord::Migration[7.0]
   def change
-    create_blobs_table
-    create_attachments_table
-    create_variant_records_table
+    primary_key_type, foreign_key_type = primary_and_foreign_key_types
+
+    create_blobs_table(primary_key_type)
+    create_attachments_table(primary_key_type, foreign_key_type)
+    create_variant_records_table(foreign_key_type)
   end
 
   private
 
-  def create_blobs_table
-    primary_key_type, foreign_key_type = primary_and_foreign_key_types
-
+  def create_blobs_table(primary_key_type)
     create_table :active_storage_blobs, id: primary_key_type do |t|
       t.string   :key,          null: false
       t.string   :filename,     null: false
@@ -29,9 +29,7 @@ class CreateActiveStorageTables < ActiveRecord::Migration[7.0]
     end
   end
 
-  def create_attachments_table
-    primary_key_type, foreign_key_type = primary_and_foreign_key_types
-
+  def create_attachments_table(primary_key_type, foreign_key_type)
     create_table :active_storage_attachments, id: primary_key_type do |t|
       t.string     :name,     null: false
       t.references :record,   null: false, polymorphic: true, index: false, type: foreign_key_type
@@ -48,9 +46,7 @@ class CreateActiveStorageTables < ActiveRecord::Migration[7.0]
     end
   end
 
-  def create_variant_records_table
-    primary_key_type, foreign_key_type = primary_and_foreign_key_types
-
+  def create_variant_records_table(foreign_key_type)
     create_table :active_storage_variant_records, id: primary_key_type do |t|
       t.belongs_to :blob, null: false, index: false, type: foreign_key_type
       t.string :variation_digest, null: false
