@@ -40,7 +40,7 @@ function VolunteerApplicationForm({ onSave, toggleModal, initialData }) {
     if (initialData) {
       handleSubmit.setValues(initialData);
     }
-  }, [initialData]);
+  }, [initialData, handleSubmit]);
 
   return (
     <div className="container mt-5">
