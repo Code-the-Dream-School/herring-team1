@@ -37,7 +37,7 @@ function InfoPage() {
         <div className="mb-1">
           <div
             onClick={() => setIsFirstAccordionOpen(!isFirstAccordionOpen)}
-            className="bg-gray-200 p-3 cursor-pointer font-semibold flex justify-between items-center"
+            className="bg-light_purple p-3 cursor-pointer font-semibold flex justify-between items-center"
           >
             <h2 className="m-2 text-center">Company information:</h2>
             <span
@@ -120,7 +120,7 @@ function InfoPage() {
         <div className="my-10 ">
           <div
             onClick={() => setIsSecondAccordionOpen(!isSecondAccordionOpen)}
-            className="bg-gray-200 p-3 cursor-pointer font-semibold flex justify-between items-center"
+            className="bg-light_purple p-3 cursor-pointer font-semibold flex justify-between items-center"
           >
             <h2 className="my-2 text-center">Requests:</h2>
             <span

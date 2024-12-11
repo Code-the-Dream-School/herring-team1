@@ -54,6 +54,7 @@ function VolunteerApplicationForm({ onSave, toggleModal, initialData }) {
             onChange={handleChange}
             className="w-full text-sm border-gray-300 border rounded-lg p-2"
             placeholder="Enter first name"
+            autoFocus
           >
             <span className="block text-sm mb-1">First Name</span>
           </InputWithLabel>

@@ -1,13 +1,15 @@
 import { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-function InputWithLabel({ id, type = 'text', name, value, onChange, placeholder, children }) {
+function InputWithLabel({ id, type = 'text', name, value, onChange, placeholder, autoFocus, children }) {
   const inputRef = useRef();
 
   // Automatically focus on the input field
   useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
 
   return (
     <div className="form-group mb-2 ">
@@ -37,6 +39,7 @@ InputWithLabel.propTypes = {
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
+  autoFocus: PropTypes.bool,
 };
 
 export default InputWithLabel;
