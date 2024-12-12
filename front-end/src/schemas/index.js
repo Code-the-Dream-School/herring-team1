@@ -23,3 +23,9 @@ export const registerSchema = yup.object().shape({
     .required('Please, choose organization or volunteer account')
     .typeError('Please, choose organization or volunteer account'),
 });
+
+export const applicationSchema = yup.object({
+  firstName: yup.string().required('First Name is required.'),
+  lastName: yup.string().required('Last Name is required.'),
+  about: yup.string().required('About is required.'),
+});
