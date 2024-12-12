@@ -6,9 +6,13 @@ import craftIcon from '../../../assets/craft.png';
 import educationIcon from '../../../assets/education.png';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { editOrganization } from '../../../utils/apiReqests';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function OrganizationForm() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   function ServicesCheckbox() {
     const services = [
@@ -60,6 +64,7 @@ function OrganizationForm() {
     phone: Yup.string()
       .required('Phone number is required')
       .matches(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
+    email: Yup.string().required('Email is required'),
     website: Yup.string()
       .required('Website is required')
       .matches(
@@ -72,6 +77,41 @@ function OrganizationForm() {
       .max(500, 'Maximum 500 characters allowed'),
   });
 
+  const handleSubmit = async (values) => {
+    setIsLoading(true);
+
+    try {
+      await editOrganization({
+        name: values.name,
+        address: values.address,
+        city: values.city,
+        state: values.state,
+        zipcode: values.zipcode,
+        phone: values.phone,
+        website: values.website,
+        email: values.email,
+        mission: values.mission,
+        description: values.description,
+        services: [1],
+      });
+
+      toast.success('Organization updated successfully!');
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      toast.error(error.message || 'An error occurred while updating the organization.', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-8 bg-background rounded-lg">
       <p className="text-gray-900 text-sm mb-8 md:text-md xl:text-lg">
@@ -80,6 +120,7 @@ function OrganizationForm() {
       </p>
 
       <Formik
+        enableReinitialize
         initialValues={{
           name: '',
           address: '',
@@ -87,14 +128,13 @@ function OrganizationForm() {
           state: '',
           zipcode: '',
           phone: '',
+          email: '',
           website: '',
           mission: '',
           description: '',
         }}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          console.log('Form Submitted', values);
-        }}
+        onSubmit={handleSubmit}
       >
         {({ setFieldValue, values }) => (
           <Form className="grid gap-8">
@@ -189,6 +229,20 @@ function OrganizationForm() {
                 </div>
 
                 <div>
+                  <label htmlFor="email" className="block text-gray-800 text-small">
+                    Email
+                  </label>
+                  <Field
+                    type="text"
+                    id="email"
+                    name="email"
+                    className="w-full text-sm border-gray-300 border rounded-lg shadow-md p-2"
+                    placeholder="Enter email"
+                  />
+                  <ErrorMessage name="email" component="div" className="text-red-500 text-xs" />
+                </div>
+
+                <div>
                   <label htmlFor="website" className="block text-gray-800 text-small mt-6">
                     Organization website
                   </label>
@@ -270,9 +324,14 @@ function OrganizationForm() {
             <div className="flex space-x-4 mt-6">
               <button
                 type="submit"
-                className="w-2/5 px-4 py-2 sm:text-xl bg-orange text-white rounded-md hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
+                className={`w-2/5 px-4 py-2 sm:text-xl rounded-md ${
+                  isLoading
+                    ? 'bg-orange-600 text-white cursor-not-allowed'
+                    : 'bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400'
+                }`}
+                disabled={isLoading}
               >
-                Save
+                {isLoading ? 'Saving...' : 'Save'}
               </button>
               <button
                 type="button"
@@ -292,6 +351,7 @@ function OrganizationForm() {
           </Form>
         )}
       </Formik>
+      <ToastContainer />
     </div>
   );
 }
