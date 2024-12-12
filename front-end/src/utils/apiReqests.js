@@ -197,3 +197,68 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
     console.error('Error while submitting form:', error);
   }
 };
+
+export const editOrganization = async (updatedData) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const related_entity_id = user.related_entity_id;
+  console.log(related_entity_id);
+  console.log(user);
+
+  if (!related_entity_id) {
+    throw new Error('Organization ID not found.');
+  }
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const response = await axios.patch(`${API_BASE_URL}organizations/${related_entity_id}`, updatedData, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error editing organization:', error);
+    throw error.response.data;
+  }
+};
+
+export const deleteOrganization = async (related_entity_id) => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const response = await axios.delete(`${API_BASE_URL}organizations/${related_entity_id}`, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting organization:', error);
+    throw error.response.data;
+  }
+};
+
+export const getOrganization = async (related_entity_id) => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/organizations/${related_entity_id}`, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+    console.error('Error fetching organization data:', error);
+    throw error.response?.data || 'Failed to fetch organization data.';
+  }
+};
+
+
