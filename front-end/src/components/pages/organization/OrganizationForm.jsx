@@ -13,6 +13,8 @@ import 'react-toastify/dist/ReactToastify.css';
 function OrganizationForm() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const auth = JSON.parse(localStorage.getItem('user')).id;
+  console.log(auth);
 
   function ServicesCheckbox() {
     const services = [
@@ -54,6 +56,7 @@ function OrganizationForm() {
   }
 
   const validationSchema = Yup.object({
+    auth_id: Yup.string(),
     name: Yup.string().required('Organization name is required'),
     address: Yup.string().required('Street address is required'),
     city: Yup.string().required('City is required'),
@@ -64,7 +67,6 @@ function OrganizationForm() {
     phone: Yup.string()
       .required('Phone number is required')
       .matches(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
-    email: Yup.string().required('Email is required'),
     website: Yup.string()
       .required('Website is required')
       .matches(
@@ -82,6 +84,7 @@ function OrganizationForm() {
 
     try {
       await editOrganization({
+        auth_id: auth,
         name: values.name,
         address: values.address,
         city: values.city,
@@ -89,7 +92,6 @@ function OrganizationForm() {
         zipcode: values.zipcode,
         phone: values.phone,
         website: values.website,
-        email: values.email,
         mission: values.mission,
         description: values.description,
         services: [1],
@@ -122,13 +124,13 @@ function OrganizationForm() {
       <Formik
         enableReinitialize
         initialValues={{
+          auth_id: '',
           name: '',
           address: '',
           city: '',
           state: '',
           zipcode: '',
           phone: '',
-          email: '',
           website: '',
           mission: '',
           description: '',
@@ -194,7 +196,7 @@ function OrganizationForm() {
                       className="w-full text-sm bg-white border-gray-300 border rounded-lg shadow-md p-2"
                     >
                       <option value="">Select State</option>
-                      <option value="ME">Maine</option>
+                      <option value="ME">MA</option>
                     </Field>
                     <ErrorMessage name="state" component="div" className="text-red-500 text-xs" />
                   </div>
@@ -226,20 +228,6 @@ function OrganizationForm() {
                     placeholder="Enter phone number"
                   />
                   <ErrorMessage name="phone" component="div" className="text-red-500 text-xs" />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-gray-800 text-small">
-                    Email
-                  </label>
-                  <Field
-                    type="text"
-                    id="email"
-                    name="email"
-                    className="w-full text-sm border-gray-300 border rounded-lg shadow-md p-2"
-                    placeholder="Enter email"
-                  />
-                  <ErrorMessage name="email" component="div" className="text-red-500 text-xs" />
                 </div>
 
                 <div>

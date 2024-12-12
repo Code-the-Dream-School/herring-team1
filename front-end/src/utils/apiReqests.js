@@ -222,6 +222,7 @@ export const editOrganization = async (updatedData) => {
     return response.data;
   } catch (error) {
     console.error('Error editing organization:', error);
+    console.log(error);
     throw error.response.data;
   }
 };
