@@ -4,7 +4,7 @@ function Volunteering() {
   return (
     <div className="mt-20">
       <OrganizationCard />
-      <OrganizationCard />
+      {/*<OrganizationCard />*/}
     </div>
   );
 }
