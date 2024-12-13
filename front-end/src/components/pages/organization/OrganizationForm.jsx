@@ -86,15 +86,19 @@ function OrganizationForm() {
       await editOrganization({
         auth_id: auth,
         name: values.name,
-        address: values.address,
-        city: values.city,
-        state: values.state,
-        zipcode: values.zipcode,
         phone: values.phone,
         website: values.website,
         mission: values.mission,
         description: values.description,
-        services: [1],
+        addresses: [
+          {
+            address: values.address,
+            city: values.city,
+            state: values.state,
+            zipcode: values.zipcode,
+          },
+        ],
+        service_ids: [1, 2, 3],
       });
 
       toast.success('Organization updated successfully!');
@@ -196,7 +200,8 @@ function OrganizationForm() {
                       className="w-full text-sm bg-white border-gray-300 border rounded-lg shadow-md p-2"
                     >
                       <option value="">Select State</option>
-                      <option value="ME">MA</option>
+                      <option value="MA">MA</option>
+                      <option value="CT">CT</option>
                     </Field>
                     <ErrorMessage name="state" component="div" className="text-red-500 text-xs" />
                   </div>
