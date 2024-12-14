@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import homecareIcon from '../../../assets/homecare.png';
 import advocacyIcon from '../../../assets/advocacy.png';
@@ -6,15 +6,15 @@ import craftIcon from '../../../assets/craft.png';
 import educationIcon from '../../../assets/education.png';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { editOrganization } from '../../../utils/apiReqests';
+import { editOrganization, getOrganizationById } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function OrganizationForm() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [initialValues, setInitialValues] = useState('');
   const auth = JSON.parse(localStorage.getItem('user')).id;
-  console.log(auth);
 
   function ServicesCheckbox() {
     const services = [
@@ -54,6 +54,20 @@ function OrganizationForm() {
       </div>
     );
   }
+
+  useEffect(() => {
+    const fetchOrganization = async () => {
+      try {
+        const data = await getOrganizationById();
+        console.log(data);
+        setInitialValues(data);
+      } catch (error) {
+        console.error('Failed to fetch organization:', error);
+      }
+    };
+
+    fetchOrganization();
+  }, []);
 
   const validationSchema = Yup.object({
     auth_id: Yup.string(),
@@ -127,18 +141,17 @@ function OrganizationForm() {
 
       <Formik
         enableReinitialize
-        initialValues={{
-          auth_id: '',
-          name: '',
-          address: '',
-          city: '',
-          state: '',
-          zipcode: '',
-          phone: '',
-          website: '',
-          mission: '',
-          description: '',
-        }}
+        initialValues={
+          initialValues || {
+            auth_id: '',
+            name: '',
+            addresses: [{ address: '', city: '', state: '', zip_code: '' }],
+            phone: '',
+            website: '',
+            mission: '',
+            description: '',
+          }
+        }
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
@@ -167,7 +180,7 @@ function OrganizationForm() {
                   <Field
                     type="text"
                     id="address"
-                    name="address"
+                    name={`addresses[0].address`}
                     className="w-full text-sm border-gray-300 border rounded-lg p-2 shadow-md"
                     placeholder="Enter street address"
                   />
@@ -181,7 +194,7 @@ function OrganizationForm() {
                   <Field
                     type="text"
                     id="city"
-                    name="city"
+                    name={`addresses[0].city`}
                     className="w-full text-sm border-gray-300 border rounded-lg shadow-md p-2"
                     placeholder="Enter city"
                   />
@@ -196,7 +209,7 @@ function OrganizationForm() {
                     <Field
                       as="select"
                       id="state"
-                      name="state"
+                      name={`addresses[0].state`}
                       className="w-full text-sm bg-white border-gray-300 border rounded-lg shadow-md p-2"
                     >
                       <option value="">Select State</option>
@@ -213,7 +226,7 @@ function OrganizationForm() {
                     <Field
                       type="text"
                       id="zipcode"
-                      name="zipcode"
+                      name={`addresses[0].zip_code`}
                       className="w-full border-gray-300 text-sm border rounded-lg shadow-md p-2"
                       placeholder="Enter zip code"
                     />

@@ -225,18 +225,35 @@ export const editOrganization = async (updatedData) => {
   }
 };
 
-export const getOrganization = async (related_entity_id) => {
+export const getOrganizationById = async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const related_entity_id = user.related_entity_id;
+
+  if (!related_entity_id) {
+    throw new Error('Organization ID not found.');
+  }
+
   const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
 
   if (!x_csrf_token) {
     throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
   }
   try {
-    const response = await axios.get(`${API_BASE_URL}/organizations/${related_entity_id}`, {
+    const url = `${API_BASE_URL}organizations/${related_entity_id}`;
+    const response = await axios.get(url, {
       headers: {
         'X-CSRF-Token': x_csrf_token,
     console.error('Error fetching organization data:', error);
-    throw error.response?.data || 'Failed to fetch organization data.';
+    if (error.response) {
+      console.error('Backend error response:', error.response.data);
+      throw error.response.data;
+    } else if (error.request) {
+      console.error('No response received from the backend:', error.request);
+      throw 'No response received from the backend';
+    } else {
+      console.error('Request error:', error.message);
+      throw 'Failed to fetch organization data.';
+    }
   }
 };
 
