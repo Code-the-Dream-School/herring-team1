@@ -77,8 +77,11 @@ function EditVolunteer() {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="p-14">
-      <div className="md:mt-6"></div>
+    <div className="px-8 sm:px-24 md:px-48 lg:px-64 py-12">
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-semibold mb-4">Please add or edit your information</h1>
+        <p className="text-gray-600">Ensure all details are correct and up-to-date to help us serve you better.</p>
+      </div>
       <form onSubmit={handleSubmit}>
         <div className="flex space-x-4 mb-4">
           <div className="w-1/2">
