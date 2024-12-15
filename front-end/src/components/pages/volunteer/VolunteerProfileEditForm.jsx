@@ -1,26 +1,49 @@
 import { useEffect, useState } from 'react';
-import { getVolunteerById } from '../../../utils/apiReqests';
+import { getVolunteerById, updateVolunteerById } from '../../../utils/apiReqests';
 import { states } from '../../../data/states';
+import { useNavigate } from 'react-router-dom';
 
 function EditVolunteer() {
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const transformFormData = (formData) => {
+    return {
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      email: formData.email,
+      phone: formData.phone,
+      about: formData.about,
+      addresses_attributes: [
+        {
+          id: formData.address_id || null,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip_code: formData.zip_code,
+        },
+      ],
+    };
+  };
 
   useEffect(() => {
     const fetchVolunteerData = async () => {
       try {
         const volunteerData = await getVolunteerById();
+        const latestAddress = volunteerData.addresses?.[volunteerData.addresses.length - 1] || {};
         setFormData({
-          firstName: volunteerData.first_name || '',
-          lastName: volunteerData.last_name || '',
+          first_name: volunteerData.first_name || '',
+          last_name: volunteerData.last_name || '',
           email: volunteerData.email || '',
           phone: volunteerData.phone || '',
-          address: volunteerData.addresses?.[0]?.address || '',
-          city: volunteerData.addresses?.[0]?.city || '',
-          state: volunteerData.addresses?.[0]?.state || '',
-          zipCode: volunteerData.addresses?.[0]?.zip_code || '',
           about: volunteerData.about || '',
+          address_id: latestAddress.id || null,
+          address: latestAddress.address || '',
+          city: latestAddress.city || '',
+          state: latestAddress.state || '',
+          zip_code: latestAddress.zip_code || '',
         });
       } catch (err) {
         console.error('Error fetching volunteer data:', err);
@@ -29,7 +52,6 @@ function EditVolunteer() {
         setLoading(false);
       }
     };
-
     fetchVolunteerData();
   }, []);
 
@@ -38,10 +60,17 @@ function EditVolunteer() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.info('Form submitted:', formData);
-    // Add logic to send updated data to the backend
+    const transformedData = transformFormData(formData);
+    console.info('Submitting transformed data:', transformedData);
+    try {
+      const response = await updateVolunteerById(transformedData);
+      console.info('Server response:', response);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Error updating volunteer:', err);
+    }
   };
 
   if (loading) return <p>Loading...</p>;
@@ -56,8 +85,8 @@ function EditVolunteer() {
             <label className="block text-sm font-bold">First Name</label>
             <input
               type="text"
-              name="firstName"
-              value={formData.firstName}
+              name="first_name"
+              value={formData.first_name}
               onChange={handleInputChange}
               className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
             />
@@ -66,8 +95,8 @@ function EditVolunteer() {
             <label className="block text-sm font-bold">Last Name</label>
             <input
               type="text"
-              name="lastName"
-              value={formData.lastName}
+              name="last_name"
+              value={formData.last_name}
               onChange={handleInputChange}
               className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
             />
@@ -127,8 +156,8 @@ function EditVolunteer() {
               <label className="block text-sm font-bold">Zip Code</label>
               <input
                 type="text"
-                name="zipCode"
-                value={formData.zipCode}
+                name="zip_code"
+                value={formData.zip_code}
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
               />
@@ -136,12 +165,25 @@ function EditVolunteer() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="px-4 py-2 bg-orangeButton text-white rounded borde transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
-        >
-          Save
-        </button>
+        <div className="mb-4">
+          <label className="block text-sm font-bold capitalize">About</label>
+          <textarea
+            type="text"
+            name="about"
+            value={formData.about}
+            onChange={handleInputChange}
+            className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
+          />
+        </div>
+
+        <div className="flex justify-center mt-6">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-orangeButton text-white rounded border transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
+          >
+            Save
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -12,15 +12,16 @@ function VolunteerProfile() {
     const fetchVolunteerData = async () => {
       try {
         const volunteerData = await getVolunteerById();
+        const latestAddress = volunteerData.addresses?.[volunteerData.addresses.length - 1] || {};
         setFormData({
           firstName: volunteerData.first_name || '',
           lastName: volunteerData.last_name || '',
           email: volunteerData.email || '',
           phone: volunteerData.phone || '',
-          address: volunteerData.addresses?.[0]?.address || '',
-          city: volunteerData.addresses?.[0]?.city || '',
-          state: volunteerData.addresses?.[0]?.state || '',
-          zipCode: volunteerData.addresses?.[0]?.zip_code || '',
+          address: latestAddress.address || '',
+          city: latestAddress.city || '',
+          state: latestAddress.state || '',
+          zipCode: latestAddress.zip_code || '',
           about: volunteerData.about || '',
         });
       } catch (err) {
@@ -38,9 +39,9 @@ function VolunteerProfile() {
     navigate('/edit_volunteer');
   };
 
-  const handleDelete = () => {
-    console.info('Delete profile functionality to be implemented.');
-  };
+  // const handleDelete = () => {
+  //   console.info('Delete profile functionality to be implemented.');
+  // };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -97,12 +98,12 @@ function VolunteerProfile() {
         >
           Edit
         </button>
-        <button
+        {/* <button
           onClick={handleDelete}
           className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg"
         >
           Delete
-        </button>
+        </button> */}
       </div>
     </div>
   );
