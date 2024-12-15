@@ -54,6 +54,15 @@ export const logout = async () => {
   }
 };
 
+export const fetchOrganizations = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}organizations`, {});
+    return response;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
 export const getVolunteerById = async (id) => {
   try {
     const response = await axios.get(`http://127.0.0.1:3000/volunteers/${id}`, {

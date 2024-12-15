@@ -10,10 +10,11 @@ class RequestsController < ApplicationController
   # GET /requests
   def index
     if params[:organization_id]
-      @organization = Organization.find_by(id: params[:organization_id])
-      render json: { error: 'Organization not found' }, status: :not_found and return unless @organization
-
-      @requests = @organization.requests
+      @requests = Request.where(organization: params[:organization_id])
+      if @requests.empty?
+        render json: { error: 'No requests found for this organization' }, status: :not_found
+        return
+      end
     else
       @requests = Request.all
     end

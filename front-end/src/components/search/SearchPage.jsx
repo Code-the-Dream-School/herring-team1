@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { useNavigate } from 'react-router-dom';
 
 const SearchPage = () => {
   const hardcodedOrganizations = [
@@ -29,6 +30,11 @@ const SearchPage = () => {
     setFavorites((prevFavorites) =>
       prevFavorites.includes(id) ? prevFavorites.filter((favId) => favId !== id) : [...prevFavorites, id]
     );
+  };
+
+  const navigate = useNavigate();
+  const handleCardClick = (id) => {
+    navigate(`/organizations/${id}`);
   };
 
   return (
@@ -89,6 +95,11 @@ const SearchPage = () => {
                 <p className="text-sm text-gray-700">
                   <span className="font-bold">Services:</span> {org.services.join(', ')}
                 </p>
+
+                {/* Button to view details */}
+                <button onClick={() => handleCardClick(org.id)} className="text-sm text-blue-500 mt-4">
+                  View Details &gt;
+                </button>
               </div>
             ))}
           </div>
