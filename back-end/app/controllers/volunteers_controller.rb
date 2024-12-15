@@ -47,7 +47,7 @@ class VolunteersController < ApplicationController
   # Params for update
   def volunteer_params
     params.require(:volunteer).permit(
-      :first_name, :last_name, :email, :phone, :about, 
+      :first_name, :last_name, :email, :phone, :about,
       addresses_attributes: [:id, :address, :city, :state, :zip_code, :_destroy]
     )
   end
