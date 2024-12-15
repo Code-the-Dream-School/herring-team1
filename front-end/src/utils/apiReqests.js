@@ -54,11 +54,20 @@ export const logout = async () => {
   }
 };
 
+export const fetchOrganizations = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}organizations`, {});
+    return response;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
 export const searchOrganizations = async (zip_code, keyword, service) => {
   try {
     const params = {};
 
-    // Добавляем параметры поиска в запрос
+    // add params if they are not empty
     if (zip_code) params.zip_code = zip_code;
     if (keyword) params.keyword = keyword;
     if (service) params.service = service;

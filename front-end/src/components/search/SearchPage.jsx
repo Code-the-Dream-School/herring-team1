@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { useNavigate } from 'react-router-dom';
 import { searchOrganizations } from '../../utils/apiReqests';
 
 const SearchPage = () => {
@@ -13,23 +14,27 @@ const SearchPage = () => {
 
   const [debouncedSearch, setDebouncedSearch] = useState(searchParams);
 
-  // Обработчик клика для изменения состояния избранных организаций
+  // Switch favorite status
   const toggleFavorite = (id) => {
     setFavorites((prevFavorites) =>
       prevFavorites.includes(id) ? prevFavorites.filter((favId) => favId !== id) : [...prevFavorites, id]
     );
   };
 
-  // Дебаунсинг для параметров поиска
+  const navigate = useNavigate();
+  const handleCardClick = (id) => {
+    navigate(`/organizations/${id}`);
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchParams);
-    }, 500); // Задержка 500мс, можно настроить под себя
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [searchParams]);
 
-  // Запрос организаций по параметрам поиска
+  // Get organizations based on search parameters
   useEffect(() => {
     const fetchOrganizations = async () => {
       if (debouncedSearch.zip_code || debouncedSearch.keyword || debouncedSearch.service) {
@@ -42,10 +47,10 @@ const SearchPage = () => {
           setOrganizations(result);
         } catch (error) {
           console.error('Error fetching organizations:', error);
-          setOrganizations([]); // Если ошибка, сбрасываем организации в пустой массив
+          setOrganizations([]);
         }
       } else {
-        setOrganizations([]); // Если нет параметров поиска, сбрасываем список организаций
+        setOrganizations([]);
       }
     };
 
@@ -134,6 +139,11 @@ const SearchPage = () => {
                   <p className="text-sm text-gray-700">
                     <span className="font-bold">Services:</span> {org.services.join(', ')}
                   </p>
+
+                  {/* Button to view details */}
+                  <button onClick={() => handleCardClick(org.id)} className="text-sm text-blue-500 mt-4">
+                    View Details &gt;
+                  </button>
                 </div>
               ))
             ) : (

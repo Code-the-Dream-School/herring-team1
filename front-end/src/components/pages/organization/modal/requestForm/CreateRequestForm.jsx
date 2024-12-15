@@ -78,7 +78,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
           className="w-full text-sm border-gray-300 border rounded-lg"
           placeholder="Service name"
         >
-          <span className="block text-sm font-bold mb-1">Service</span>
+          <span className="block text-sm mb-1">Service</span>
         </InputWithLabel>
         {errors.service && <div className="text-red-500 text-sm">{errors.service}</div>}
       </div>
