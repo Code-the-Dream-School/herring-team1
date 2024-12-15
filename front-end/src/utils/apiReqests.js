@@ -53,3 +53,20 @@ export const logout = async () => {
     console.error('Logout error:', error);
   }
 };
+
+export const searchOrganizations = async (zip_code, keyword, service) => {
+  try {
+    const params = {};
+
+    // Добавляем параметры поиска в запрос
+    if (zip_code) params.zip_code = zip_code;
+    if (keyword) params.keyword = keyword;
+    if (service) params.service = service;
+
+    const response = await axios.get(`${API_BASE_URL}/search`, { params });
+
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
