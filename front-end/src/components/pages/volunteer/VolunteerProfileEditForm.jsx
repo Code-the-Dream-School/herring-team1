@@ -48,83 +48,102 @@ function EditVolunteer() {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="flex space-x-4 mb-4">
-        <div className="w-1/2">
-          <label className="block text-sm font-bold">First Name</label>
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
-          />
-        </div>
-        <div className="w-1/2">
-          <label className="block text-sm font-bold">Last Name</label>
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
-          />
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-bold">Address</label>
-        <input
-          type="text"
-          name="address"
-          value={formData.address}
-          onChange={handleInputChange}
-          className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300 mb-4"
-        />
-        <label className="block text-sm font-bold">City</label>
-        <input
-          type="text"
-          name="city"
-          value={formData.city}
-          onChange={handleInputChange}
-          className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300 mb-4"
-        />
+    <div className="p-14">
+      <div className="md:mt-6"></div>
+      <form onSubmit={handleSubmit}>
         <div className="flex space-x-4 mb-4">
           <div className="w-1/2">
-            <label className="block text-sm font-bold">State</label>
-            <select
-              name="state"
-              value={formData.state}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
-            >
-              {states.map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="w-1/2">
-            <label className="block text-sm font-bold">Zip Code</label>
+            <label className="block text-sm font-bold">First Name</label>
             <input
               type="text"
-              name="zipCode"
-              value={formData.zipCode}
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
+            />
+          </div>
+          <div className="w-1/2">
+            <label className="block text-sm font-bold">Last Name</label>
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
               onChange={handleInputChange}
               className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
             />
           </div>
         </div>
-      </div>
 
-      <button
-        type="submit"
-        className="px-4 py-2 bg-blue-500 text-white rounded border border-blue-500 transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
-      >
-        Save Changes
-      </button>
-    </form>
+        <div className="mb-4">
+          <label className="block text-sm font-bold">Email</label>
+          <input
+            type="text"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300 mb-4"
+          />
+          <label className="block text-sm font-bold">Phone</label>
+          <input
+            type="text"
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
+            className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300 mb-4"
+          />
+          <label className="block text-sm font-bold">Address</label>
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleInputChange}
+            className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300 mb-4"
+          />
+          <label className="block text-sm font-bold">City</label>
+          <input
+            type="text"
+            name="city"
+            value={formData.city}
+            onChange={handleInputChange}
+            className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300 mb-4"
+          />
+          <div className="flex space-x-4 mb-4">
+            <div className="w-1/2">
+              <label className="block text-sm font-bold">State</label>
+              <select
+                name="state"
+                value={formData.state}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
+              >
+                {states.map((state) => (
+                  <option key={state} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="w-1/2">
+              <label className="block text-sm font-bold">Zip Code</label>
+              <input
+                type="text"
+                name="zipCode"
+                value={formData.zipCode}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
+              />
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="px-4 py-2 bg-orangeButton text-white rounded borde transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
+        >
+          Save
+        </button>
+      </form>
+    </div>
   );
 }
 
