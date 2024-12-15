@@ -104,14 +104,12 @@ function VolunteerProfile() {
             </button>
           </>
         ) : (
-          <>
-            <button
-              onClick={handleEdit}
-              className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
-            >
-              Edit
-            </button>
-          </>
+          <button
+            onClick={handleEdit}
+            className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
+          >
+            Edit
+          </button>
         )}
       </div>
     </div>
