@@ -62,3 +62,19 @@ export const fetchOrganizations = async () => {
     throw error.response.data;
   }
 };
+
+export const getVolunteerById = async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const related_entity_id = user.related_entity_id;
+  if (!user || !user.related_entity_id) {
+    throw new Error('Related entity ID not found.');
+  }
+
+  try {
+    const response = await axios.get(`http://127.0.0.1:3000/volunteers/${related_entity_id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching volunteer data:', error);
+    throw error.response?.data || 'Failed to fetch volunteer data.';
+  }
+};
