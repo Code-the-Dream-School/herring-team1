@@ -1,10 +1,54 @@
-import PropTypes from 'prop-types';
-
+import { useEffect, useState } from 'react';
+import { getVolunteerById } from '../../../utils/apiReqests';
 import { states } from '../../../data/states';
 
-function VolunteerProfileEditForm({ formData, handleInputChange }) {
+function EditVolunteer() {
+  const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchVolunteerData = async () => {
+      try {
+        const volunteerData = await getVolunteerById();
+        setFormData({
+          firstName: volunteerData.first_name || '',
+          lastName: volunteerData.last_name || '',
+          email: volunteerData.email || '',
+          phone: volunteerData.phone || '',
+          address: volunteerData.addresses?.[0]?.address || '',
+          city: volunteerData.addresses?.[0]?.city || '',
+          state: volunteerData.addresses?.[0]?.state || '',
+          zipCode: volunteerData.addresses?.[0]?.zip_code || '',
+          about: volunteerData.about || '',
+        });
+      } catch (err) {
+        console.error('Error fetching volunteer data:', err);
+        setError('Failed to load volunteer data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVolunteerData();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.info('Form submitted:', formData);
+    // Add logic to send updated data to the backend
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className="flex space-x-4 mb-4">
         <div className="w-1/2">
           <label className="block text-sm font-bold">First Name</label>
@@ -43,7 +87,7 @@ function VolunteerProfileEditForm({ formData, handleInputChange }) {
           name="city"
           value={formData.city}
           onChange={handleInputChange}
-          className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300  mb-4"
+          className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300 mb-4"
         />
         <div className="flex space-x-4 mb-4">
           <div className="w-1/2">
@@ -74,40 +118,14 @@ function VolunteerProfileEditForm({ formData, handleInputChange }) {
         </div>
       </div>
 
-      {Object.keys(formData)
-        .filter(
-          (field) => !['firstName', 'lastName', 'address', 'city', 'state', 'zipCode', 'phone', 'email'].includes(field)
-        )
-        .map((field) => (
-          <div key={field} className="mb-4">
-            <label className="block text-sm font-bold capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
-            <textarea
-              type="text"
-              name={field}
-              value={formData[field]}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded px-2 py-1 w-full shadow-md shadow-gray-300"
-            />
-          </div>
-        ))}
+      <button
+        type="submit"
+        className="px-4 py-2 bg-blue-500 text-white rounded border border-blue-500 transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
+      >
+        Save Changes
+      </button>
     </form>
   );
 }
 
-VolunteerProfileEditForm.propTypes = {
-  formData: PropTypes.shape({
-    firstName: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
-    address: PropTypes.string.isRequired,
-    city: PropTypes.string.isRequired,
-    state: PropTypes.string.isRequired,
-    zipCode: PropTypes.string.isRequired,
-    phone: PropTypes.string,
-    email: PropTypes.string,
-    about: PropTypes.string,
-    skills: PropTypes.string,
-  }).isRequired,
-  handleInputChange: PropTypes.func.isRequired,
-};
-
-export default VolunteerProfileEditForm;
+export default EditVolunteer;
