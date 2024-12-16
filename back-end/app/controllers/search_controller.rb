@@ -52,7 +52,7 @@ class SearchController < ApplicationController
   def filter_by_service(organizations)
     service_ids = Service.where('name ILIKE ?', "%#{service}%").pluck(:id)
     return organizations.none if service_ids.empty?
-  
+
     organizations.joins(:org_services).where(org_services: { service_id: service_ids })
   end
 
