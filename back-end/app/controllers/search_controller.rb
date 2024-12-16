@@ -1,4 +1,4 @@
-# This controller is responsible for handling search requests by zipcode, keywords and services
+# This controller is responsible for handling search requests by zipcode, keywords and servicesclass SearchController < ApplicationController
 class SearchController < ApplicationController
   def search
     # Check if all parameters are blank
@@ -16,11 +16,39 @@ class SearchController < ApplicationController
     if organizations.empty?
       render_error('No search results found', :not_found)
     else
-      render_organizations(organizations.uniq)
+      # Apply pagination
+      paginated_organizations = organizations.page(params[:page]).per(params[:per_page] || 9)
+
+      render json: {
+        organizations: render_organizations(paginated_organizations),
+        meta: {
+          current_page: paginated_organizations.current_page,
+          total_pages: paginated_organizations.total_pages,
+          total_count: paginated_organizations.total_count
+        }
+      }
     end
   end
 
   private
+
+  def render_organizations(organizations)
+    organizations.map { |org| format_organization(org) }
+  end
+
+  def format_organization(org)
+    {
+      name: org.name,
+      request: org.description,
+      logo: org.logo.attached? ? org.logo.url : 'placeholder_logo_url',
+      services: org.org_services.map { |os| service_name(os.service_id) }
+    }
+  end
+
+  def service_name(service_id)
+    service = Service.find_by(id: service_id)
+    service ? service.name : 'Unknown service'
+  end
 
   # Check if all search parameters are missing
   def params_blank?
@@ -56,36 +84,8 @@ class SearchController < ApplicationController
     organizations.joins(:org_services).where(org_services: { service_id: service_ids })
   end
 
-  # Extract organization IDs from addresses linked to organizations
-  def filter_organization_ids(addresses)
-    addresses.select { |address| address.addressable_type == 'Organization' }
-             .map(&:addressable_id)
-             .uniq
-  end
-
-  # Get organization IDs by matching service keywords
-  def org_ids_by_service_keyword(keyword)
-    Service.where('name ILIKE ?', "%#{keyword}%").includes(:org_services).map do |service|
-      service.org_services.pluck(:organization_id)
-    end.flatten.uniq
-  end
-
-  def render_organizations(organizations)
-    render json: organizations.map { |org| format_organization(org) }
-  end
-
-  def format_organization(org)
-    {
-      name: org.name,
-      request: org.description,
-      logo: org.logo.attached? ? org.logo.url : 'placeholder_logo_url',
-      services: org.org_services.map { |os| service_name(os.service_id) }
-    }
-  end
-
-  def service_name(service_id)
-    service = Service.find_by(id: service_id)
-    service ? service.name : 'Unknown service'
+  def render_error(message, status)
+    render json: { error: message }, status: status
   end
 
   # Retrieve zip_code parameter
@@ -101,9 +101,5 @@ class SearchController < ApplicationController
   # Retrieve service parameter
   def service
     params[:service]
-  end
-
-  def render_error(message, status)
-    render json: { error: message }, status: status
   end
 end

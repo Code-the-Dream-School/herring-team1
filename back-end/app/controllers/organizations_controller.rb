@@ -9,8 +9,16 @@ class OrganizationsController < ApplicationController
 
   # GET all organizations
   def index
-    @organizations = Organization.includes(:addresses).all
-    render json: @organizations.as_json(include: [:addresses, :org_services])
+    @organizations = Organization.includes(:addresses).page(params[:page])
+  
+    render json: {
+      organizations: @organizations.as_json(include: [:addresses, :org_services]),
+      meta: {
+        current_page: @organizations.current_page,
+        total_pages: @organizations.total_pages,
+        total_count: @organizations.total_count
+      }
+    }
   end
 
   # GET one organization
