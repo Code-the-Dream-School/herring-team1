@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength
 class VolunteerApplicationsController < ApplicationController
   before_action :set_volunteer_application, only: [:show, :update, :destroy]
   before_action :set_organization, only: [:update]
@@ -138,3 +139,4 @@ class VolunteerApplicationsController < ApplicationController
     end
   end
 end
+# rubocop:disable Metrics/ClassLength
