@@ -15,7 +15,11 @@ function Register() {
       localStorage.setItem('user', JSON.stringify(auth.user));
       localStorage.setItem('x_csrf_token', response.headers.get('x-csrf-token'));
       setUser(auth.user);
-      navigate('/dashboard');
+      if (!auth.user.isOrganization) {
+        navigate('/edit_volunteer');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error('Error:', error);
       setErrors({ submit: error.message || 'Registration failed' });

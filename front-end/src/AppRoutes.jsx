@@ -11,13 +11,15 @@ import Dashboard from './components/navbars/Dashboard.jsx';
 import Auth from './components/auth/Auth.jsx';
 import NotFound from './components/pages/NotFound.jsx';
 import InfoPage from './components/pages/organization/InfoPage.jsx';
+import EditVolunteer from './components/pages/volunteer/VolunteerProfileEditForm.jsx';
+
+import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 
 function AppRoutes() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Header />
       <Routes>
-        {/* <Route path="*" element={<NotFound />} /> */}
         <Route path="/" element={<HomePage />} />
         <Route path="/auth" element={<Auth />}>
           <Route path="login" element={<Login />} />
@@ -25,9 +27,17 @@ function AppRoutes() {
         </Route>
         <Route path="/search" element={<SearchPage />} />
         <Route path="/team" element={<TeamPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />{' '}
         <Route path="/organizations/:id" element={<InfoPage />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/edit_volunteer" element={<EditVolunteer />} />
       </Routes>
       <Footer />
     </BrowserRouter>
