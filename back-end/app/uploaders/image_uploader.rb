@@ -2,7 +2,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   include Cloudinary::CarrierWave
 
   def extension_allowlist
-    %w[jpg jpeg gif png]
+    ['jpg', 'jpeg', 'gif', 'png']
   end
 
   def public_id

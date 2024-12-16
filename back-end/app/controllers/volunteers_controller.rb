@@ -44,16 +44,16 @@ class VolunteersController < ApplicationController
 
   def upload_image
     @volunteer = Volunteer.find_by(id: params[:id])
-  
+
     if @volunteer.nil?
       render json: { error: 'Volunteer not found' }, status: :not_found
       return
     end
-  
+
     if params[:profile_img].present?
       Rails.logger.info "Uploading for Volunteer ID: #{@volunteer.id}"
       Rails.logger.info "Profile Image: #{params[:profile_img].inspect}"
-  
+
       @volunteer.profile_img = params[:profile_img]
       if @volunteer.save
         render json: { imageUrl: @volunteer.profile_img.url }, status: :ok
