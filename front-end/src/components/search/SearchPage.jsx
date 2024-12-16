@@ -131,7 +131,7 @@ const SearchPage = () => {
                   </button>
                   <h3 className="text-lg font-bold">{org.name}</h3>
                   <div className="w-16 h-16 bg-gray-200 rounded-full mb-4 flex items-center justify-center text-gray-500">
-                    {org.logo ? <img src={org.logo} alt="logo" className="w-full h-full object-cover" /> : 'LOGO'}
+                    {!org.logo && <span className="text-sm font-semibold text-center">LOGO</span>}
                   </div>
                   <p className="text-sm text-gray-700">
                     <span className="font-bold">Request:</span> {org.request}
