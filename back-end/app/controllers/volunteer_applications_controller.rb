@@ -139,4 +139,3 @@ class VolunteerApplicationsController < ApplicationController
     end
   end
 end
-# rubocop:disable Metrics/ClassLength
