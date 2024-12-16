@@ -62,3 +62,45 @@ export const fetchOrganizations = async () => {
     throw error.response.data;
   }
 };
+
+export const getVolunteerById = async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const related_entity_id = user.related_entity_id;
+  if (!user || !user.related_entity_id) {
+    throw new Error('Related entity ID not found.');
+  }
+
+  try {
+    const response = await axios.get(`http://127.0.0.1:3000/volunteers/${related_entity_id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching volunteer data:', error);
+    throw error.response?.data || 'Failed to fetch volunteer data.';
+  }
+};
+
+export const updateVolunteerById = async (updatedData) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const csrfToken = localStorage.getItem('x_csrf_token');
+  const related_entity_id = user.related_entity_id;
+  if (!user || !user.related_entity_id) {
+    throw new Error('Related entity ID not found.');
+  }
+
+  try {
+    const response = await axios.patch(
+      `http://127.0.0.1:3000/volunteers/${related_entity_id}`,
+      { volunteer: updatedData },
+      {
+        headers: {
+          'X-CSRF-Token': csrfToken,
+        },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating volunteer:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to update volunteer data.';
+  }
+};
