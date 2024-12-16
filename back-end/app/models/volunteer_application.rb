@@ -1,4 +1,4 @@
-# Model represents an volunteer's application to a specific request 
+# Model represents an volunteer's application to a specific request
 # The status reflects the current state of the application.
 class VolunteerApplication < ApplicationRecord
   belongs_to :volunteer
