@@ -50,7 +50,10 @@ class SearchController < ApplicationController
 
   # Filter organizations by service
   def filter_by_service(organizations)
-    organizations.joins(:org_services).where(org_services: { service_id: service })
+    service_ids = Service.where('name ILIKE ?', "%#{service}%").pluck(:id)
+    return organizations.none if service_ids.empty?
+
+    organizations.joins(:org_services).where(org_services: { service_id: service_ids })
   end
 
   # Extract organization IDs from addresses linked to organizations
