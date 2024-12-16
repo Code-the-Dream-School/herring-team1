@@ -14,6 +14,7 @@ const volunteerDashboard = [
 function VolunteerDashboard() {
   const [currentPage, setCurrentPage] = useState('Profile');
   const [userProfileImage, setUserProfileImage] = useState(null);
+  const [registrationDate, setRegistrationDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -23,6 +24,10 @@ function VolunteerDashboard() {
         setLoading(true);
         const volunteerData = await getVolunteerById();
         setUserProfileImage(volunteerData.profile_img?.url || defaultProfileImage);
+        const formattedDate = new Date(volunteerData.created_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+        });
+        setRegistrationDate(formattedDate);
       } catch (err) {
         console.error('Error fetching volunteer data:', err);
         setError('Failed to load volunteer data. Please try again.');
@@ -90,7 +95,7 @@ function VolunteerDashboard() {
         </div>
         {loading && <p className="text-center text-blue-500">Uploading...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
-        <p className="text-center text-xs mt-2 mb-10">Member since ...</p>
+        <p className="text-center text-xs mt-2 mb-10">Member since {registrationDate}</p>
         <div className="w-full">
           <nav className="flex flex-col sm:m-10 lg:m-20">
             <ul className="w-full">
