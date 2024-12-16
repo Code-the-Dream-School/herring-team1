@@ -104,3 +104,20 @@ export const updateVolunteerById = async (updatedData) => {
     throw error.response?.data || 'Failed to update volunteer data.';
   }
 };
+
+export const searchOrganizations = async (zip_code, keyword, service) => {
+  try {
+    const params = {};
+
+    // add params if they are not empty
+    if (zip_code) params.zip_code = zip_code;
+    if (keyword) params.keyword = keyword;
+    if (service) params.service = service;
+
+    const response = await axios.get(`${API_BASE_URL}/search`, { params });
+
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
