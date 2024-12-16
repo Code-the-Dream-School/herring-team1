@@ -15,6 +15,7 @@ const SearchPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false); // check if user has searched
+  const [isAuthenticated] = useState(true); // assume user is logged in for now, set it based on authentication
 
   const toggleFavorite = (id) => {
     setFavorites((prevFavorites) =>
@@ -68,6 +69,17 @@ const SearchPage = () => {
 
     fetchOrganizations();
   }, [debouncedSearch]);
+
+  // Clear search params if user logs out
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setSearchParams({
+        zip_code: '',
+        keyword: '',
+        service: '',
+      });
+    }
+  }, [isAuthenticated]);
 
   // check if user has searched
   const hasSearchParams = debouncedSearch.zip_code || debouncedSearch.keyword || debouncedSearch.service;
