@@ -4,5 +4,7 @@ class OrgService < ApplicationRecord
   belongs_to :organization
   belongs_to :service
 
+  has_many :requests
+
   validates :organization_id, :service_id, presence: true
 end

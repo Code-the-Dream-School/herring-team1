@@ -13,7 +13,10 @@ Rails.application.routes.draw do
     resources :requests, only: [:index, :show, :create, :update, :destroy]
   end
 
-  resources :volunteers, only: [:index, :show, :update, :destroy]
+  resources :volunteers, only: [:index, :show, :update, :destroy] do
+    resources :volunteer_applications, only: [:index, :show, :create, :update, :destroy]
+  end
+  resources :volunteer_applications, only: [:index, :show, :create, :update, :destroy]
   resources :addresses, only: [:index, :show, :create, :update, :destroy]
   resources :requests, only: [:index, :show]
 
