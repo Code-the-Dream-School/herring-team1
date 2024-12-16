@@ -13,7 +13,12 @@ Rails.application.routes.draw do
     resources :requests, only: [:index, :show, :create, :update, :destroy]
   end
 
-  resources :volunteers, only: [:index, :show, :update, :destroy]
+  resources :volunteers, only: [:index, :show, :update, :destroy] do
+    member do
+      post :upload_image
+    end
+  end
+
   resources :addresses, only: [:index, :show, :create, :update, :destroy]
   resources :requests, only: [:index, :show]
 
