@@ -1,9 +1,9 @@
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
 import VolunteerProfile from '../pages/volunteer/VolunteerProfile.jsx';
 import Volunteering from '../pages/volunteer/Volunteering.jsx';
 import Favorites from '../pages/volunteer/Favorites.jsx';
 import defaultProfileImage from '../assets/images_default/profile_default.jpg';
+import { getVolunteerById, uploadProfileImage } from '../../utils/apiReqests';
 
 const volunteerDashboard = [
   { text: 'Profile', link: '/profile' },
@@ -13,7 +13,44 @@ const volunteerDashboard = [
 
 function VolunteerDashboard() {
   const [currentPage, setCurrentPage] = useState('Profile');
-  const userProfileImage = null;
+  const [userProfileImage, setUserProfileImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchVolunteerData = async () => {
+      try {
+        setLoading(true);
+        const volunteerData = await getVolunteerById();
+        setUserProfileImage(volunteerData.profile_img?.url || defaultProfileImage);
+      } catch (err) {
+        console.error('Error fetching volunteer data:', err);
+        setError('Failed to load volunteer data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVolunteerData();
+  }, []);
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await uploadProfileImage(file);
+      setUserProfileImage(response.imageUrl);
+    } catch (err) {
+      setError(err.error || 'Failed to upload image. Please try again.');
+      console.error('Error uploading profile image:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderContent = () => {
     switch (currentPage) {
@@ -48,14 +85,11 @@ function VolunteerDashboard() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            <input
-              type="file"
-              className="hidden"
-              accept="image/*"
-              onChange={(event) => console.log(event.target.files[0])}
-            />
+            <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
           </label>
         </div>
+        {loading && <p className="text-center text-blue-500">Uploading...</p>}
+        {error && <p className="text-center text-red-500">{error}</p>}
         <p className="text-center text-xs mt-2 mb-10">Member since ...</p>
         <div className="w-full">
           <nav className="flex flex-col sm:m-10 lg:m-20">
