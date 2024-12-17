@@ -14,7 +14,7 @@ class VolunteerApplicationsController < ApplicationController
 
       render json: @volunteer_applications.as_json(include: :request)
     else
-      @volunteer_applications = VolunteerApplication.all
+      render json: VolunteerApplication.all
     end
   end
 
@@ -63,7 +63,8 @@ class VolunteerApplicationsController < ApplicationController
   end
 
   def set_organization
-    return if Organization.find_by(id: @volunteer_application.request.organization_id)
+    @organization = Organization.find_by(id: @volunteer_application.request.organization_id)
+    return if Organization
 
     render json: { error: 'Organization not found for this request.' }, status: :not_found
   end
