@@ -7,4 +7,6 @@ class Volunteer < ApplicationRecord
   has_many :requests, through: :volunteer_applications
 
   accepts_nested_attributes_for :addresses, allow_destroy: true
+
+  mount_uploader :profile_img, ImageUploader
 end
