@@ -14,7 +14,7 @@ class VolunteerApplicationsController < ApplicationController
 
       render json: @volunteer_applications.as_json(include: :request)
     else
-      @volunteer_applications = VolunteerApplication.all
+      render json: VolunteerApplication.all
     end
   end
 
