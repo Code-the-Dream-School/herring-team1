@@ -105,6 +105,26 @@ export const updateVolunteerById = async (updatedData) => {
   }
 };
 
+export const uploadProfileImage = async (imageFile) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const related_entity_id = user.related_entity_id;
+
+  const formData = new FormData();
+  formData.append('profile_img', imageFile);
+
+  try {
+    const response = await axios.post(`http://127.0.0.1:3000/volunteers/${related_entity_id}/upload_image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    throw error.response?.data || error.message;
+  }
+};
+
 export const searchOrganizations = async (zip_code, keyword, service) => {
   try {
     const params = {};
