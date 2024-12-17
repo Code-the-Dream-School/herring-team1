@@ -109,7 +109,17 @@ class VolunteersController < ApplicationController
     volunteer = current_auth.volunteer
 
     if volunteer
-      render json: volunteer.as_json(include: { address: {}, auth: { only: :email } }), status: :ok
+      render json: {
+        id: volunteer.id,
+        auth_id: volunteer.auth_id,
+        first_name: volunteer.first_name,
+        last_name: volunteer.last_name,
+        phone: volunteer.phone,
+        about: volunteer.about,
+        profile_img: volunteer.profile_img,
+        email: volunteer.auth.email,
+        address: volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+      }, status: :ok
     else
       render json: { message: 'You do not own an volunteer' }, status: :not_found
     end
