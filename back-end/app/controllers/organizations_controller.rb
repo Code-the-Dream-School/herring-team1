@@ -89,6 +89,7 @@ class OrganizationsController < ApplicationController
   end
 
   # UPDATE organization
+  # rubocop:disable Metrics/CyclomaticComplexity
   def update
     # update organization
     if @organization.update(organization_params)
@@ -146,6 +147,7 @@ class OrganizationsController < ApplicationController
       render json: { message: "Failed to update organization", errors: @organization.errors.full_messages }, status: :unprocessable_entity
     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   # DELETE organization
   def destroy
