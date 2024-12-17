@@ -6,13 +6,38 @@ class VolunteersController < ApplicationController
 
   # GET all volunteers
   def index
-    @volunteers = Volunteer.all
-    render json: @volunteers.as_json(include: { address: {} }), status: :ok
+    @volunteers = Volunteer.includes(:auth, :address)
+
+    render json: @volunteers.map { |volunteer|
+      {
+        id: volunteer.id,
+        auth_id: volunteer.auth_id,
+        first_name: volunteer.first_name,
+        last_name: volunteer.last_name,
+        phone: volunteer.phone,
+        about: volunteer.about,
+        profile_img: volunteer.profile_img,
+        email: volunteer.auth.email,
+        address: volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+      }
+    }, status: :ok
   end
 
   # GET one volunteer by ID
   def show
-    render json: @volunteer.as_json(include: { address: {}, auth: { only: :email } }), status: :ok
+    render json: {
+      volunteer: {
+        id: @volunteer.id,
+        auth_id: @volunteer.auth_id,
+        first_name: @volunteer.first_name,
+        last_name: @volunteer.last_name,
+        phone: @volunteer.phone,
+        about: @volunteer.about,
+        profile_img: @volunteer.profile_img,
+        email: @volunteer.auth.email,
+        address: @volunteer.address.as_json(only: [:id, :street, :city, :state, :zip_code])
+      }
+    }, status: :ok
   end
 
   # POST - create volunteer
@@ -22,8 +47,22 @@ class VolunteersController < ApplicationController
 
     if @volunteer.save
       # Create address
-      Address.create(address_params.merge(volunteer_id: @volunteer.id)) if params[:volunteer][:address].present?
-      render json: { message: "Volunteer created successfully", volunteer: @volunteer.as_json(include: { address: {}, auth: { only: :email } }) }, status: :created
+      address = Address.create(address_params.merge(volunteer_id: @volunteer.id)) if params[:volunteer][:address].present?
+
+      render json: {
+        message: "Volunteer created successfully",
+        volunteer: {
+          id: @volunteer.id,
+          auth_id: @volunteer.auth_id,
+          first_name: @volunteer.first_name,
+          last_name: @volunteer.last_name,
+          phone: @volunteer.phone,
+          about: @volunteer.about,
+          profile_img: @volunteer.profile_img,
+          email: @volunteer.auth.email,
+          address: address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+        }
+      }, status: :created
     else
       render json: { message: "Failed to create volunteer", errors: @volunteer.errors.full_messages }, status: :unprocessable_entity
     end
@@ -39,7 +78,18 @@ class VolunteersController < ApplicationController
           @volunteer.create_address(address_params)
         end
       end
-      render json: { message: "Volunteer updated successfully", volunteer: @volunteer.as_json(include: { address: {}, auth: { only: :email } }) }, status: :ok
+      render json: { message: "Volunteer updated successfully",
+                     volunteer: {
+                       id: @volunteer.id,
+                       auth_id: @volunteer.auth_id,
+                       first_name: @volunteer.first_name,
+                       last_name: @volunteer.last_name,
+                       phone: @volunteer.phone,
+                       about: @volunteer.about,
+                       profile_img: @volunteer.profile_img,
+                       email: @volunteer.auth.email,
+                       address: @volunteer.address.as_json(only: [:id, :street, :city, :state, :zip_code])
+                     } }, status: :ok
     else
       render json: { message: "Failed to update volunteer", errors: @volunteer.errors.full_messages }, status: :unprocessable_entity
     end

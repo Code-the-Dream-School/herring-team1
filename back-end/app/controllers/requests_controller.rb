@@ -10,7 +10,7 @@ class RequestsController < ApplicationController
   # GET /requests
   def index
     if params[:organization_id]
-      @requests = Request.where(organization: params[:organization_id])
+      @requests = Request.joins(:org_service).where(org_services: { organization_id: params[:organization_id] })
       if @requests.empty?
         render json: { error: 'No requests found for this organization' }, status: :not_found
         return
@@ -19,7 +19,18 @@ class RequestsController < ApplicationController
       @requests = Request.all
     end
 
-    render json: @requests, include: { org_service: { include: :service } }
+    render json: @requests.map { |request|
+      {
+        id: request.id,
+        title: request.title,
+        description: request.description,
+        org_service_id: request.org_service_id,
+        status: request.status,
+        service_id: request.org_service.service_id,
+        name: request.org_service.service.name,
+        organization_id: request.org_service.organization_id
+      }
+    }, status: :ok
   end
 
   # GET /requests/:id
@@ -29,7 +40,16 @@ class RequestsController < ApplicationController
     if @request.nil?
       render json: { error: 'Request not found' }, status: :not_found
     else
-      render json: @request, include: { org_service: { include: :service } }
+      render json: {
+        id: @request.id,
+        title: @request.title,
+        description: @request.description,
+        org_service_id: @request.org_service_id,
+        organization_id: @request.org_service.organization_id,
+        status: @request.status,
+        service_id: @request.org_service.service_id,
+        name: @request.org_service.service.name
+      }, status: :ok
     end
   end
 
@@ -47,7 +67,16 @@ class RequestsController < ApplicationController
     if @request.save
       render json: {
         message: "Request created successfully.",
-        request: @request.as_json(include: { org_service: { include: :service } })
+        request: {
+          id: @request.id,
+          title: @request.title,
+          description: @request.description,
+          org_service_id: @request.org_service_id,
+          status: @request.status,
+          service_id: @request.org_service.service_id,
+          name: @request.org_service.service.name,
+          organization_id: @request.org_service.organization_id
+        }
       }, status: :created
     else
       render json: { errors: @request.errors.full_messages }, status: :unprocessable_entity
@@ -66,7 +95,16 @@ class RequestsController < ApplicationController
     if @request.update(request_params)
       render json: {
         message: "Request updated successfully.",
-        request: @request.as_json(include: { org_service: { include: :service } })
+        request: {
+          id: @request.id,
+          title: @request.title,
+          description: @request.description,
+          org_service_id: @request.org_service_id,
+          status: @request.status,
+          service_id: @request.org_service.service_id,
+          name: @request.org_service.service.name,
+          organization_id: @request.org_service.organization_id
+        }
       }, status: :ok
     else
       render json: { errors: @request.errors.full_messages }, status: :unprocessable_entity

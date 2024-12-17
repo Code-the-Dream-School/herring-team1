@@ -8,20 +8,46 @@ class OrganizationsController < ApplicationController
 
   # GET all organizations
   def index
-    @organizations = Organization.all
-    render json: @organizations.as_json(include: {
-                                          org_services: { include: :service },
-                                          address: {}
-                                        }), status: :ok
+    @organizations = Organization.includes(:auth, :org_services, :address, org_services: :service)
+
+    render json: @organizations.map { |organization|
+      {
+        id: organization.id,
+        auth_id: organization.auth_id,
+        name: organization.name,
+        website: organization.website,
+        phone: organization.phone,
+        description: organization.description,
+        mission: organization.mission,
+        logo: organization.logo,
+        email: organization.auth.email,
+        org_services: organization.org_services.map do |org_service|
+          {
+            id: org_service.id,
+            service_id: org_service.service_id,
+            name: org_service.service.name
+          }
+        end,
+        address: organization.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+      }
+    }, status: :ok
   end
 
   # GET one organization
   def show
-    render json: @organization.as_json(include: {
-                                         org_services: { include: :service },
-                                         address: {},
-                                         auth: { only: :email }
-                                       }), status: :ok
+    render json: {
+      organization: @organization.as_json(only: [:id, :auth_id, :name, :website, :phone, :description, :mission, :logo]).merge(
+        email: @organization.auth.email,
+        org_services: @organization.org_services.map do |org_service|
+          {
+            id: org_service.id,
+            service_id: org_service.service_id,
+            name: org_service.service.name
+          }
+        end,
+        address: @organization.address.as_json(only: [:id, :street, :city, :state, :zip_code])
+      )
+    }, status: :ok
   end
 
   # POST - create organization
@@ -45,7 +71,17 @@ class OrganizationsController < ApplicationController
 
       render json: {
         message: "Organization created successfully.",
-        organization: @organization.as_json(include: { org_services: { include: :service }, address: {}, auth: { only: :email } })
+        organization: @organization.as_json(only: [:id, :auth_id, :name, :website, :phone, :description, :mission, :logo]).merge(
+          email: @organization.auth.email,
+          org_services: @organization.org_services.map do |org_service|
+            {
+              id: org_service.id,
+              service_id: org_service.service_id,
+              name: org_service.service.name
+            }
+          end,
+          address: @organization.address.as_json(only: [:id, :street, :city, :state, :zip_code])
+        )
       }, status: :created
     else
       render json: { message: "Failed to create organization", errors: @organization.errors.full_messages }, status: :unprocessable_entity
@@ -65,18 +101,21 @@ class OrganizationsController < ApplicationController
         end
       end
 
-      #  update OrgServices if present
+      # update OrgServices if present
       if params[:organization][:service_ids].present?
         current_service_ids = @organization.org_services.pluck(:service_id)
+
         # Find services that need to be removed (which exist, but are no longer in the new ones)
         services_to_remove = current_service_ids - params[:organization][:service_ids].map(&:to_i)
         # Find the services that need to be added (which are in the new ones, but not in the old ones)
         services_to_add = params[:organization][:service_ids].map(&:to_i) - current_service_ids
-        # Removing old connections
+
+        # Removing old connections (and requests related to those services)
         @organization.org_services.where(service_id: services_to_remove).each do |org_service|
           org_service.requests.destroy_all
           org_service.destroy
         end
+
         # Adding new connections
         services_to_add.each do |service_id|
           OrgService.create(organization: @organization, service_id: service_id)
@@ -91,7 +130,17 @@ class OrganizationsController < ApplicationController
 
       render json: {
         message: "Organization updated successfully.",
-        organization: @organization.as_json(include: { org_services: { include: :service }, address: {}, auth: { only: :email } })
+        organization: @organization.as_json(only: [:id, :auth_id, :name, :website, :phone, :description, :mission, :logo]).merge(
+          email: @organization.auth.email,
+          org_services: @organization.org_services.map do |org_service|
+            {
+              id: org_service.id,
+              service_id: org_service.service_id,
+              name: org_service.service.name
+            }
+          end,
+          address: @organization.address.as_json(only: [:id, :street, :city, :state, :zip_code])
+        )
       }, status: :ok
     else
       render json: { message: "Failed to update organization", errors: @organization.errors.full_messages }, status: :unprocessable_entity
@@ -115,14 +164,6 @@ class OrganizationsController < ApplicationController
     render json: { message: "Failed to delete organization", errors: e.message }, status: :unprocessable_entity
   end
 
-  # def destroy
-  #   if @organization.destroy
-  #     render json: { message: "Organization deleted successfully." }, status: :ok
-  #   else
-  #     render json: { error: "Failed to delete organization" }, status: :unprocessable_entity
-  #   end
-  # end
-
   # GET available services for a specific organization
   def available_services
     @organization = Organization.find(params[:id])
@@ -135,11 +176,19 @@ class OrganizationsController < ApplicationController
     organization = current_auth.organization
 
     if organization
-      render json: organization.as_json(include: {
-                                          org_services: { include: :service },
-                                          address: {},
-                                          auth: { only: :email }
-                                        }), status: :ok
+      render json: {
+        organization: organization.as_json(only: [:id, :auth_id, :name, :website, :phone, :description, :mission, :logo]).merge(
+          email: organization.auth.email,
+          org_services: organization.org_services.map do |org_service|
+            {
+              id: org_service.id,
+              service_id: org_service.service_id,
+              name: org_service.service.name
+            }
+          end,
+          address: organization.address.as_json(only: [:id, :street, :city, :state, :zip_code])
+        )
+      }, status: :ok
     else
       render json: { message: 'You do not own an organization' }, status: :not_found
     end
