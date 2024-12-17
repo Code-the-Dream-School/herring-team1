@@ -29,7 +29,7 @@ module SetCookiePartitionFlag
     set_header 'set-cookie', add_cookie_to_header(cookie_header, key, value)
   end
 
-  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+  # rubocop:disable Metrics/CyclomaticComplexity
   def add_cookie_to_header(header, key, value)
     case value
     when Hash

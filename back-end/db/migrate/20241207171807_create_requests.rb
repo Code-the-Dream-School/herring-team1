@@ -7,7 +7,7 @@ class CreateRequests < ActiveRecord::Migration[7.1]
       t.string :title
       t.string :description
       t.references :org_service, null: false, foreign_key: true
-      t.integer :request_status_id
+      t.string :status, default: 'open'
 
       t.timestamps
     end

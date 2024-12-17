@@ -1,24 +1,47 @@
 class VolunteersController < ApplicationController
+  include AuthenticationCheck
+
   before_action :find_volunteer, only: [:show, :update, :destroy]
   before_action :authorize_volunteer, only: [:update, :destroy]
 
   # GET all volunteers
   def index
-    @volunteers = Volunteer.includes(:addresses).all
-    render json: @volunteers.as_json(include: :addresses)
+    @volunteers = Volunteer.all
+    render json: @volunteers.as_json(include: { address: {} }), status: :ok
   end
 
-  # GET one volunteer
+  # GET one volunteer by ID
   def show
-    render json: @volunteer.as_json(include: :addresses)
+    render json: @volunteer.as_json(include: { address: {}, auth: { only: :email } }), status: :ok
+  end
+
+  # POST - create volunteer
+  def create
+    @volunteer = Volunteer.new(volunteer_params)
+    @volunteer.auth_id = current_auth.id
+
+    if @volunteer.save
+      # Create address
+      Address.create(address_params.merge(volunteer_id: @volunteer.id)) if params[:volunteer][:address].present?
+      render json: { message: "Volunteer created successfully", volunteer: @volunteer.as_json(include: { address: {}, auth: { only: :email } }) }, status: :created
+    else
+      render json: { message: "Failed to create volunteer", errors: @volunteer.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   # UPDATE volunteer
   def update
     if @volunteer.update(volunteer_params)
-      render json: { message: "Volunteer updated successfully", volunteer: @volunteer.as_json(include: :addresses) }, status: :ok
+      if params[:volunteer][:address].present?
+        if @volunteer.address.present?
+          @volunteer.address.update(address_params)
+        else
+          @volunteer.create_address(address_params)
+        end
+      end
+      render json: { message: "Volunteer updated successfully", volunteer: @volunteer.as_json(include: { address: {}, auth: { only: :email } }) }, status: :ok
     else
-      render json: { error: "Failed to update volunteer", details: @volunteer.errors.full_messages }, status: :unprocessable_entity
+      render json: { message: "Failed to update volunteer", errors: @volunteer.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -27,7 +50,18 @@ class VolunteersController < ApplicationController
     if @volunteer.destroy
       render json: { message: "Volunteer deleted successfully" }, status: :ok
     else
-      render json: { error: "Failed to delete volunteer" }, status: :unprocessable_entity
+      render json: { message: "Failed to delete volunteer", errors: @volunteer.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  # GET my volunteer
+  def my_volunteer
+    volunteer = current_auth.volunteer
+
+    if volunteer
+      render json: volunteer.as_json(include: { address: {}, auth: { only: :email } }), status: :ok
+    else
+      render json: { message: 'You do not own an volunteer' }, status: :not_found
     end
   end
 
@@ -37,18 +71,22 @@ class VolunteersController < ApplicationController
   def authorize_volunteer
     return if @volunteer.auth_id == current_auth.id
 
-    render json: { error: "You are not authorized to perform this action" }, status: :forbidden
+    render json: { message: "You are not authorized to perform this action" }, status: :forbidden
   end
 
   # Find volunteer by ID
   def find_volunteer
     @volunteer = Volunteer.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render json: { error: "Volunteer not found" }, status: :not_found
+    render json: { message: "Volunteer not found" }, status: :not_found
   end
 
   # Params for update
   def volunteer_params
-    params.require(:volunteer).permit(:first_name, :last_name, :email, :about, :services, :profile_img, addresses_attributes: [:id, :address, :city, :state, :zip_code, :_destroy])
+    params.require(:volunteer).permit(:first_name, :last_name, :phone, :about, :profile_img)
+  end
+
+  def address_params
+    params.require(:volunteer).require(:address).permit(:street, :city, :state, :zip_code)
   end
 end

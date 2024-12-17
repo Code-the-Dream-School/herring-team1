@@ -20,10 +20,3 @@ Service.create([
                  { name: 'Arts&Culture' },
                  { name: 'Health&Medicine' }
                ])
-
-RequestStatus.create([
-                       { request_status_name: 'open' },
-                       { request_status_name: 'in-progress' },
-                       { request_status_name: 'closed' },
-                       { request_status_name: 'canceled' }
-                     ])

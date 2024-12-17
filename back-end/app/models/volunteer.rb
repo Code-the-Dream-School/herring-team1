@@ -1,8 +1,9 @@
 class Volunteer < ApplicationRecord
+  belongs_to :auth, foreign_key: 'auth_id'
+  has_one :address, dependent: :destroy
+
   validates :auth_id, presence: true, uniqueness: true
-  validates :email, presence: true, uniqueness: true
+  validates :first_name, :last_name, :phone, :about, :profile_img, presence: true
 
-  has_many :addresses, as: :addressable, dependent: :destroy
-
-  accepts_nested_attributes_for :addresses, allow_destroy: true
+  validates :phone, format: { with: /\A\+?\d{10,15}\z/, message: "must be a valid phone number" }
 end

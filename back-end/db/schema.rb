@@ -10,10 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_10_012919) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
+ActiveRecord::Schema[7.1].define(version: 2024_12_16_224628) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -43,15 +40,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_10_012919) do
   end
 
   create_table "addresses", force: :cascade do |t|
-    t.string "address", null: false
-    t.string "city", null: false
-    t.string "state", null: false
-    t.string "zip_code", null: false
-    t.string "addressable_type", null: false
-    t.bigint "addressable_id", null: false
+    t.string "street"
+    t.string "city"
+    t.string "state"
+    t.string "zip_code"
+    t.integer "volunteer_id"
+    t.integer "organization_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
+    t.index ["organization_id"], name: "index_addresses_on_organization_id"
+    t.index ["volunteer_id"], name: "index_addresses_on_volunteer_id"
   end
 
   create_table "auths", force: :cascade do |t|
@@ -62,14 +60,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_10_012919) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "isOrganization", default: false, null: false
+    t.boolean "isOrganization"
     t.index ["email"], name: "index_auths_on_email", unique: true
     t.index ["reset_password_token"], name: "index_auths_on_reset_password_token", unique: true
   end
 
   create_table "org_services", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.bigint "service_id", null: false
+    t.integer "organization_id", null: false
+    t.integer "service_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_org_services_on_organization_id"
@@ -77,34 +75,26 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_10_012919) do
   end
 
   create_table "organizations", force: :cascade do |t|
-    t.integer "auth_id"
-    t.string "name", limit: 150
+    t.integer "auth_id", null: false
+    t.string "name", limit: 150, null: false
     t.string "website", limit: 100
     t.string "phone", limit: 15
     t.string "description", limit: 255
     t.string "mission", limit: 255
+    t.string "logo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "email"
     t.index ["auth_id"], name: "index_organizations_on_auth_id"
-  end
-
-  create_table "request_statuses", force: :cascade do |t|
-    t.string "request_status_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "requests", force: :cascade do |t|
     t.string "title"
     t.string "description"
-    t.bigint "org_service_id", null: false
-    t.integer "request_status_id"
+    t.integer "org_service_id", null: false
+    t.string "status", default: "open"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "organization_id", null: false
     t.index ["org_service_id"], name: "index_requests_on_org_service_id"
-    t.index ["organization_id"], name: "index_requests_on_organization_id"
   end
 
   create_table "services", force: :cascade do |t|
@@ -114,23 +104,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_10_012919) do
   end
 
   create_table "volunteers", force: :cascade do |t|
-    t.integer "auth_id"
+    t.integer "auth_id", null: false
     t.string "first_name"
     t.string "last_name"
-    t.string "profile_img"
     t.string "phone"
-    t.string "email"
     t.text "about"
-    t.text "services"
+    t.string "profile_img"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["auth_id"], name: "index_volunteers_on_auth_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "addresses", "organizations"
+  add_foreign_key "addresses", "volunteers"
   add_foreign_key "org_services", "organizations"
   add_foreign_key "org_services", "services"
   add_foreign_key "organizations", "auths"
   add_foreign_key "requests", "org_services"
-  add_foreign_key "requests", "organizations"
+  add_foreign_key "volunteers", "auths"
 end

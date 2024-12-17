@@ -1,5 +1,4 @@
 # OrganizationsController handles the CRUD operations for organizations.
-# rubocop:disable Metrics/AbcSize
 class OrganizationsController < ApplicationController
   include AuthenticationCheck
 
@@ -9,60 +8,120 @@ class OrganizationsController < ApplicationController
 
   # GET all organizations
   def index
-    @organizations = Organization.includes(:addresses).all
-    render json: @organizations.as_json(include: [:addresses, :org_services])
+    @organizations = Organization.all
+    render json: @organizations.as_json(include: {
+                                          org_services: { include: :service },
+                                          address: {}
+                                        }), status: :ok
   end
 
   # GET one organization
   def show
-    render json: @organization.as_json(include: [:addresses, :org_services])
+    render json: @organization.as_json(include: {
+                                         org_services: { include: :service },
+                                         address: {},
+                                         auth: { only: :email }
+                                       }), status: :ok
   end
 
   # POST - create organization
-  # def create
-  #   @organization = Organization.new(organization_params.except(:service_ids))
+  def create
+    # reate organization
+    @organization = Organization.new(organization_params)
+    @organization.auth_id = current_auth.id
+    # create address
 
-  #   if @organization.save
-  #     if params[:organization][:service_ids].present?
-  #       params[:organization][:service_ids].map do |service_id|
-  #         OrgService.create(organization: @organization, service_id: service_id)
-  #       end
-  #     end
+    if @organization.save
+      # Add services if exist
+      if params[:organization][:service_ids].present?
+        service_ids = params[:organization][:service_ids]
+        service_ids.each do |service_id|
+          OrgService.create(organization: @organization, service_id: service_id)
+        end
+      end
 
-  #     render json: @organization.as_json(include: { org_services: { include: :service } }), status: :created
-  #   else
-  #     render json: { errors: @organization.errors.full_messages }, status: :unprocessable_entity
-  #   end
-  # end
+      # Create address
+      Address.create(address_params.merge(organization_id: @organization.id)) if params[:organization][:address].present?
+
+      render json: {
+        message: "Organization created successfully.",
+        organization: @organization.as_json(include: { org_services: { include: :service }, address: {}, auth: { only: :email } })
+      }, status: :created
+    else
+      render json: { message: "Failed to create organization", errors: @organization.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
 
   # UPDATE organization
   def update
-    if @organization.update(organization_params.except(:service_ids))
-      current_service_ids = @organization.org_services.pluck(:service_id)
-      service_ids_to_add = params[:organization][:service_ids] - current_service_ids
-      service_ids_to_remove = current_service_ids - params[:organization][:service_ids]
-
-      service_ids_to_add.each do |service_id|
-        OrgService.create(organization: @organization, service_id: service_id)
+    # update organization
+    if @organization.update(organization_params)
+      # update address if present
+      if params[:organization][:address].present?
+        if @organization.address.present?
+          @organization.address.update(address_params)
+        else
+          @organization.create_address(address_params)
+        end
       end
 
-      @organization.org_services.where(service_id: service_ids_to_remove).destroy_all
+      #  update OrgServices if present
+      if params[:organization][:service_ids].present?
+        current_service_ids = @organization.org_services.pluck(:service_id)
+        # Find services that need to be removed (which exist, but are no longer in the new ones)
+        services_to_remove = current_service_ids - params[:organization][:service_ids].map(&:to_i)
+        # Find the services that need to be added (which are in the new ones, but not in the old ones)
+        services_to_add = params[:organization][:service_ids].map(&:to_i) - current_service_ids
+        # Removing old connections
+        @organization.org_services.where(service_id: services_to_remove).each do |org_service|
+          org_service.requests.destroy_all
+          org_service.destroy
+        end
+        # Adding new connections
+        services_to_add.each do |service_id|
+          OrgService.create(organization: @organization, service_id: service_id)
+        end
+      elsif params[:organization][:service_ids].empty?
+        # If no services are selected, remove all existing connections and their associated requests
+        @organization.org_services.each do |org_service|
+          org_service.requests.destroy_all
+          org_service.destroy
+        end
+      end
 
-      @organization.reload
-      render json: @organization.as_json(include: { org_services: { include: :service } }), status: :ok
+      render json: {
+        message: "Organization updated successfully.",
+        organization: @organization.as_json(include: { org_services: { include: :service }, address: {}, auth: { only: :email } })
+      }, status: :ok
     else
-      render json: { errors: @organization.errors.full_messages }, status: :unprocessable_entity
+      render json: { message: "Failed to update organization", errors: @organization.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   # DELETE organization
   def destroy
-    if @organization.destroy
+    ActiveRecord::Base.transaction do
+      @organization.org_services.each do |org_service|
+        Request.where(org_service_id: org_service.id).destroy_all
+      end
+
+      @organization.org_services.destroy_all
+
+      @organization.destroy!
+
       render json: { message: "Organization deleted successfully." }, status: :ok
-    else
-      render json: { error: "Failed to delete organization" }, status: :unprocessable_entity
     end
+  rescue StandardError => e
+    render json: { message: "Failed to delete organization", errors: e.message }, status: :unprocessable_entity
   end
+
+  # def destroy
+  #   if @organization.destroy
+  #     render json: { message: "Organization deleted successfully." }, status: :ok
+  #   else
+  #     render json: { error: "Failed to delete organization" }, status: :unprocessable_entity
+  #   end
+  # end
 
   # GET available services for a specific organization
   def available_services
@@ -72,27 +131,43 @@ class OrganizationsController < ApplicationController
     render json: available_services
   end
 
+  def my_organization
+    organization = current_auth.organization
+
+    if organization
+      render json: organization.as_json(include: {
+                                          org_services: { include: :service },
+                                          address: {},
+                                          auth: { only: :email }
+                                        }), status: :ok
+    else
+      render json: { message: 'You do not own an organization' }, status: :not_found
+    end
+  end
+
   private
 
   # Set the organization for show, edit, update, and destroy actions
   def set_organization
-    @organization = Organization.includes(:addresses).find(params[:id])
+    @organization = Organization.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { message: 'Organization not found' }, status: :not_found
   end
 
   # Authorize organization actions
   def authorize_organization
     return if @organization.auth_id == current_auth.id
 
-    render json: { error: "You are not authorized to perform this action" }, status: :forbidden
+    render json: { message: "You are not authorized to perform this action" }, status: :forbidden
   end
 
-  # Permit the necessary parameters, including nested addresses
+  # Permit the necessary parameters
   def organization_params
-    params.require(:organization).permit(
-      :auth_id, :name, :website, :phone, :description, :mission, :logo, :email,
-      addresses_attributes: [:id, :address, :city, :state, :zip_code, :_destroy],
-      service_ids: []
-    )
+    params.require(:organization).permit(:name, :website, :phone, :description, :mission, :logo)
+  end
+
+  def address_params
+    params.require(:organization).require(:address).permit(:street, :city, :state, :zip_code)
   end
 end
 # rubocop:enable Metrics/AbcSize
