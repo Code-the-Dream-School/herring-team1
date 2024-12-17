@@ -13,4 +13,5 @@ class Organization < ApplicationRecord
   validates :phone, presence: true
   validates :description, presence: true
   validates :mission, presence: true
+  validates :phone, format: { with: /\A\+?\d{10,15}\z/, message: "must be a valid phone number" }
 end

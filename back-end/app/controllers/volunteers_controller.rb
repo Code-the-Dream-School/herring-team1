@@ -115,6 +115,19 @@ class VolunteersController < ApplicationController
     end
   end
 
+  def upload_image
+    @volunteer = find_volunteer
+    return render_not_found unless @volunteer
+
+    if params[:profile_img].present?
+      process_image_upload
+    else
+      render json: { error: 'No image file provided' }, status: :unprocessable_entity
+    end
+  rescue Cloudinary::CarrierWave::UploadError => e
+    handle_upload_error(e)
+  end
+
   private
 
   # Authorize volunteer actions
@@ -129,6 +142,23 @@ class VolunteersController < ApplicationController
     @volunteer = Volunteer.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render json: { message: "Volunteer not found" }, status: :not_found
+  end
+
+  def process_image_upload
+    Rails.logger.info "Uploading for Volunteer ID: #{@volunteer.id}"
+    Rails.logger.info "Profile Image: #{params[:profile_img].inspect}"
+
+    @volunteer.profile_img = params[:profile_img]
+    if @volunteer.save
+      render json: { imageUrl: @volunteer.profile_img.url }, status: :ok
+    else
+      render json: { error: @volunteer.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def handle_upload_error(error)
+    Rails.logger.error "Cloudinary error: #{error.message}"
+    render json: { error: "Cloudinary error: #{error.message}" }, status: :unprocessable_entity
   end
 
   # Params for update

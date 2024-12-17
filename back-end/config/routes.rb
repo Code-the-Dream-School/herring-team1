@@ -16,8 +16,13 @@ Rails.application.routes.draw do
 
   resources :volunteers, only: [:index, :show, :create, :update, :destroy] do
     get '/my_volunteer', to: 'volunteers#my_volunteer', on: :collection
+    member do
+      post :upload_image
+    end
+    resources :volunteer_applications, only: [:index, :show, :create, :update, :destroy]
   end
 
+  resources :volunteer_applications, only: [:index, :show, :create, :update, :destroy]
   resources :requests, only: [:index, :show]
 
   # Universal search

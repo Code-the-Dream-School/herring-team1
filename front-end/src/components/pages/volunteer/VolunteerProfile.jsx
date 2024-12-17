@@ -1,98 +1,109 @@
-import { useState } from 'react';
-
-import VolunteerProfileEditForm from './VolunteerProfileEditForm.jsx';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getVolunteerById } from '../../../utils/apiReqests';
 
 function VolunteerProfile() {
-  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    firstName: 'Joe',
-    lastName: 'Williams',
-    address: '123 Main St',
-    city: 'New York',
-    state: 'NY',
-    zipCode: '10001',
-    phone: '123-456-7890',
-    email: 'joe.williams@example.com',
-    about: 'Volunteer with 5 years of experience.',
-    skills: 'Teamwork, Communication, Leadership',
-  });
+  useEffect(() => {
+    const fetchVolunteerData = async () => {
+      try {
+        const volunteerData = await getVolunteerById();
+        const latestAddress = volunteerData.addresses?.[volunteerData.addresses.length - 1] || {};
+        setFormData({
+          firstName: volunteerData.first_name || '',
+          lastName: volunteerData.last_name || '',
+          email: volunteerData.email || '',
+          phone: volunteerData.phone || '',
+          address: latestAddress.address || '',
+          city: latestAddress.city || '',
+          state: latestAddress.state || '',
+          zipCode: latestAddress.zip_code || '',
+          about: volunteerData.about || '',
+        });
+      } catch (err) {
+        console.error('Error fetching volunteer data:', err);
+        setError('Failed to load volunteer data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const [originalData, setOriginalData] = useState(formData);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleCancel = () => {
-    setFormData(originalData);
-    setIsEditing(false);
-  };
+    fetchVolunteerData();
+  }, []);
 
   const handleEdit = () => {
-    setOriginalData(formData);
-    setIsEditing(true);
+    navigate('/edit_volunteer');
   };
 
-  const handleDelete = () => {
-    console.info('Delete your profile.');
-  };
+  // const handleDelete = () => {
+  //   console.info('Delete profile functionality to be implemented.');
+  // };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+
   return (
     <div className="p-14">
-      {isEditing ? (
-        <VolunteerProfileEditForm formData={formData} handleInputChange={handleInputChange} />
-      ) : (
-        <div className="md:mt-6">
-          <label className="block text-sm font-bold">Name</label>
-          <p>
-            {formData.firstName} {formData.lastName}
-          </p>
-          <label className="block text-sm font-bold">Address</label>
-          <p>
-            {formData.address}, {formData.city}, {formData.state}, {formData.zipCode}{' '}
-          </p>
-          <label className="block text-sm font-bold">About</label>
-          <p>{formData.about}</p>
-          <label className="block text-sm font-bold">Skills</label>
-          <p>{formData.skills}</p>
-        </div>
-      )}
-      <div className="mt-6 flex space-x-4 xs:justify-center md:justify-start">
-        {isEditing ? (
+      <div className="md:mt-6">
+        {(formData.firstName || formData.lastName) && (
           <>
-            <button
-              onClick={() => setIsEditing(false)}
-              className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
-            >
-              Save
-            </button>
-            <button
-              onClick={handleCancel}
-              className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg"
-            >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={handleEdit}
-              className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
-            >
-              Edit
-            </button>
-            <button
-              onClick={handleDelete}
-              className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg"
-            >
-              Detele
-            </button>
+            <label className="block text-sm font-bold">Name</label>
+            <p>
+              {formData.firstName} {formData.lastName}
+            </p>
           </>
         )}
+
+        {formData.email && (
+          <>
+            <label className="block text-sm font-bold">Email</label>
+            <p>{formData.email}</p>
+          </>
+        )}
+
+        {formData.phone && (
+          <>
+            <label className="block text-sm font-bold">Phone</label>
+            <p>{formData.phone}</p>
+          </>
+        )}
+
+        {(formData.address || formData.city || formData.state || formData.zipCode) && (
+          <>
+            <label className="block text-sm font-bold">Address</label>
+            <p>
+              {formData.address && `${formData.address}, `}
+              {formData.city && `${formData.city}, `}
+              {formData.state && `${formData.state}, `}
+              {formData.zipCode}
+            </p>
+          </>
+        )}
+
+        {formData.about && (
+          <>
+            <label className="block text-sm font-bold">About</label>
+            <p>{formData.about}</p>
+          </>
+        )}
+      </div>
+      <div className="mt-6 flex space-x-4 xs:justify-center md:justify-start">
+        <button
+          onClick={handleEdit}
+          className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
+        >
+          Edit
+        </button>
+        {/* <button
+          onClick={handleDelete}
+          className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg"
+        >
+          Delete
+        </button> */}
       </div>
     </div>
   );
