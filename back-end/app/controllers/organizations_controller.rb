@@ -3,6 +3,7 @@ class OrganizationsController < ApplicationController
   include AuthenticationCheck
 
   before_action :is_auth_logged_in, except: [:index, :show]
+  before_action :ensure_is_organization, only: [:create]
   before_action :set_organization, only: %i[show update destroy]
   before_action :authorize_organization, only: [:update, :destroy]
 
@@ -210,6 +211,13 @@ class OrganizationsController < ApplicationController
     return if @organization.auth_id == current_auth.id
 
     render json: { message: "You are not authorized to perform this action" }, status: :forbidden
+  end
+
+  # Check isOrganization == true
+  def ensure_is_organization
+    return if current_auth.isOrganization
+
+    render json: { message: 'You register your account as volunteer, you can not create organization' }, status: :forbidden
   end
 
   # Permit the necessary parameters

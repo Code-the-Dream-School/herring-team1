@@ -7,4 +7,4 @@ module AuthenticationCheck
           status: :unauthorized
       end
     end
-  end
+end

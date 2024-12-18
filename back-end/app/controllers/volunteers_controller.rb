@@ -1,6 +1,8 @@
 class VolunteersController < ApplicationController
   include AuthenticationCheck
 
+  before_action :is_auth_logged_in
+  before_action :ensure_is_volunteer, only: [:create]
   before_action :find_volunteer, only: [:show, :update, :destroy]
   before_action :authorize_volunteer, only: [:update, :destroy]
 
@@ -169,6 +171,13 @@ class VolunteersController < ApplicationController
   def handle_upload_error(error)
     Rails.logger.error "Cloudinary error: #{error.message}"
     render json: { error: "Cloudinary error: #{error.message}" }, status: :unprocessable_entity
+  end
+
+  # Check isOrganization == false
+  def ensure_is_volunteer
+    return unless current_auth.isOrganization
+
+    render json: { message: 'You register your account as organization, you can not create volunteer' }, status: :forbidden
   end
 
   # Params for update
