@@ -8,6 +8,7 @@ class CreateOrganizations < ActiveRecord::Migration[7.1]
       t.string :phone, limit: 15
       t.string :description, limit: 255
       t.string :mission, limit: 255
+      t.string :logo
 
       t.timestamps
     end

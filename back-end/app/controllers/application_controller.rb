@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
         headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD'
         headers['Access-Control-Allow-Headers'] = 'Origin, Content-Type, Accept, Authorization, X-Requested-With'
         headers['Access-Control-Allow-Credentials'] = 'true'
-      end
+    end
 
   private
 

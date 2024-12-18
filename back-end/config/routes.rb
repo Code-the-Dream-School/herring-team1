@@ -6,21 +6,23 @@ Rails.application.routes.draw do
                registrations: 'auth/registrations'
              }
 
-  resources :organizations do
+  resources :organizations, only: [:index, :show, :create, :update, :destroy] do
     member do
       get :available_services
     end
+    get '/my_organization', to: 'organizations#my_organization', on: :collection
     resources :requests, only: [:index, :show, :create, :update, :destroy]
   end
 
-  resources :volunteers, only: [:index, :show, :update, :destroy] do
+  resources :volunteers, only: [:index, :show, :create, :update, :destroy] do
+    get '/my_volunteer', to: 'volunteers#my_volunteer', on: :collection
     member do
       post :upload_image
     end
     resources :volunteer_applications, only: [:index, :show, :create, :update, :destroy]
   end
+
   resources :volunteer_applications, only: [:index, :show, :create, :update, :destroy]
-  resources :addresses, only: [:index, :show, :create, :update, :destroy]
   resources :requests, only: [:index, :show]
 
   # Universal search

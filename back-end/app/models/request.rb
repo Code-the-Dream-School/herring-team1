@@ -3,8 +3,8 @@
 
 class Request < ApplicationRecord
   belongs_to :org_service
-  belongs_to :request_status
-  belongs_to :organization
 
-  validates :title, :description, :org_service_id, :request_status_id, presence: true
+  enum status: { open: 'open', in_progress: 'in-progress', closed: 'closed', canceled: 'canceled' }
+
+  validates :title, :description, :org_service_id, presence: true
 end

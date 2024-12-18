@@ -1,12 +1,12 @@
 class Volunteer < ApplicationRecord
-  validates :auth_id, presence: true, uniqueness: true
-  validates :email, presence: true, uniqueness: true
-
-  has_many :addresses, as: :addressable, dependent: :destroy
+  belongs_to :auth, foreign_key: 'auth_id'
+  has_one :address, dependent: :destroy
   has_many :volunteer_applications
   has_many :requests, through: :volunteer_applications
 
-  accepts_nested_attributes_for :addresses, allow_destroy: true
+  validates :auth_id, presence: true, uniqueness: true
+  validates :first_name, :last_name, :phone, :about, presence: true
+  validates :phone, format: { with: /\A\+?\d{10,15}\z/, message: "must be a valid phone number" }
 
   mount_uploader :profile_img, ImageUploader
 end
