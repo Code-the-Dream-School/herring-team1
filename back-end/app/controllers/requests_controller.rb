@@ -10,7 +10,7 @@ class RequestsController < ApplicationController
   # GET /requests
   def index
     if params[:organization_id]
-      @requests = Request.where(organization: params[:organization_id])
+      @requests = Request.joins(:org_service).where(org_services: { organization_id: params[:organization_id] })
       if @requests.empty?
         render json: { error: 'No requests found for this organization' }, status: :not_found
         return
@@ -19,17 +19,38 @@ class RequestsController < ApplicationController
       @requests = Request.all
     end
 
-    render json: @requests, include: { org_service: { include: :service }, request_status: {} }
+    render json: @requests.map { |request|
+      {
+        id: request.id,
+        title: request.title,
+        description: request.description,
+        org_service_id: request.org_service_id,
+        status: request.status,
+        service_id: request.org_service.service_id,
+        name: request.org_service.service.name,
+        organization_id: request.org_service.organization_id
+      }
+    }, status: :ok
   end
 
   # GET /requests/:id
   def show
-    @request = if @organization
-                 @organization.requests.find(params[:id])
-               else
-                 Request.find_by(id: params[:id])
-               end
-    render json: @request, include: { org_service: { include: :service }, request_status: {} }
+    @request = Request.find_by(id: params[:id])
+
+    if @request.nil?
+      render json: { error: 'Request not found' }, status: :not_found
+    else
+      render json: {
+        id: @request.id,
+        title: @request.title,
+        description: @request.description,
+        org_service_id: @request.org_service_id,
+        organization_id: @request.org_service.organization_id,
+        status: @request.status,
+        service_id: @request.org_service.service_id,
+        name: @request.org_service.service.name
+      }, status: :ok
+    end
   end
 
   # POST /organizations/:id/requests
@@ -41,10 +62,22 @@ class RequestsController < ApplicationController
       return
     end
 
-    @request = @organization.requests.new(request_params.merge(request_status_id: default_status.id))
+    @request = @org_service.requests.new(request_params)
 
     if @request.save
-      render json: @request, status: :created, include: { org_service: { include: :service }, request_status: {} }
+      render json: {
+        message: "Request created successfully.",
+        request: {
+          id: @request.id,
+          title: @request.title,
+          description: @request.description,
+          org_service_id: @request.org_service_id,
+          status: @request.status,
+          service_id: @request.org_service.service_id,
+          name: @request.org_service.service.name,
+          organization_id: @request.org_service.organization_id
+        }
+      }, status: :created
     else
       render json: { errors: @request.errors.full_messages }, status: :unprocessable_entity
     end
@@ -52,8 +85,27 @@ class RequestsController < ApplicationController
 
   # PUT/PATCH  /organizations/:id/requests/:id
   def update
+    @org_service = @request.org_service
+
+    if @org_service.organization_id != @organization.id
+      render json: { error: 'Invalid service for this organization' }, status: :unprocessable_entity
+      return
+    end
+
     if @request.update(request_params)
-      render json: @request, status: :ok, include: { org_service: { include: :service }, request_status: {} }
+      render json: {
+        message: "Request updated successfully.",
+        request: {
+          id: @request.id,
+          title: @request.title,
+          description: @request.description,
+          org_service_id: @request.org_service_id,
+          status: @request.status,
+          service_id: @request.org_service.service_id,
+          name: @request.org_service.service.name,
+          organization_id: @request.org_service.organization_id
+        }
+      }, status: :ok
     else
       render json: { errors: @request.errors.full_messages }, status: :unprocessable_entity
     end
@@ -84,16 +136,12 @@ class RequestsController < ApplicationController
   end
 
   def authorize_request_owner
-    return if @request.organization_id == @organization&.id
+    return if @request.org_service.organization_id == @organization&.id
 
     render json: { error: 'Request does not belong to this organization' }, status: :forbidden
   end
 
-  def default_status
-    @default_status ||= RequestStatus.find_by(request_status_name: 'open')
-  end
-
   def request_params
-    params.require(:request).permit(:title, :description, :org_service_id, :organization_id)
+    params.require(:request).permit(:title, :description, :status, :org_service_id)
   end
 end
