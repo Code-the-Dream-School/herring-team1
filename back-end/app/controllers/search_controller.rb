@@ -5,26 +5,29 @@ class SearchController < ApplicationController
       return render_error('At least one search parameter is required', :bad_request)
     end
 
-   # Получаем все организации с сервисами
-  organizations = Organization.includes(:services)  # Предзагрузка сервисов для каждой организации
+    # Получаем все организации с сервисами
+    organizations = Organization.includes(:services) # Предзагрузка сервисов для каждой организации
 
-  # Смотрим, сколько организаций до фильтрации
-  puts "Total organizations before filtering: #{organizations.count}"
+    # Смотрим, сколько организаций до фильтрации
+    puts "Total organizations before filtering: #{organizations.count}"
 
-  organizations = filter_by_zip_code(organizations) if params[:zip_code].present?
-  organizations = filter_by_keyword(organizations) if params[:keyword].present?
-  organizations = filter_by_service(organizations) if params[:service].present?
+    organizations = filter_by_zip_code(organizations) if params[:zip_code].present?
+    organizations = filter_by_keyword(organizations) if params[:keyword].present?
+    organizations = filter_by_service(organizations) if params[:service].present?
 
-  # Смотрим, сколько организаций после фильтрации
-  puts "Total organizations after filtering: #{organizations.count}"
+    # Смотрим, сколько организаций после фильтрации
+    puts "Total organizations after filtering: #{organizations.count}"
 
-  # Если ничего не найдено, отправляем сообщение об ошибке
-  if organizations.empty?
-    render_error('No search results found', :not_found)
-  else
-    render_organizations(organizations.distinct)
+    # Применяем пагинацию
+    paginated_organizations = organizations.distinct.page(params[:page]).per(params[:per_page] || 6)
+
+    # Если ничего не найдено, отправляем сообщение об ошибке
+    if paginated_organizations.empty?
+      render_error('No search results found', :not_found)
+    else
+      render_organizations(paginated_organizations)
+    end
   end
-end
 
   private
 
@@ -71,14 +74,19 @@ end
 
   # Фильтрация организаций по сервису
   def filter_by_service(organizations)
-    service_name = "%#{params[:service]}%"
-    service_ids = Service.where('name ILIKE ?', service_name).pluck(:id)
+    service_name = "%#{params[:service].downcase}%"
+    service_ids = Service.where('LOWER(name) LIKE ?', service_name).pluck(:id)
     organizations.joins(:org_services).where(org_services: { service_id: service_ids })
   end
 
   # Форматирование ответа с организациями
   def render_organizations(organizations)
-    render json: organizations.map { |org| format_organization(org) }
+    render json: {
+      current_page: organizations.current_page,
+      total_pages: organizations.total_pages,
+      total_count: organizations.total_count,
+      organizations: organizations.map { |org| format_organization(org) }
+    }
   end
 
   # Форматирование организации для вывода
@@ -91,11 +99,6 @@ end
       request: org.description,
       services: services.join(', ')  # Возвращаем имена сервисов
     }
-  end
-
-  # Форматирование адреса
-  def format_address(address)
-    "#{address.street}, #{address.city}, #{address.state}, #{address.zip_code}"
   end
 
   # Возвращаем ошибку в случае неправильного запроса
