@@ -14,18 +14,20 @@ function Request() {
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchRequests()
-      .then(async (response) => {
-        const orgId = await getOrganizationId(user.id);
-        const filteredRequests = response.data.filter((request) => request.organization_id === orgId);
-        setRequests(filteredRequests);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching requests:', error);
-        setError(error);
-        setLoading(false);
-      });
+    if (user?.id) {
+      fetchRequests()
+        .then(async (response) => {
+          const orgId = await getOrganizationId(user.id);
+          const filteredRequests = response.data.filter((request) => request.organization_id === orgId);
+          setRequests(filteredRequests);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching requests:', error);
+          setError(error);
+          setLoading(false);
+        });
+    }
   }, [user.id]);
 
   const handleSaveRequest = (newRequest) => {
