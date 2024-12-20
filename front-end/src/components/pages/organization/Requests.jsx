@@ -12,12 +12,11 @@ function Request() {
   const [error, setError] = useState(null);
 
   const { user } = useAuth();
-  const authId = user.id;
 
   useEffect(() => {
     fetchRequests()
       .then(async (response) => {
-        const orgId = await getOrganizationId(authId);
+        const orgId = await getOrganizationId(user.id);
         const filteredRequests = response.data.filter((request) => request.organization_id === orgId);
         setRequests(filteredRequests);
         setLoading(false);
@@ -27,7 +26,7 @@ function Request() {
         setError(error);
         setLoading(false);
       });
-  }, []);
+  }, [user.id]);
 
   const handleSaveRequest = (newRequest) => {
     if (editingIndex !== null) {
