@@ -134,9 +134,31 @@ export const searchOrganizations = async (zip_code, keyword, service) => {
     if (keyword) params.keyword = keyword;
     if (service) params.service = service;
 
-    const response = await axios.get(`${API_BASE_URL}/search`, { params });
+    const response = await axios.get(`${API_BASE_URL}search`, { params });
 
     return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const getOrganizationId = async (authId) => {
+  try {
+    const response = await fetchOrganizations(authId);
+    const organization = response.data.find((org) => org.auth_id === authId);
+    if (organization) {
+      return organization.id;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching organizations:', error);
+    return null;
+  }
+};
+
+export const fetchRequests = async () => {
+  try {
+    return await axios.get(`${API_BASE_URL}requests`, {});
   } catch (error) {
     throw error.response.data;
   }

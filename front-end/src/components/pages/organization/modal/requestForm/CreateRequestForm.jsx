@@ -8,7 +8,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
     service: '',
     request: '',
     description: '',
-    status: 'Select status',
+    status: 'Open',
   });
 
   const [errors, setErrors] = useState({});
@@ -30,9 +30,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
   let validationSchema = Yup.object({
     service: Yup.string().required('Service is required.'),
     request: Yup.string().required('Request is required.'),
-    status: Yup.string()
-      .required('Status is required. Please select a valid status.')
-      .notOneOf(['Select status'], 'Please select a valid status.'),
+    status: Yup.string(),
   });
 
   const handleSubmit = async (event) => {
@@ -50,7 +48,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
         service: '',
         request: '',
         description: '',
-        status: 'Select status',
+        status: 'Open',
       });
     } catch (error) {
       console.warn('Error while submitting form:', error);
@@ -73,7 +71,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
         <InputWithLabel
           id="service"
           name="service"
-          value={formData.service}
+          value={formData.name}
           onChange={handleChange}
           className="w-full text-sm border-gray-300 border rounded-lg"
           placeholder="Service name"
@@ -86,7 +84,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
         <InputWithLabel
           id="request"
           name="request"
-          value={formData.request}
+          value={formData.title}
           onChange={handleChange}
           className="form-select w-full text-sm border-gray-300 border rounded-lg p-2"
           placeholder="Enter your request"
@@ -120,7 +118,6 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
           onChange={handleChange}
           className="text-sm bg-white border-gray-300 border rounded-lg p-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none"
         >
-          <option value="Select status">Select status</option>
           <option value="Open">Open</option>
           <option value="Closed">Rejected</option>
           <option value="Canceled">Canceled</option>
