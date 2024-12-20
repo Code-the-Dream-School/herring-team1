@@ -12,12 +12,14 @@ function Request() {
   const [error, setError] = useState(null);
 
   const { user } = useAuth();
+  const authId = user.id;
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (user?.id) {
+    if (authId) {
       fetchRequests()
         .then(async (response) => {
-          const orgId = await getOrganizationId(user.id);
+          const orgId = await getOrganizationId(authId);
           const filteredRequests = response.data.filter((request) => request.organization_id === orgId);
           setRequests(filteredRequests);
           setLoading(false);
@@ -28,7 +30,7 @@ function Request() {
           setLoading(false);
         });
     }
-  }, [user.id]);
+  }, [authId]);
 
   const handleSaveRequest = (newRequest) => {
     if (editingIndex !== null) {
