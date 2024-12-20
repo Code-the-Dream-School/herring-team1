@@ -14,7 +14,6 @@ function Request() {
   const { user } = useAuth();
   const authId = user.id;
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (authId) {
       fetchRequests()
