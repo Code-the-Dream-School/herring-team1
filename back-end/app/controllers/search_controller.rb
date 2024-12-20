@@ -1,42 +1,33 @@
 class SearchController < ApplicationController
   def search
-    # Проверяем, есть ли хотя бы один параметр для поиска
+    # check if at least one search parameter is present
     if params_blank?
       return render_error('At least one search parameter is required', :bad_request)
     end
 
-    # Получаем все организации с сервисами
-    organizations = Organization.includes(:services) # Предзагрузка сервисов для каждой организации
-
-    # Смотрим, сколько организаций до фильтрации
-    puts "Total organizations before filtering: #{organizations.count}"
+    organizations = Organization.includes(:services)
 
     organizations = filter_by_zip_code(organizations) if params[:zip_code].present?
     organizations = filter_by_keyword(organizations) if params[:keyword].present?
-    organizations = filter_by_service(organizations) if params[:service].present?
+    organizations = filter_by_service(organizations) if params[:service].present?   
 
-    # Смотрим, сколько организаций после фильтрации
-    puts "Total organizations after filtering: #{organizations.count}"
+    # Paginate the results
+    paginated_organizations = organizations.page(params[:page]).per(params[:per_page] || 6)
 
-    # Применяем пагинацию
-    paginated_organizations = organizations.distinct.page(params[:page]).per(params[:per_page] || 6)
-
-    # Если ничего не найдено, отправляем сообщение об ошибке
+    puts "organizations is a: #{organizations.class.name}"
+   
     if paginated_organizations.empty?
       render_error('No search results found', :not_found)
     else
       render_organizations(paginated_organizations)
     end
   end
-
   private
-
-  # Проверка, что все параметры поиска отсутствуют
+ 
   def params_blank?
     params[:zip_code].blank? && params[:keyword].blank? && params[:service].blank?
   end
 
-  # Фильтрация организаций по zip-коду
   def filter_by_zip_code(organizations)
     zip_code = params[:zip_code]
     organization_ids = Address.where(zip_code: zip_code, organization_id: organizations.pluck(:id))
@@ -45,41 +36,34 @@ class SearchController < ApplicationController
     organizations.where(id: organization_ids)
   end
 
-  # Фильтрация организаций по ключевому слову
   def filter_by_keyword(organizations)
     keyword = "%#{params[:keyword].downcase}%"
   
-    # Фильтр по полям самой организации
     organizations_query = organizations.where(
       'LOWER(name) LIKE :keyword OR LOWER(description) LIKE :keyword OR LOWER(mission) LIKE :keyword',
       keyword: keyword
     )
   
-    # Фильтр по связанным сервисам
     service_org_ids = Service.where('LOWER(name) LIKE ?', keyword)
                              .joins(:org_services)
                              .pluck('org_services.organization_id')
-  
-    # Фильтр по адресам
+    
     address_org_ids = Address.where(
       'LOWER(street) LIKE :keyword OR LOWER(city) LIKE :keyword OR LOWER(state) LIKE :keyword OR LOWER(zip_code) LIKE :keyword',
       keyword: keyword
     ).pluck(:organization_id)
   
-    # Объединение всех найденных записей
     organizations_query.or(
       organizations.where(id: service_org_ids + address_org_ids)
     )
   end
 
-  # Фильтрация организаций по сервису
   def filter_by_service(organizations)
     service_name = "%#{params[:service].downcase}%"
     service_ids = Service.where('LOWER(name) LIKE ?', service_name).pluck(:id)
     organizations.joins(:org_services).where(org_services: { service_id: service_ids })
   end
-
-  # Форматирование ответа с организациями
+ 
   def render_organizations(organizations)
     render json: {
       current_page: organizations.current_page,
@@ -88,20 +72,18 @@ class SearchController < ApplicationController
       organizations: organizations.map { |org| format_organization(org) }
     }
   end
-
-  # Форматирование организации для вывода
+  
   def format_organization(org)
-    services = org.services.pluck(:name)  # Получаем имена сервисов
-    puts "Organization #{org.name} has services: #{services.inspect}"  # Добавляем вывод для диагностики
+    services = org.services.pluck(:name)
+    puts "Organization #{org.name} has services: #{services.inspect}"
     {
       name: org.name,
       logo: org.logo&.attached? ? org.logo.url : 'https://via.placeholder.com/100?text=Logo',
       request: org.description,
-      services: services.join(', ')  # Возвращаем имена сервисов
+      services: services.join(', ')
     }
   end
-
-  # Возвращаем ошибку в случае неправильного запроса
+  
   def render_error(message, status)
     render json: { error: message }, status: status
   end
