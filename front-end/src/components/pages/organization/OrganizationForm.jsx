@@ -12,7 +12,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function OrganizationForm() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   const [initialValues, setInitialValues] = useState('');
   const auth = JSON.parse(localStorage.getItem('user')).id;
 
@@ -61,6 +60,7 @@ function OrganizationForm() {
         const data = await getOrganizationById();
         console.log(data);
         setInitialValues(data);
+        console.log('fetch finished');
       } catch (error) {
         console.error('Failed to fetch organization:', error);
       }
@@ -94,9 +94,9 @@ function OrganizationForm() {
   });
 
   const handleSubmit = async (values) => {
-    setIsLoading(true);
-
     try {
+      console.log('handleSubmit');
+      console.log(values);
       await editOrganization({
         auth_id: auth,
         name: values.name,
@@ -109,7 +109,7 @@ function OrganizationForm() {
             address: values.address,
             city: values.city,
             state: values.state,
-            zipcode: values.zipcode,
+            zip_code: values.zip_code,
           },
         ],
         service_ids: [1, 2, 3],
@@ -117,8 +117,8 @@ function OrganizationForm() {
 
       toast.success('Organization updated successfully!');
       setTimeout(() => {
-        navigate('/');
-      }, 2000);
+        navigate('/dashboard');
+      }, 5000);
     } catch (error) {
       toast.error(error.message || 'An error occurred while updating the organization.', {
         position: 'top-right',
@@ -127,8 +127,6 @@ function OrganizationForm() {
         closeOnClick: true,
         pauseOnHover: true,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -213,7 +211,7 @@ function OrganizationForm() {
                       className="w-full text-sm bg-white border-gray-300 border rounded-lg shadow-md p-2"
                     >
                       <option value="">Select State</option>
-                      <option value="MA">MA</option>
+                      <option value="NY">NY</option>
                       <option value="CT">CT</option>
                     </Field>
                     <ErrorMessage name="state" component="div" className="text-red-500 text-xs" />
@@ -330,25 +328,13 @@ function OrganizationForm() {
             <div className="flex space-x-4 mt-6">
               <button
                 type="submit"
-                className={`w-2/5 px-4 py-2 sm:text-xl rounded-md ${
-                  isLoading
-                    ? 'bg-orange-600 text-white cursor-not-allowed'
-                    : 'bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400'
-                }`}
-                disabled={isLoading}
+                onClick={() => handleSubmit(values)}
+                className="w-2/5 px-4 py-2 sm:text-xl rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
               >
-                {isLoading ? 'Saving...' : 'Save'}
+                Save
               </button>
               <button
                 type="button"
-                onClick={() => navigate('/dashboard')}
-                className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
-              >
-                Edit
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/')}
                 className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
               >
                 Delete

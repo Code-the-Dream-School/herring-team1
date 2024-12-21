@@ -210,6 +210,8 @@ export const editOrganization = async (updatedData) => {
   if (!x_csrf_token) {
     throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
   }
+  console.log('Updating organization:', related_entity_id);
+  console.log(updatedData);
   try {
     const response = await axios.patch(`${API_BASE_URL}organizations/${related_entity_id}`, updatedData, {
       headers: {
