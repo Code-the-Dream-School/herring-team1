@@ -1,6 +1,8 @@
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_REACT_URL;
 
+const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
 export const register = async (email, password, confirmPassword, isOrganization) => {
   try {
     const response = await axios.post(`${API_BASE_URL}auth`, {
@@ -32,8 +34,6 @@ export const login = async (email, password) => {
 };
 
 export const logout = async () => {
-  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
-
   if (!x_csrf_token) {
     throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
   }
@@ -137,6 +137,38 @@ export const searchOrganizations = async (zip_code, keyword, service) => {
     const response = await axios.get(`${API_BASE_URL}/search`, { params });
 
     return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const getMyOrganization = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}organizations/my_organization`, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+    return response;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const createOrganization = async (organization) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}organizations/`,
+      { organization: organization },
+      {
+        headers: {
+          'X-CSRF-Token': x_csrf_token,
+        },
+        withCredentials: true,
+      }
+    );
+    return response;
   } catch (error) {
     throw error.response.data;
   }

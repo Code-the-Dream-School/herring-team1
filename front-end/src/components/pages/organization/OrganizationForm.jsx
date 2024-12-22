@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import homecareIcon from '../../../assets/homecare.png';
 import advocacyIcon from '../../../assets/advocacy.png';
@@ -6,22 +6,37 @@ import craftIcon from '../../../assets/craft.png';
 import educationIcon from '../../../assets/education.png';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { getMyOrganization, createOrganization } from '../../../utils/apiReqests';
 
 function OrganizationForm() {
   const navigate = useNavigate();
 
   function ServicesCheckbox() {
     const services = [
-      { name: 'Homecare', icon: homecareIcon },
-      { name: 'Education', icon: educationIcon },
-      { name: 'Advocacy', icon: advocacyIcon },
-      { name: 'Craft', icon: craftIcon },
+      { value: 1, name: 'Food service', icon: null },
+      { value: 2, name: 'Transportation', icon: null },
+      { value: 3, name: 'Education', icon: educationIcon },
+      { value: 4, name: 'Sports&Recreation', icon: null },
+      { value: 5, name: 'Attractions', icon: null },
+      { value: 6, name: 'Housing&Facilities', icon: homecareIcon },
+      { value: 7, name: 'Legal&Advocacy', icon: advocacyIcon },
+      { value: 8, name: 'Hobbies&Crafts', icon: craftIcon },
+      { value: 9, name: 'Arts&Culture', icon: null },
+      { value: 10, name: 'Health&Medicine', icon: null },
     ];
 
     const [selectedServices, setSelectedServices] = useState([]);
     const toggleService = (service) => {
       setSelectedServices((prev) => (prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]));
     };
+
+    useEffect(() => {
+      async function fetchData() {
+        const response = await getMyOrganization();
+        console.log(response);
+      }
+      fetchData();
+    }, []);
 
     return (
       <div>
@@ -70,6 +85,7 @@ function OrganizationForm() {
     description: Yup.string()
       .required('Organization description is required')
       .max(500, 'Maximum 500 characters allowed'),
+    service_ids: Yup.array(),
   });
 
   return (
@@ -90,10 +106,26 @@ function OrganizationForm() {
           website: '',
           mission: '',
           description: '',
+          service_ids: [],
         }}
         validationSchema={validationSchema}
         onSubmit={(values) => {
           console.log('Form Submitted', values);
+          const response = createOrganization({
+            name: 'My org',
+            website: 'https://www.volunteermatch.org',
+            phone: '0957779689',
+            description: 'sfkjdhsjksdhfkj',
+            mission: 'jfkjsekfjwelfjk',
+            service_ids: [1, 2],
+            address: {
+              street: '123 Main St',
+              city: 'Some City',
+              state: 'Some State',
+              zip_code: '12345',
+            },
+          });
+          console.log(response);
         }}
       >
         {({ setFieldValue, values }) => (
