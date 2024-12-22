@@ -2,8 +2,7 @@ class SearchController < ApplicationController
   def search
     return render_error('At least one search parameter is required', :bad_request) if params_blank?
 
-    organizations = Organization.includes(:services)
-
+    organizations = Organization.all
     organizations = filter_by_zip_code(organizations) if params[:zip_code].present?
     organizations = filter_by_keyword(organizations) if params[:keyword].present?
     organizations = filter_by_service(organizations) if params[:service].present?
@@ -20,7 +19,7 @@ class SearchController < ApplicationController
   private
 
   def params_blank?
-    params[:zip_code].blank? && params[:keyword].blank? && params[:service].blank?
+    params[:zip_code].blank? && params[:keyword].blank? && Array(params[:service]).blank?
   end
 
   def filter_by_zip_code(organizations)
@@ -54,9 +53,12 @@ class SearchController < ApplicationController
   end
 
   def filter_by_service(organizations)
-    service_name = "%#{params[:service].downcase}%"
-    service_ids = Service.where('LOWER(name) LIKE ?', service_name).pluck(:id)
-    organizations.joins(:org_services).where(org_services: { service_id: service_ids })
+    selected_services = Array(params[:service]).map(&:downcase) # Преобразуем в массив
+
+    valid_service_ids = Service.where('LOWER(name) IN (?)', selected_services).pluck(:id)
+    return organizations.none if valid_service_ids.empty?
+
+    organizations.joins(:org_services).where(org_services: { service_id: valid_service_ids })
   end
 
   def render_organizations(organizations)
