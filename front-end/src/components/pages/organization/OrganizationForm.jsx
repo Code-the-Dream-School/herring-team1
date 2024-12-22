@@ -1,58 +1,65 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import homecareIcon from '../../../assets/homecare.png';
-import advocacyIcon from '../../../assets/advocacy.png';
-import craftIcon from '../../../assets/craft.png';
-import educationIcon from '../../../assets/education.png';
+// import homecareIcon from '../../../assets/homecare.png';
+// import advocacyIcon from '../../../assets/advocacy.png';
+// import craftIcon from '../../../assets/craft.png';
+// import educationIcon from '../../../assets/education.png';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { editOrganization, getOrganizationById } from '../../../utils/apiReqests';
+import { createOrganization, getOrganizationById } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function OrganizationForm() {
   const navigate = useNavigate();
-  const [initialValues, setInitialValues] = useState('');
-  const auth = JSON.parse(localStorage.getItem('user')).id;
+  const [initialValues, setInitialValues] = useState(null);
+  // const auth = JSON.parse(localStorage.getItem('user')).id;
 
-  function ServicesCheckbox() {
-    const services = [
-      { name: 'Homecare', icon: homecareIcon },
-      { name: 'Education', icon: educationIcon },
-      { name: 'Advocacy', icon: advocacyIcon },
-      { name: 'Craft', icon: craftIcon },
-    ];
+  // function getInitialValues() {
+  //   const values = initialValues;
+  //   console.log('getInitialValues');
+  //   console.log(values);
+  //   return values;
+  // }
 
-    const [selectedServices, setSelectedServices] = useState([]);
-    const toggleService = (service) => {
-      setSelectedServices((prev) => (prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]));
-    };
+  // function ServicesCheckbox() {
+  //   const services = [
+  //     { name: 'Homecare', icon: homecareIcon },
+  //     { name: 'Education', icon: educationIcon },
+  //     { name: 'Advocacy', icon: advocacyIcon },
+  //     { name: 'Craft', icon: craftIcon },
+  //   ];
 
-    return (
-      <div>
-        <label htmlFor="services" className="block text-gray-800 text-small mb-1">
-          Services
-        </label>
-        <div className="flex flex-wrap justify-left gap-4">
-          {services.map(({ name, icon }) => (
-            <div
-              key={name}
-              onClick={() => toggleService(name)}
-              className="flex items-center justify-center cursor-pointer"
-            >
-              <div
-                className={`w-12 h-12 flex items-center justify-center rounded-full  transform hover:scale-110 transition-all duration-300 ease-in-out ${
-                  selectedServices.includes(name) ? 'bg-orangeButton' : 'bg-background'
-                }`}
-              >
-                <img src={icon} alt={name} className="w-8 h-8 object-contain" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  //   const [selectedServices, setSelectedServices] = useState([]);
+  //   const toggleService = (service) => {
+  //     setSelectedServices((prev) => (prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]));
+  //   };
+
+  //   return (
+  //     <div>
+  //       <label htmlFor="services" className="block text-gray-800 text-small mb-1">
+  //         Services
+  //       </label>
+  //       <div className="flex flex-wrap justify-left gap-4">
+  //         {services.map(({ name, icon }) => (
+  //           <div
+  //             key={name}
+  //             onClick={() => toggleService(name)}
+  //             className="flex items-center justify-center cursor-pointer"
+  //           >
+  //             <div
+  //               className={`w-12 h-12 flex items-center justify-center rounded-full  transform hover:scale-110 transition-all duration-300 ease-in-out ${
+  //                 selectedServices.includes(name) ? 'bg-orangeButton' : 'bg-background'
+  //               }`}
+  //             >
+  //               <img src={icon} alt={name} className="w-8 h-8 object-contain" />
+  //             </div>
+  //           </div>
+  //         ))}
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   useEffect(() => {
     const fetchOrganization = async () => {
@@ -72,12 +79,14 @@ function OrganizationForm() {
   const validationSchema = Yup.object({
     auth_id: Yup.string(),
     name: Yup.string().required('Organization name is required'),
-    address: Yup.string().required('Street address is required'),
-    city: Yup.string().required('City is required'),
-    state: Yup.string().required('State is required'),
-    zipcode: Yup.string()
-      .required('Zip Code is required')
-      .matches(/^[0-9]{5}$/, 'Zip Code must be exactly 5 digits'),
+    address: Yup.object({
+      street: Yup.string().required('Street is required'),
+      city: Yup.string().required('City is required'),
+      state: Yup.string().required('State is required'),
+      zip_code: Yup.string()
+        .required('Zip Code is required')
+        .matches(/^[0-9]{5}$/, 'Zip Code must be exactly 5 digits'),
+    }),
     phone: Yup.string()
       .required('Phone number is required')
       .matches(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
@@ -97,22 +106,20 @@ function OrganizationForm() {
     try {
       console.log('handleSubmit');
       console.log(values);
-      await editOrganization({
-        auth_id: auth,
+      await createOrganization({
+        auth_id: values.user.id,
         name: values.name,
         phone: values.phone,
         website: values.website,
         mission: values.mission,
         description: values.description,
-        addresses: [
-          {
-            address: values.address,
-            city: values.city,
-            state: values.state,
-            zip_code: values.zip_code,
-          },
-        ],
-        service_ids: [1, 2, 3],
+        address: {
+          street: values.street,
+          city: values.city,
+          state: values.state,
+          zip_code: values.zip_code,
+        },
+        service_ids: values.services || [],
       });
 
       toast.success('Organization updated successfully!');
@@ -120,6 +127,7 @@ function OrganizationForm() {
         navigate('/dashboard');
       }, 5000);
     } catch (error) {
+      console.log('Bububu');
       toast.error(error.message || 'An error occurred while updating the organization.', {
         position: 'top-right',
         autoClose: 3000,
@@ -138,22 +146,21 @@ function OrganizationForm() {
       </p>
 
       <Formik
-        enableReinitialize
         initialValues={
           initialValues || {
-            auth_id: '',
             name: '',
-            addresses: [{ address: '', city: '', state: '', zip_code: '' }],
+            address: { street: '', city: '', state: '', zip_code: '' },
             phone: '',
             website: '',
             mission: '',
             description: '',
+            services: [],
           }
         }
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ setFieldValue, values }) => (
+        {({ values }) => (
           <Form className="grid gap-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
@@ -165,6 +172,7 @@ function OrganizationForm() {
                     type="text"
                     id="name"
                     name="name"
+                    value={values.name}
                     className="w-full text-sm border-gray-300 border rounded-lg p-2 shadow-md"
                     placeholder="Enter organization name"
                   />
@@ -177,8 +185,8 @@ function OrganizationForm() {
                   </label>
                   <Field
                     type="text"
-                    id="address"
-                    name={`addresses[0].address`}
+                    id="address.street"
+                    name="address.street"
                     className="w-full text-sm border-gray-300 border rounded-lg p-2 shadow-md"
                     placeholder="Enter street address"
                   />
@@ -191,8 +199,8 @@ function OrganizationForm() {
                   </label>
                   <Field
                     type="text"
-                    id="city"
-                    name={`addresses[0].city`}
+                    id="address.city"
+                    name="address.city"
                     className="w-full text-sm border-gray-300 border rounded-lg shadow-md p-2"
                     placeholder="Enter city"
                   />
@@ -206,8 +214,8 @@ function OrganizationForm() {
                     </label>
                     <Field
                       as="select"
-                      id="state"
-                      name={`addresses[0].state`}
+                      id="address.state"
+                      name="address.state"
                       className="w-full text-sm bg-white border-gray-300 border rounded-lg shadow-md p-2"
                     >
                       <option value="">Select State</option>
@@ -223,12 +231,12 @@ function OrganizationForm() {
                     </label>
                     <Field
                       type="text"
-                      id="zipcode"
-                      name={`addresses[0].zip_code`}
+                      id="zip_code"
+                      name="address.zip_code"
                       className="w-full border-gray-300 text-sm border rounded-lg shadow-md p-2"
                       placeholder="Enter zip code"
                     />
-                    <ErrorMessage name="zipcode" component="div" className="text-red-500 text-xs" />
+                    <ErrorMessage name="zip_code" component="div" className="text-red-500 text-xs" />
                   </div>
                 </div>
 
@@ -273,9 +281,10 @@ function OrganizationForm() {
                   <div className="mt-2 flex justify-center">
                     <label
                       htmlFor="logo"
-                      className="cursor-pointer inline-block bg-light_grey text-gray-800 text-sm px-4 py-2 rounded-md shadow-md hover:shadow-md hover:shadow-gray-400"
+                      className="cursor-pointer inline-block bg-light_grey text-gray-800 text-sm px-4 py-2 rounded-md shadow-md hover:shadow-md hover:shadow-gray-400 transition duration-200 ease-in-out"
                     >
-                      Upload
+                      Change Logo
+                      <Field type="file" id="logo" name="logo" accept="image/*" className="hidden" />
                     </label>
                     <input type="file" id="logo" className="hidden" />
                   </div>
@@ -283,7 +292,7 @@ function OrganizationForm() {
               </div>
             </div>
 
-            <ServicesCheckbox
+            {/* <ServicesCheckbox
               selectedServices={values.services || []}
               toggleService={(service) => {
                 const newSelected = values.services.includes(service)
@@ -291,7 +300,7 @@ function OrganizationForm() {
                   : [...values.services, service];
                 setFieldValue('services', newSelected);
               }}
-            />
+            /> */}
 
             <div className="space-y-4">
               <div>
@@ -327,11 +336,16 @@ function OrganizationForm() {
 
             <div className="flex space-x-4 mt-6">
               <button
-                type="submit"
-                onClick={() => handleSubmit(values)}
+                type="button"
                 className="w-2/5 px-4 py-2 sm:text-xl rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
               >
                 Save
+              </button>
+              <button
+                type="button"
+                className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+              >
+                Edit
               </button>
               <button
                 type="button"

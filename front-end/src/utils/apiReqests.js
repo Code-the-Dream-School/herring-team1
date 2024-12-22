@@ -198,64 +198,100 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
   }
 };
 
-export const editOrganization = async (updatedData) => {
+// Create a new organization
+export const createOrganization = async (organizationData) => {
+  const csrfToken = localStorage.getItem('x_csrf_token');
   const user = JSON.parse(localStorage.getItem('user'));
-  const related_entity_id = user.related_entity_id;
 
-  if (!related_entity_id) {
+  console.log('csrfToken:', csrfToken);
+  console.log(user);
+
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure it is set correctly.');
+  }
+
+  if (!user?.id) {
+    throw new Error('User ID is missing. Ensure the user is logged in.');
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}organizations`,
+      {
+        organization: {
+          ...organizationData,
+          auth_id: user?.id,
+        },
+      },
+      {
+        headers: { 'X-CSRF-Token': csrfToken },
+        withCredentials: true,
+      }
+    );
+    console.log('Organization created successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating organization:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to create organization.';
+  }
+};
+
+// export const editOrganization = async (updatedData) => {
+//   const user = JSON.parse(localStorage.getItem('user'));
+//   const related_entity_id = user.related_entity_id;
+
+//   if (!related_entity_id) {
+//     throw new Error('Organization ID not found.');
+//   }
+//   const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+//   if (!x_csrf_token) {
+//     throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+//   }
+//   console.log('Updating organization:', related_entity_id);
+//   console.log(updatedData);
+//   try {
+//     const response = await axios.patch(`${API_BASE_URL}organizations/${related_entity_id}`, updatedData, {
+//       headers: {
+//         'X-CSRF-Token': x_csrf_token,
+//       },
+//       withCredentials: true,
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error editing organization:', error);
+//     console.log(error);
+//     throw error.response.data;
+//   }
+// };
+
+export const getOrganizationById = async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.id;
+
+  if (!userId) {
     throw new Error('Organization ID not found.');
   }
+
   const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
 
   if (!x_csrf_token) {
     throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
   }
-  console.log('Updating organization:', related_entity_id);
-  console.log(updatedData);
   try {
-    const response = await axios.patch(`${API_BASE_URL}organizations/${related_entity_id}`, updatedData, {
+    const url = `${API_BASE_URL}organizations/my_organization`;
+    const response = await axios.get(url, {
       headers: {
         'X-CSRF-Token': x_csrf_token,
       },
       withCredentials: true,
     });
+
     return response.data;
   } catch (error) {
-    console.error('Error editing organization:', error);
+    console.error('Error getting organization:', error);
     console.log(error);
     throw error.response.data;
-  }
-};
-
-export const getOrganizationById = async () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const related_entity_id = user.related_entity_id;
-
-  if (!related_entity_id) {
-    throw new Error('Organization ID not found.');
-  }
-
-  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
-
-  if (!x_csrf_token) {
-    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
-  }
-  try {
-    const url = `${API_BASE_URL}organizations/${related_entity_id}`;
-    const response = await axios.get(url, {
-      headers: {
-        'X-CSRF-Token': x_csrf_token,
-    console.error('Error fetching organization data:', error);
-    if (error.response) {
-      console.error('Backend error response:', error.response.data);
-      throw error.response.data;
-    } else if (error.request) {
-      console.error('No response received from the backend:', error.request);
-      throw 'No response received from the backend';
-    } else {
-      console.error('Request error:', error.message);
-      throw 'Failed to fetch organization data.';
-    }
   }
 };
 
