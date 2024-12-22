@@ -1,6 +1,9 @@
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_REACT_URL;
 
+const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+console.log('x_csrf_token', x_csrf_token);
+
 export const register = async (email, password, confirmPassword, isOrganization) => {
   try {
     const response = await axios.post(`${API_BASE_URL}auth`, {
@@ -167,5 +170,30 @@ export const fetchRequests = async () => {
     return await axios.get(`${API_BASE_URL}requests`, {});
   } catch (error) {
     throw error.response.data;
+  }
+};
+
+export const postRequests = async (values, orgId, serviceId, statusId) => {
+  try {
+    const body = {
+      title: values.title,
+      description: values.description,
+      org_service_id: serviceId,
+      request_status_id: statusId,
+    };
+    console.log('POST request body:', body);
+
+    const response = await axios.post(`${API_BASE_URL}organizations/${orgId}/requests/`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': x_csrf_token,
+      },
+      credentials: 'include',
+    });
+
+    const responseBody = await response.data;
+    console.log('POST request response:', responseBody);
+  } catch (error) {
+    console.error('Error while submitting form:', error);
   }
 };
