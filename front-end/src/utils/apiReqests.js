@@ -142,17 +142,23 @@ export const searchOrganizations = async (zip_code, keyword, service) => {
   }
 };
 
-export const getOrganizationId = async (authId) => {
+export const getMyOrganization = async () => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') || null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
   try {
-    const response = await fetchOrganizations(authId);
-    const organization = response.data.find((org) => org.auth_id === authId);
-    if (organization) {
-      return organization.id;
-    }
-    return null;
+    const response = await axios.get(`${API_BASE_URL}organizations/my_organization`, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+    console.log(response.data);
+    return response;
   } catch (error) {
-    console.error('Error fetching organizations:', error);
-    return null;
+    throw error.response.data;
   }
 };
 
