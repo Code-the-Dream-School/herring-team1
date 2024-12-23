@@ -109,6 +109,7 @@ export const getMyVolunteer = async () => {
       },
       withCredentials: true,
     });
+    console.log('volunteet_data', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching current volunteer data:', error.response?.data || error.message);
@@ -116,43 +117,44 @@ export const getMyVolunteer = async () => {
   }
 };
 
-//get volunteer by id
-export const getVolunteerById = async () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const related_entity_id = user.related_entity_id;
-  if (!user || !user.related_entity_id) {
-    throw new Error('Related entity ID not found.');
-  }
+// //get volunteer by id
+// export const getVolunteerById = async () => {
+//   const user = JSON.parse(localStorage.getItem('user'));
+//   const related_entity_id = user.id;
+//   if (!user || !user.related_entity_id) {
+//     throw new Error('Related entity ID not found.');
+//   }
 
-  try {
-    const response = await axios.get(`http://127.0.0.1:3000/volunteers/${related_entity_id}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching volunteer data:', error);
-    throw error.response?.data || 'Failed to fetch volunteer data.';
-  }
-};
+//   try {
+//     const response = await axios.get(`http://127.0.0.1:3000/volunteers/${related_entity_id}`);
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error fetching volunteer data:', error);
+//     throw error.response?.data || 'Failed to fetch volunteer data.';
+//   }
+// };
 
-//patch volunteer
-export const updateVolunteerById = async (updatedData) => {
-  const user = JSON.parse(localStorage.getItem('user'));
+// Update volunteer by ID
+export const updateVolunteerById = async (id, updatedData) => {
   const csrfToken = localStorage.getItem('x_csrf_token');
-  const related_entity_id = user.related_entity_id;
-  if (!user || !user.related_entity_id) {
-    throw new Error('Related entity ID not found.');
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure you are logged in.');
   }
 
   try {
     const response = await axios.patch(
-      `http://127.0.0.1:3000/volunteers/${related_entity_id}`,
+      `/volunteers/${id}`,
       { volunteer: updatedData },
       {
         headers: {
+          'Content-Type': 'application/json',
           'X-CSRF-Token': csrfToken,
         },
         withCredentials: true,
       }
     );
+
+    console.log('Volunteer updated successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error updating volunteer:', error.response?.data || error.message);
