@@ -104,18 +104,6 @@ function VolunteerProfile() {
             <p>{formData.about}</p>
           </>
         )}
-
-        {/* Profile Image */}
-        {formData.profileImg && (
-          <div className="mt-4">
-            <label className="block text-sm font-bold">Profile Image</label>
-            <img
-              src={formData.profileImg}
-              alt="Volunteer Profile"
-              className="mt-2 w-32 h-32 object-cover rounded-full"
-            />
-          </div>
-        )}
       </div>
 
       {/* Buttons */}

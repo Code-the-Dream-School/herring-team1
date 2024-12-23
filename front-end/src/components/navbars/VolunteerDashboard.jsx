@@ -23,6 +23,7 @@ function VolunteerDashboard() {
       try {
         setLoading(true);
         const volunteerData = await getMyVolunteer();
+        console.log(volunteerData);
         setUserProfileImage(volunteerData.profile_img?.url || defaultProfileImage);
         const formattedDate = new Date(volunteerData.created_at).toLocaleDateString('en-US', {
           year: 'numeric',
@@ -47,8 +48,9 @@ function VolunteerDashboard() {
     setError(null);
 
     try {
-      const response = await uploadProfileImage(file);
-      setUserProfileImage(response.imageUrl);
+      const volunteerData = await getMyVolunteer();
+      const response = await uploadProfileImage(volunteerData.id, file);
+      setUserProfileImage(response.imageUrl || defaultProfileImage);
     } catch (err) {
       setError(err.error || 'Failed to upload image. Please try again.');
       console.error('Error uploading profile image:', err);

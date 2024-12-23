@@ -2,7 +2,6 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_REACT_URL || 'http://127.0.0.1:3000/';
 
 const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
-console.log('x_csrf_token', x_csrf_token);
 
 export const register = async (email, password, confirmPassword, isOrganization) => {
   try {
@@ -109,7 +108,6 @@ export const getMyVolunteer = async () => {
       },
       withCredentials: true,
     });
-    console.log('volunteet_data', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching current volunteer data:', error.response?.data || error.message);
@@ -153,8 +151,6 @@ export const updateVolunteerById = async (id, updatedData) => {
         withCredentials: true,
       }
     );
-
-    console.log('Volunteer updated successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error updating volunteer:', error.response?.data || error.message);
@@ -163,23 +159,27 @@ export const updateVolunteerById = async (id, updatedData) => {
 };
 
 //upload volunteer image
-export const uploadProfileImage = async (imageFile) => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const related_entity_id = user.related_entity_id;
+export const uploadProfileImage = async (id, imageFile) => {
+  const csrfToken = localStorage.getItem('x_csrf_token');
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure you are logged in.');
+  }
 
   const formData = new FormData();
   formData.append('profile_img', imageFile);
 
   try {
-    const response = await axios.post(`http://127.0.0.1:3000/volunteers/${related_entity_id}/upload_image`, formData, {
+    const response = await axios.post(`/volunteers/${id}/upload_image`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'X-CSRF-Token': csrfToken,
       },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
-    console.error('Error uploading profile image:', error);
-    throw error.response?.data || error.message;
+    console.error('Error uploading profile image:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to upload profile image.';
   }
 };
 
