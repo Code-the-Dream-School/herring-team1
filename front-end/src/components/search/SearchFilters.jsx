@@ -1,38 +1,12 @@
 import PropTypes from 'prop-types';
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import { services } from '../../data/services';
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
+import DropdownMenu from './DropdownMenu.jsx';
 
 const SearchFilters = ({ searchParams, setSearchParams, handleServiceChange }) => {
   return (
     <div className="bg-light_purple min-h-[20vh] flex flex-col justify-center items-center p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-        <div className="relative">
-          <button
-            className="p-3 pl-10 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 w-full text-left"
-            onClick={() => setSearchParams({ ...searchParams, service: '' })}
-          >
-            {searchParams.services.length > 0 ? searchParams.services.join(', ') : 'Search by service'}
-            <ChevronDownIcon className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" />
-          </button>
-          {searchParams.services.length === 0 && (
-            <div className="absolute top-12 bg-white shadow-lg rounded-lg w-full z-10">
-              {services.map((service) => (
-                <div key={service.id} className="flex items-center p-2 hover:bg-gray-100">
-                  <input
-                    type="checkbox"
-                    id={service.name}
-                    checked={searchParams.services.includes(service.name)}
-                    onChange={() => handleServiceChange(service.name)}
-                    className="mr-2"
-                  />
-                  <label htmlFor={service.name} className="text-sm">
-                    {service.name}
-                  </label>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <DropdownMenu selectedServices={searchParams.services} handleServiceChange={handleServiceChange} />
 
         <div className="relative">
           <input

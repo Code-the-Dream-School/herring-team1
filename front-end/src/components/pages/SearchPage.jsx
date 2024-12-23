@@ -11,7 +11,7 @@ const SearchPage = () => {
   const [searchParams, setSearchParams] = useState({
     zip_code: '',
     keyword: '',
-    services: [], // теперь это массив для нескольких сервисов
+    services: [],
   });
   const [debouncedSearch, setDebouncedSearch] = useState(searchParams);
   const [error, setError] = useState('');
