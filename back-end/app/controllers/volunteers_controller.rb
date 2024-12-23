@@ -37,7 +37,9 @@ class VolunteersController < ApplicationController
         about: @volunteer.about,
         profile_img: @volunteer.profile_img,
         email: @volunteer.auth.email,
-        address: @volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+        address: @volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code]),
+        created_at: @volunteer.created_at,
+        updated_at: @volunteer.updated_at
       }
     }, status: :ok
   end
@@ -90,7 +92,9 @@ class VolunteersController < ApplicationController
           about: @volunteer.about,
           profile_img: @volunteer.profile_img,
           email: @volunteer.auth.email,
-          address: @volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+          address: @volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code]),
+          created_at: @volunteer.created_at,
+          updated_at: @volunteer.updated_at
         }
       }, status: :ok
     else
@@ -121,7 +125,9 @@ class VolunteersController < ApplicationController
         about: volunteer.about,
         profile_img: volunteer.profile_img,
         email: volunteer.auth.email,
-        address: volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+        address: volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code]),
+        created_at: volunteer.created_at,
+        updated_at: volunteer.updated_at
       }, status: :ok
     else
       render json: { message: 'You do not own a volunteer profile' }, status: :not_found
