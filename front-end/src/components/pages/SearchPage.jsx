@@ -64,7 +64,7 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await searchOrganizations(debouncedSearch);
-        setOrganizations(result);
+        setOrganizations(result.organizations); // Ensure to access the organizations array from the response
         setError('');
         setHasSearched(true);
       } catch (error) {
