@@ -23,7 +23,6 @@ function VolunteerDashboard() {
       try {
         setLoading(true);
         const volunteerData = await getMyVolunteer();
-        console.log(volunteerData);
         setUserProfileImage(volunteerData.profile_img?.url || defaultProfileImage);
         const formattedDate = new Date(volunteerData.created_at).toLocaleDateString('en-US', {
           year: 'numeric',
