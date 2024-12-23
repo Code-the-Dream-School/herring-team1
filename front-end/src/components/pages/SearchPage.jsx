@@ -12,7 +12,7 @@ const SearchPage = () => {
   const [searchParams, setSearchParams] = useState({
     zip_code: '',
     keyword: '',
-    services: '',
+    services: [],
   });
   const [debouncedSearch, setDebouncedSearch] = useState(searchParams);
   const [error, setError] = useState('');
@@ -37,6 +37,7 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await fetchOrganizations();
+        console.log('Fetched organizations:', result.organizations); // Log the fetched organizations
         setOrganizations(result.organizations); // Ensure to access the organizations array from the response
         setAllOrganizations(result.organizations); // Store all organizations
         setError('');
@@ -67,6 +68,7 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await searchOrganizations(debouncedSearch);
+        console.log('Fetched filtered organizations:', result.organizations); // Log the fetched filtered organizations
         setOrganizations(result.organizations); // Ensure to access the organizations array from the response
         setError('');
         setHasSearched(true);

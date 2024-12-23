@@ -56,26 +56,13 @@ export const logout = async () => {
 
 export const fetchOrganizations = async () => {
   try {
-    const response = await fetch('/api/organizations');
-    const text = await response.text(); // Получение текста ответа
-    console.log('Response text:', text); // Логирование текста ответа
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    // Проверьте, если ответ начинается с HTML (например, ошибка 404 или перенаправление)
-    if (text.trim().startsWith('<!DOCTYPE html>')) {
-      throw new Error('Received HTML instead of JSON, possibly an error page');
-    }
-
-    const data = JSON.parse(text); // Преобразование текста в JSON
-
-    if (!Array.isArray(data.organizations)) {
+    const response = await axios.get(`${API_BASE_URL}organizations`);
+    console.log('Response data:', response.data); // Log the response data
+    if (response.data && Array.isArray(response.data.organizations)) {
+      return response.data;
+    } else {
       throw new Error('Organizations data is not an array');
     }
-
-    return data;
   } catch (error) {
     console.error('Error fetching organizations:', error.message);
     throw error;
@@ -87,7 +74,9 @@ export const searchOrganizations = async (searchParams) => {
     const response = await axios.get(`${API_BASE_URL}search`, {
       params: searchParams,
     });
-    if (Array.isArray(response.data)) {
+    console.log('Search response data:', response.data); // Log the response data
+    console.log('Response structure:', JSON.stringify(response.data, null, 2)); // Log the response structure
+    if (response.data && Array.isArray(response.data.organizations)) {
       return response.data;
     } else {
       throw new Error('Filtered organizations data is not an array');
