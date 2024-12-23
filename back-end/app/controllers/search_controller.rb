@@ -12,6 +12,8 @@ class SearchController < ApplicationController
     organizations = filter_by_keyword(organizations) if keyword.present?
     organizations = filter_by_service(organizations) if service.present?
 
+    puts "Filtered Organizations: #{organizations.inspect}"  # Вывод в консоль
+
     # Check if any organizations were found, if not, render an error
     if organizations.empty?
       render_error('No search results found', :not_found)
