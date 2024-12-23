@@ -57,36 +57,30 @@ export const logout = async () => {
 export const fetchOrganizations = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}organizations`);
-    // Ensure the response data is an array
     if (Array.isArray(response.data)) {
-      return response;
+      return response.data;
     } else {
       throw new Error('Organizations data is not an array');
     }
   } catch (error) {
     console.error('Error fetching organizations:', error);
-    throw error.response ? error.response.data : error;
+    throw error;
   }
 };
 
-export const searchOrganizations = async (zip_code, keyword, service) => {
+export const searchOrganizations = async (searchParams) => {
   try {
-    const params = {};
-    if (zip_code) params.zip_code = zip_code;
-    if (keyword) params.keyword = keyword;
-    if (service) params.service = service;
-
-    const response = await axios.get(`${API_BASE_URL}/search`, { params });
-
-    // Ensure the response data is an array
+    const response = await axios.get(`${API_BASE_URL}search`, {
+      params: searchParams,
+    });
     if (Array.isArray(response.data)) {
       return response.data;
     } else {
-      throw new Error('Search result is not an array');
+      throw new Error('Filtered organizations data is not an array');
     }
   } catch (error) {
     console.error('Error fetching filtered organizations:', error);
-    throw error.response ? error.response.data : error;
+    throw error;
   }
 };
 
