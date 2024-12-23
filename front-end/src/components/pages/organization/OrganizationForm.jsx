@@ -16,6 +16,7 @@ function OrganizationForm() {
     mission: '',
     description: '',
   });
+  const [isOrganizationCreated, setIsOrganizationCreated] = useState(false);
 
   useEffect(() => {
     const fetchOrganization = async () => {
@@ -39,8 +40,10 @@ function OrganizationForm() {
         console.log(data);
         console.log(values);
         setFormValues(values);
+        setIsOrganizationCreated(true);
       } catch (error) {
         console.error('Failed to fetch organization:', error);
+        setIsOrganizationCreated(false);
       }
     };
     fetchOrganization();
@@ -68,8 +71,13 @@ function OrganizationForm() {
 
   const handleSubmit = async (values) => {
     try {
+      if (isOrganizationCreated) {
+        toast.info('Organization already exists!');
+        return; 
+      }
       await createOrganization(values);
       toast.success('Organization created successfully!');
+      setIsOrganizationCreated(true);
 
       setTimeout(() => {
         navigate('/dashboard');
@@ -247,12 +255,14 @@ function OrganizationForm() {
             </div>
 
             <div className="flex justify-center mt-8 mb-4">
-              <button
-                type="submit"
-                className="w-2/5 px-4 py-2 sm:text-xl rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
-              >
-                Create
-              </button>
+              {!isOrganizationCreated && (
+                <button
+                  type="submit"
+                  className="w-2/5 px-4 py-2 sm:text-xl rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
+                >
+                  Create Organization
+                </button>
+              )}
               {/* <button
                 type="button"
                 className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
