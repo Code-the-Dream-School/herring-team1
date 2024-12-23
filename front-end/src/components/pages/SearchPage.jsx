@@ -37,9 +37,9 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await fetchOrganizations();
-        console.log('Fetched organizations:', result.organizations); // Log the fetched organizations
-        setOrganizations(result.organizations); // Ensure to access the organizations array from the response
-        setAllOrganizations(result.organizations); // Store all organizations
+        console.log('Fetched organizations:', result); // Log the fetched organizations
+        setOrganizations(result); // Ensure to access the organizations array from the response
+        setAllOrganizations(result); // Store all organizations
         setError('');
       } catch (error) {
         console.error('Error fetching organizations:', error);
@@ -68,8 +68,8 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await searchOrganizations(debouncedSearch);
-        console.log('Fetched filtered organizations:', result.organizations); // Log the fetched filtered organizations
-        setOrganizations(result.organizations); // Ensure to access the organizations array from the response
+        console.log('Fetched filtered organizations:', result); // Log the fetched filtered organizations
+        setOrganizations(result); // Ensure to access the organizations array from the response
         setError('');
         setHasSearched(true);
       } catch (error) {

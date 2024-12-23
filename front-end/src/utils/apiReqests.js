@@ -1,6 +1,12 @@
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_REACT_URL;
 
+if (!API_BASE_URL) {
+  throw new Error('API_BASE_URL is not defined. Please set it in your environment variables.');
+}
+
+console.log('API_BASE_URL:', API_BASE_URL);
+
 export const register = async (email, password, confirmPassword, isOrganization) => {
   try {
     const response = await axios.post(`${API_BASE_URL}auth`, {
@@ -21,8 +27,8 @@ export const login = async (email, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}auth/login`, {
       auth: {
-        email: email,
-        password: password,
+        email,
+        password,
       },
     });
     return response;
@@ -58,13 +64,13 @@ export const fetchOrganizations = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}organizations`);
     console.log('Response data:', response.data); // Log the response data
-    if (response.data && Array.isArray(response.data.organizations)) {
+    if (response.data && Array.isArray(response.data)) {
       return response.data;
     } else {
       throw new Error('Organizations data is not an array');
     }
   } catch (error) {
-    console.error('Error fetching organizations:', error.message);
+    console.error('Error fetching organizations:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
@@ -77,7 +83,7 @@ export const searchOrganizations = async (searchParams) => {
     console.log('Search response data:', response.data); // Log the response data
     console.log('Response structure:', JSON.stringify(response.data, null, 2)); // Log the response structure
     if (response.data && Array.isArray(response.data.organizations)) {
-      return response.data;
+      return response.data.organizations;
     } else {
       throw new Error('Filtered organizations data is not an array');
     }
@@ -146,5 +152,74 @@ export const uploadProfileImage = async (imageFile) => {
   } catch (error) {
     console.error('Error uploading profile image:', error);
     throw error.response?.data || error.message;
+  }
+};
+
+// Create a new organization
+export const createOrganization = async (organizationData) => {
+  const csrfToken = localStorage.getItem('x_csrf_token');
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  console.log('csrfToken:', csrfToken);
+  console.log(user);
+
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure it is set correctly.');
+  }
+
+  if (!user?.id) {
+    throw new Error('User ID is missing. Ensure the user is logged in.');
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}organizations`,
+      {
+        organization: {
+          ...organizationData,
+          auth_id: user?.id,
+        },
+      },
+      {
+        headers: { 'X-CSRF-Token': csrfToken },
+        withCredentials: true,
+      }
+    );
+    console.log('Organization created successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating organization:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to create organization.';
+  }
+};
+
+// Get organization by ID
+export const getOrganizationById = async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.id;
+
+  if (!userId) {
+    throw new Error('Organization ID not found.');
+  }
+
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const url = `${API_BASE_URL}organizations/my_organization`;
+    const response = await axios.get(url, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error getting organization:', error);
+    console.log(error);
+    throw error.response.data;
   }
 };
