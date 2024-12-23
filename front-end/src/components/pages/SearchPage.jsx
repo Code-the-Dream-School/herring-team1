@@ -8,10 +8,11 @@ import OrganizationCard from '../search/OrganizationCard.jsx';
 const SearchPage = () => {
   const [favorites, setFavorites] = useState([]);
   const [organizations, setOrganizations] = useState([]);
+  const [allOrganizations, setAllOrganizations] = useState([]); // Store all organizations
   const [searchParams, setSearchParams] = useState({
     zip_code: '',
     keyword: '',
-    services: [],
+    services: '',
   });
   const [debouncedSearch, setDebouncedSearch] = useState(searchParams);
   const [error, setError] = useState('');
@@ -36,11 +37,13 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await fetchOrganizations();
-        setOrganizations(result);
+        setOrganizations(result.organizations); // Ensure to access the organizations array from the response
+        setAllOrganizations(result.organizations); // Store all organizations
         setError('');
       } catch (error) {
         console.error('Error fetching organizations:', error);
         setOrganizations([]);
+        setAllOrganizations([]);
         setError('No organizations found');
       } finally {
         setIsLoading(false);
@@ -80,9 +83,10 @@ const SearchPage = () => {
     if (debouncedSearch.zip_code || debouncedSearch.keyword || debouncedSearch.services.length > 0) {
       fetchFilteredOrganizations();
     } else {
+      setOrganizations(allOrganizations); // Display all organizations if no search parameters
       setHasSearched(false);
     }
-  }, [debouncedSearch]);
+  }, [debouncedSearch, allOrganizations]);
 
   const handleServiceChange = (serviceName) => {
     setSearchParams((prevParams) => {

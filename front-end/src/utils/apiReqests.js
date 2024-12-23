@@ -56,14 +56,28 @@ export const logout = async () => {
 
 export const fetchOrganizations = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}organizations`);
-    if (Array.isArray(response.data)) {
-      return response.data;
-    } else {
+    const response = await fetch('/api/organizations');
+    const text = await response.text(); // Получение текста ответа
+    console.log('Response text:', text); // Логирование текста ответа
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Проверьте, если ответ начинается с HTML (например, ошибка 404 или перенаправление)
+    if (text.trim().startsWith('<!DOCTYPE html>')) {
+      throw new Error('Received HTML instead of JSON, possibly an error page');
+    }
+
+    const data = JSON.parse(text); // Преобразование текста в JSON
+
+    if (!Array.isArray(data.organizations)) {
       throw new Error('Organizations data is not an array');
     }
+
+    return data;
   } catch (error) {
-    console.error('Error fetching organizations:', error);
+    console.error('Error fetching organizations:', error.message);
     throw error;
   }
 };
