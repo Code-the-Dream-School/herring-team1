@@ -17,12 +17,6 @@ class SearchController < ApplicationController
     # Paginate the organizations collection
     paginated_organizations = organizations.page(params[:page]).per(params[:per_page] || 6)
 
-    puts "Filtered Organizations: #{organizations.inspect}"
-
-    # Paginate the organizations collection
-    paginated_organizations = organizations.page(params[:page]).per(params[:per_page] || 6)
-
-  
     # Check if any organizations were found, if not, render an error
     if paginated_organizations.empty?
       render_error('No search results found', :not_found)
