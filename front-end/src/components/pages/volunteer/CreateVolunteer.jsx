@@ -108,6 +108,7 @@ function CreateVolunteer() {
             type="text"
             name="phone"
             value={formData.phone}
+            placeholder="e.g., 1234567890"
             onChange={handleInputChange}
             className={`border rounded px-2 py-1 w-full shadow-md ${
               errors.phone ? 'border-red-500' : 'border-gray-300'
@@ -164,7 +165,7 @@ function CreateVolunteer() {
             </div>
           </div>
         </div>
-        <label className="block text-sm font-bold">About</label>
+        <label className="block text-sm font-bold">About *</label>
         <textarea
           name="about"
           value={formData.about}
