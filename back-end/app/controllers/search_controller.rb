@@ -1,6 +1,11 @@
+# This controller is responsible for handling search requests by zipcode, keywords and services
 class SearchController < ApplicationController
   def search
-    return render_error('At least one search parameter is required', :bad_request) if params_blank?
+    # Check if all parameters are blank
+    if params_blank?
+      render_error('At least one search parameter is required', :bad_request)
+      return
+    end
 
     organizations = Organization.all
     organizations = filter_by_zip_code(organizations) if zip_code.present?
@@ -17,16 +22,17 @@ class SearchController < ApplicationController
       render_error('No search results found', :not_found)
     else
       render_organizations(paginated_organizations)
-      render_organizations(paginated_organizations)
     end
   end
 
   private
 
+  # Check if all search parameters are missing
   def params_blank?
-    params[:zip_code].blank? && params[:keyword].blank? && Array(params[:service]).blank?
+    zip_code.blank? && keyword.blank? && service.blank?
   end
 
+  # Filter organizations by zip code
   def filter_by_zip_code(organizations)
     addresses = Address.where(zip_code: zip_code)
     return organizations.none if addresses.empty?
@@ -36,6 +42,7 @@ class SearchController < ApplicationController
     organizations.where(id: organization_ids)
   end
 
+  # Filter organizations by keyword
   def filter_by_keyword(organizations)
     keyword = params[:keyword].to_s.downcase
     keyword_pattern = "%#{keyword}%"
@@ -46,11 +53,7 @@ class SearchController < ApplicationController
     )
   end
 
-    organizations_query.or(
-      organizations.where(id: service_org_ids + address_org_ids)
-    )
-  end
-
+  # Filter organizations by service
   def filter_by_service(organizations)
     service = params[:service].to_s.downcase
     service_pattern = "%#{service}%"
