@@ -13,7 +13,7 @@ class SearchController < ApplicationController
     organizations = filter_by_service(organizations) if service.present?
 
     puts "Filtered Organizations: #{organizations.inspect}"
-    
+
     # Paginate the organizations collection
     paginated_organizations = organizations.page(params[:page]).per(params[:per_page] || 6)
 
