@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import { createOrganization, getOrganizationById } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { states } from '../../../data/states';
 
 function OrganizationForm() {
   const navigate = useNavigate();
@@ -150,11 +151,16 @@ function OrganizationForm() {
                     <Field
                       as="select"
                       name="address.state"
+                      value={values.address.state} 
+                      onChange={handleChange}
                       className="w-full text-sm bg-white border-gray-300 border rounded-lg shadow-md p-2"
                     >
                       <option value="">Select State</option>
-                      <option value="NY">NY</option>
-                      <option value="CT">CT</option>
+                      {states.map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
                     </Field>
                     <ErrorMessage name="address.state" component="div" className="text-red-500 text-xs" />
                   </div>
