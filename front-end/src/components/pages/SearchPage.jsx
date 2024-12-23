@@ -36,7 +36,7 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await fetchOrganizations();
-        setOrganizations(result.data); // Store all organizations initially
+        setOrganizations(result);
         setError('');
       } catch (error) {
         console.error('Error fetching organizations:', error);
@@ -58,27 +58,29 @@ const SearchPage = () => {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
-  // Fetch filtered organizations based on search params (only after user modifies search)
+  // Fetch filtered organizations based on search params
   useEffect(() => {
-    if (debouncedSearch.zip_code || debouncedSearch.keyword || debouncedSearch.services.length > 0) {
-      const fetchFilteredOrganizations = async () => {
-        setIsLoading(true);
-        try {
-          const result = await searchOrganizations(debouncedSearch);
-          setOrganizations(result); // Update organizations with filtered ones
-          setError('');
-          setHasSearched(true);
-        } catch (error) {
-          console.error('Error fetching organizations:', error);
-          setOrganizations([]);
-          setError('No organizations found');
-          setHasSearched(true);
-        } finally {
-          setIsLoading(false);
-        }
-      };
+    const fetchFilteredOrganizations = async () => {
+      setIsLoading(true);
+      try {
+        const result = await searchOrganizations(debouncedSearch);
+        setOrganizations(result);
+        setError('');
+        setHasSearched(true);
+      } catch (error) {
+        console.error('Error fetching filtered organizations:', error);
+        setOrganizations([]);
+        setError('No organizations found');
+        setHasSearched(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    if (debouncedSearch.zip_code || debouncedSearch.keyword || debouncedSearch.services.length > 0) {
       fetchFilteredOrganizations();
+    } else {
+      setHasSearched(false);
     }
   }, [debouncedSearch]);
 
