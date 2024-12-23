@@ -2,6 +2,7 @@
 class Organization < ApplicationRecord
   belongs_to :auth, foreign_key: 'auth_id'
   has_one :address, dependent: :destroy
+  paginates_per 6
 
   has_many :org_services, dependent: :destroy
   has_many :services, through: :org_services
