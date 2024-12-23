@@ -236,32 +236,33 @@ export const createOrganization = async (organizationData) => {
   }
 };
 
-// export const editOrganization = async (updatedData) => {
-//   const user = JSON.parse(localStorage.getItem('user'));
-//   const related_entity_id = user.related_entity_id;
-
-//   if (!related_entity_id) {
-//     throw new Error('Organization ID not found.');
-//   }
+// export const updateOrganization = async (id, updatedData) => {
 //   const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
 
 //   if (!x_csrf_token) {
 //     throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
 //   }
-//   console.log('Updating organization:', related_entity_id);
-//   console.log(updatedData);
+
+//   if (!id) {
+//     throw new Error('Organization ID is missing.');
+//   }
+//   console.log('Updating organization with data:', updatedData);
+
 //   try {
-//     const response = await axios.patch(`${API_BASE_URL}organizations/${related_entity_id}`, updatedData, {
-//       headers: {
-//         'X-CSRF-Token': x_csrf_token,
-//       },
-//       withCredentials: true,
-//     });
+//     const response = await axios.patch(
+//       `${API_BASE_URL}organizations/${id}`,
+//       { organization: updatedData },
+//       {
+//         headers: {
+//           'X-CSRF-Token': x_csrf_token,
+//         },
+//         withCredentials: true,
+//       }
+//     );
 //     return response.data;
 //   } catch (error) {
-//     console.error('Error editing organization:', error);
-//     console.log(error);
-//     throw error.response.data;
+//     console.error('Error editing organization:', error.response?.data || error.message);
+//     throw error.response?.data || 'Failed to edit organization.';
 //   }
 // };
 
