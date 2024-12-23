@@ -295,4 +295,3 @@ export const getOrganizationById = async () => {
     throw error.response.data;
   }
 };
-

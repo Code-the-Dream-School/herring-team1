@@ -151,7 +151,7 @@ function OrganizationForm() {
                     <Field
                       as="select"
                       name="address.state"
-                      value={values.address.state} 
+                      value={values.address.state}
                       onChange={handleChange}
                       className="w-full text-sm bg-white border-gray-300 border rounded-lg shadow-md p-2"
                     >
