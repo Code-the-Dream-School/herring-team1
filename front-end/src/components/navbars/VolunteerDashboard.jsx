@@ -3,7 +3,7 @@ import VolunteerProfile from '../pages/volunteer/VolunteerProfile.jsx';
 import Volunteering from '../pages/volunteer/Volunteering.jsx';
 import Favorites from '../pages/volunteer/Favorites.jsx';
 import defaultProfileImage from '../assets/images_default/profile_default.jpg';
-import { getVolunteerById, uploadProfileImage } from '../../utils/apiReqests';
+import { getMyVolunteer, uploadProfileImage } from '../../utils/apiReqests';
 
 const volunteerDashboard = [
   { text: 'Profile', link: '/profile' },
@@ -22,7 +22,7 @@ function VolunteerDashboard() {
     const fetchVolunteerData = async () => {
       try {
         setLoading(true);
-        const volunteerData = await getVolunteerById();
+        const volunteerData = await getMyVolunteer();
         setUserProfileImage(volunteerData.profile_img?.url || defaultProfileImage);
         const formattedDate = new Date(volunteerData.created_at).toLocaleDateString('en-US', {
           year: 'numeric',

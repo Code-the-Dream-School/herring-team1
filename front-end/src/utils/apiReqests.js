@@ -74,8 +74,6 @@ export const createVolunteer = async (volunteerData) => {
   }
 
   try {
-    console.log('Sending volunteer data:', volunteerData);
-
     const response = await axios.post(
       `/volunteers`,
       { volunteer: volunteerData },
@@ -93,6 +91,28 @@ export const createVolunteer = async (volunteerData) => {
   } catch (error) {
     console.error('Error creating volunteer:', error.response?.data || error.message);
     throw error.response?.data || 'Failed to create volunteer.';
+  }
+};
+
+//get my_volunteer
+export const getMyVolunteer = async () => {
+  const csrfToken = localStorage.getItem('x_csrf_token');
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure you are logged in.');
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}volunteers/my_volunteer`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching current volunteer data:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to fetch current volunteer data.';
   }
 };
 
