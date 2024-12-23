@@ -16,7 +16,7 @@ function Register() {
       localStorage.setItem('x_csrf_token', response.headers.get('x-csrf-token'));
       setUser(auth.user);
       if (!auth.user.isOrganization) {
-        navigate('/edit_volunteer');
+        navigate('/create_volunteer');
       } else {
         navigate('/dashboard');
       }
