@@ -11,7 +11,7 @@ const SearchFilters = ({ searchParams, setSearchParams, handleServiceChange }) =
         <div className="relative">
           <input
             type="text"
-            placeholder="Search by zip code"
+            placeholder="search by zip code"
             className="p-3 pl-10 pr-10 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 w-full"
             value={searchParams.zip_code}
             onChange={(e) => setSearchParams({ ...searchParams, zip_code: e.target.value })}
@@ -22,7 +22,7 @@ const SearchFilters = ({ searchParams, setSearchParams, handleServiceChange }) =
         <div className="relative">
           <input
             type="text"
-            placeholder="Search by keyword"
+            placeholder="search by keyword"
             className="p-3 pl-10 pr-10 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 w-full"
             value={searchParams.keyword}
             onChange={(e) => setSearchParams({ ...searchParams, keyword: e.target.value })}

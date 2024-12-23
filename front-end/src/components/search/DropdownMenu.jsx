@@ -32,7 +32,7 @@ const DropdownMenu = ({ selectedServices, handleServiceChange }) => {
         }`}
         onClick={toggleDropdown}
       >
-        {selectedServices.length > 0 ? 'Selected services' : 'Search by service'}
+        {selectedServices.length > 0 ? 'selected services' : 'search by service'}
         <ChevronDownIcon className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" />
       </button>
       {isDropdownVisible && (

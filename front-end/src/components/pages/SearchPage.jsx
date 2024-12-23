@@ -16,6 +16,7 @@ const SearchPage = () => {
   const [debouncedSearch, setDebouncedSearch] = useState(searchParams);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const navigate = useNavigate();
 
@@ -35,7 +36,7 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await fetchOrganizations();
-        setOrganizations(result.data);
+        setOrganizations(result.data); // Store all organizations initially
         setError('');
       } catch (error) {
         console.error('Error fetching organizations:', error);
@@ -57,24 +58,26 @@ const SearchPage = () => {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
-  // Fetch filtered organizations based on search params
+  // Fetch filtered organizations based on search params (only after user modifies search)
   useEffect(() => {
-    const fetchFilteredOrganizations = async () => {
-      setIsLoading(true);
-      try {
-        const result = await searchOrganizations(debouncedSearch);
-        setOrganizations(result);
-        setError('');
-      } catch (error) {
-        console.error('Error fetching organizations:', error);
-        setOrganizations([]);
-        setError('No Organization found');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (debouncedSearch.zip_code || debouncedSearch.keyword || debouncedSearch.services.length > 0) {
+      const fetchFilteredOrganizations = async () => {
+        setIsLoading(true);
+        try {
+          const result = await searchOrganizations(debouncedSearch);
+          setOrganizations(result); // Update organizations with filtered ones
+          setError('');
+          setHasSearched(true);
+        } catch (error) {
+          console.error('Error fetching organizations:', error);
+          setOrganizations([]);
+          setError('No organizations found');
+          setHasSearched(true);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
       fetchFilteredOrganizations();
     }
   }, [debouncedSearch]);
@@ -105,7 +108,7 @@ const SearchPage = () => {
           setSearchParams={setSearchParams}
           handleServiceChange={handleServiceChange}
         />
-        {error && (
+        {error && hasSearched && (
           <div className="text-red-500 text-center my-4">
             <p>{error}</p>
           </div>
@@ -120,19 +123,17 @@ const SearchPage = () => {
             <div className="text-center">Loading...</div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {organizations.length > 0 ? (
-                organizations.map((org) => (
-                  <OrganizationCard
-                    key={org.id}
-                    org={org}
-                    toggleFavorite={toggleFavorite}
-                    handleCardClick={handleCardClick}
-                    favorites={favorites}
-                  />
-                ))
-              ) : (
-                <div className="text-center">No organizations found</div>
-              )}
+              {organizations.length > 0
+                ? organizations.map((org) => (
+                    <OrganizationCard
+                      key={org.id}
+                      org={org}
+                      toggleFavorite={toggleFavorite}
+                      handleCardClick={handleCardClick}
+                      favorites={favorites}
+                    />
+                  ))
+                : hasSearched && <div className="text-center">No organizations found</div>}
             </div>
           )}
         </div>
