@@ -1,11 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CreateRequest from './modal/requestForm/CreateRequest.jsx';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import RequestList from './RequestList.jsx';
+import { fetchRequests, getMyOrganization } from '../../../utils/apiReqests';
 
 function Request() {
   const [requests, setRequests] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchRequests()
+      .then(async (response) => {
+        const res = await getMyOrganization();
+        const orgId = res.data.organization.id;
+        const filteredRequests = response.data.filter((request) => request.organization_id === orgId);
+        setRequests(filteredRequests);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching requests:', error);
+        setError(error);
+        setLoading(false);
+      });
+  }, []);
 
   const handleSaveRequest = (newRequest) => {
     if (editingIndex !== null) {
@@ -30,7 +49,7 @@ function Request() {
 
   return (
     <div>
-      <h1 className="font-bold text-center text-gray-800 sm:text-lg md:text-xl lg:text-2xl mb-4">My Requests</h1>
+      <h1 className="font-bold text-center text-gray-800 sm:text-lg md:text-xl lg:text-2xl mb-1 hidden">My Requests</h1>
       <div className=" flex flex-col items-center ">
         <div className="flex flex-col sm:flex-row w-full sm:justify-between gap-4">
           {/* Search Section - to be implemented*/}
@@ -55,13 +74,19 @@ function Request() {
       </div>
 
       {/* Display the list of requests */}
-      <div className="requests-list mt-3">
-        {requests.length > 0 ? (
-          <RequestList requests={requests} onEditRequest={handleEditRequest} onRemoveRequest={handleRemoveRequest} />
-        ) : (
-          <p className="my-3">No requests added yet.</p>
-        )}
-      </div>
+      {isLoading ? (
+        <p className="text-center">Loading...</p>
+      ) : error ? (
+        <p className="text-center text-red-500">Error: {error}</p>
+      ) : (
+        <div className="requests-list mt-3">
+          {Array.isArray(requests) && requests.length > 0 ? (
+            <RequestList requests={requests} onEditRequest={handleEditRequest} onRemoveRequest={handleRemoveRequest} />
+          ) : (
+            <p className="my-3">No requests added yet.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
