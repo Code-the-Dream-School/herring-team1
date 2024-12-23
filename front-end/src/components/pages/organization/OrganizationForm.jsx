@@ -73,7 +73,7 @@ function OrganizationForm() {
     try {
       if (isOrganizationCreated) {
         toast.info('Organization already exists!');
-        return; 
+        return;
       }
       await createOrganization(values);
       toast.success('Organization created successfully!');
