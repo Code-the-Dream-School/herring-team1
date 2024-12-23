@@ -3,8 +3,8 @@ class VolunteersController < ApplicationController
 
   before_action :is_auth_logged_in
   before_action :ensure_is_volunteer, only: [:create]
-  before_action :find_volunteer, only: [:show, :update, :destroy]
-  before_action :authorize_volunteer, only: [:update, :destroy]
+  before_action :find_volunteer, only: [:show, :update, :destroy, :upload_image]
+  before_action :authorize_volunteer!, only: [:update, :destroy]
 
   # GET all volunteers
   def index
@@ -37,7 +37,7 @@ class VolunteersController < ApplicationController
         about: @volunteer.about,
         profile_img: @volunteer.profile_img,
         email: @volunteer.auth.email,
-        address: @volunteer.address.as_json(only: [:id, :street, :city, :state, :zip_code])
+        address: @volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
       }
     }, status: :ok
   end
@@ -48,7 +48,6 @@ class VolunteersController < ApplicationController
     @volunteer.auth_id = current_auth.id
 
     if @volunteer.save
-      # Create address
       address = Address.create(address_params.merge(volunteer_id: @volunteer.id)) if params[:volunteer][:address].present?
 
       render json: {
@@ -70,7 +69,7 @@ class VolunteersController < ApplicationController
     end
   end
 
-  # UPDATE volunteer
+  # PATCH/PUT - update volunteer
   def update
     if @volunteer.update(volunteer_params)
       if params[:volunteer][:address].present?
@@ -80,24 +79,26 @@ class VolunteersController < ApplicationController
           @volunteer.create_address(address_params)
         end
       end
-      render json: { message: "Volunteer updated successfully",
-                     volunteer: {
-                       id: @volunteer.id,
-                       auth_id: @volunteer.auth_id,
-                       first_name: @volunteer.first_name,
-                       last_name: @volunteer.last_name,
-                       phone: @volunteer.phone,
-                       about: @volunteer.about,
-                       profile_img: @volunteer.profile_img,
-                       email: @volunteer.auth.email,
-                       address: @volunteer.address.as_json(only: [:id, :street, :city, :state, :zip_code])
-                     } }, status: :ok
+      render json: {
+        message: "Volunteer updated successfully",
+        volunteer: {
+          id: @volunteer.id,
+          auth_id: @volunteer.auth_id,
+          first_name: @volunteer.first_name,
+          last_name: @volunteer.last_name,
+          phone: @volunteer.phone,
+          about: @volunteer.about,
+          profile_img: @volunteer.profile_img,
+          email: @volunteer.auth.email,
+          address: @volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+        }
+      }, status: :ok
     else
       render json: { message: "Failed to update volunteer", errors: @volunteer.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
-  # DELETE volunteer
+  # DELETE - delete volunteer
   def destroy
     if @volunteer.destroy
       render json: { message: "Volunteer deleted successfully" }, status: :ok
@@ -123,16 +124,19 @@ class VolunteersController < ApplicationController
         address: volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
       }, status: :ok
     else
-      render json: { message: 'You do not own an volunteer' }, status: :not_found
+      render json: { message: 'You do not own a volunteer profile' }, status: :not_found
     end
   end
 
+  # POST - upload profile image
   def upload_image
-    @volunteer = find_volunteer
-    return render_not_found unless @volunteer
-
     if params[:profile_img].present?
-      process_image_upload
+      @volunteer.profile_img = params[:profile_img]
+      if @volunteer.save
+        render json: { imageUrl: @volunteer.profile_img.url }, status: :ok
+      else
+        render json: { error: @volunteer.errors.full_messages }, status: :unprocessable_entity
+      end
     else
       render json: { error: 'No image file provided' }, status: :unprocessable_entity
     end
@@ -142,8 +146,8 @@ class VolunteersController < ApplicationController
 
   private
 
-  # Authorize volunteer actions
-  def authorize_volunteer
+  # Authenticate volunteer
+  def authorize_volunteer!
     return if @volunteer.auth_id == current_auth.id
 
     render json: { message: "You are not authorized to perform this action" }, status: :forbidden
@@ -156,36 +160,25 @@ class VolunteersController < ApplicationController
     render json: { message: "Volunteer not found" }, status: :not_found
   end
 
-  def process_image_upload
-    Rails.logger.info "Uploading for Volunteer ID: #{@volunteer.id}"
-    Rails.logger.info "Profile Image: #{params[:profile_img].inspect}"
-
-    @volunteer.profile_img = params[:profile_img]
-    if @volunteer.save
-      render json: { imageUrl: @volunteer.profile_img.url }, status: :ok
-    else
-      render json: { error: @volunteer.errors.full_messages }, status: :unprocessable_entity
-    end
-  end
-
-  def handle_upload_error(error)
-    Rails.logger.error "Cloudinary error: #{error.message}"
-    render json: { error: "Cloudinary error: #{error.message}" }, status: :unprocessable_entity
-  end
-
-  # Check isOrganization == false
+  # Ensure user is not an organization
   def ensure_is_volunteer
+    Rails.logger.info "isOrganization: #{current_auth.isOrganization}"
     return unless current_auth.isOrganization
 
-    render json: { message: 'You register your account as organization, you can not create volunteer' }, status: :forbidden
+    render json: { message: 'You registered as an organization, you cannot create a volunteer profile' }, status: :forbidden
   end
 
-  # Params for update
+  # Strong parameters
   def volunteer_params
     params.require(:volunteer).permit(:first_name, :last_name, :phone, :about, :profile_img)
   end
 
   def address_params
     params.require(:volunteer).require(:address).permit(:street, :city, :state, :zip_code)
+  end
+
+  def handle_upload_error(error)
+    Rails.logger.error "Cloudinary error: #{error.message}"
+    render json: { error: "Cloudinary error: #{error.message}" }, status: :unprocessable_entity
   end
 end
