@@ -57,17 +57,14 @@ export const logout = async () => {
   }
 };
 
-export const fetchOrganizations = async () => {
+export const fetchOrganizations = async (params = {}) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}organizations`);
-    console.log('Response data:', response.data); // Log the response data
-    if (response.data && Array.isArray(response.data)) {
-      return response.data;
-    } else {
-      throw new Error('Organizations data is not an array');
-    }
+    const endpoint = Object.keys(params).length > 0 ? 'search' : 'organizations';
+    const response = await axios.get(`${API_BASE_URL}${endpoint}`, { params });
+    console.log('Response data:', response.data);
+    return response.data;
   } catch (error) {
-    console.error('Error fetching organizations:', error.response ? error.response.data : error.message);
+    console.error('Error fetching organizations:', error.response?.data || error.message);
     throw error;
   }
 };

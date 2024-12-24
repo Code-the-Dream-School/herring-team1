@@ -4,11 +4,12 @@ import { fetchOrganizations, searchOrganizations } from '../../utils/apiReqests'
 import SearchFilters from '../search/SearchFilters.jsx';
 import SelectedFilters from '../search/SelectedFilters.jsx';
 import OrganizationCard from '../search/OrganizationCard.jsx';
+import Pagination from '../search/Pagination.jsx';
 
 const SearchPage = () => {
   const [favorites, setFavorites] = useState([]);
   const [organizations, setOrganizations] = useState([]);
-  const [allOrganizations, setAllOrganizations] = useState([]); // Store all organizations
+  const [allOrganizations, setAllOrganizations] = useState([]);
   const [searchParams, setSearchParams] = useState({
     zip_code: '',
     keyword: '',
@@ -19,7 +20,17 @@ const SearchPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchParams);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchParams]);
 
   const toggleFavorite = (id) => {
     setFavorites((prevFavorites) =>
@@ -31,20 +42,26 @@ const SearchPage = () => {
     navigate(`/organizations/${id}`);
   };
 
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   // Fetch all organizations on page load
   useEffect(() => {
     const fetchAllOrganizations = async () => {
       setIsLoading(true);
       try {
         const result = await fetchOrganizations();
-        console.log('Fetched organizations:', result); // Log the fetched organizations
-        setOrganizations(result); // Ensure to access the organizations array from the response
-        setAllOrganizations(result); // Store all organizations
+        setOrganizations(result.slice(0, 10)); // Первые 10 организаций для начальной страницы
+        setAllOrganizations(result);
+        setTotalPages(Math.ceil(result.length / 10)); // Рассчитать количество страниц
         setError('');
       } catch (error) {
         console.error('Error fetching organizations:', error);
         setOrganizations([]);
         setAllOrganizations([]);
+        setTotalPages(1);
         setError('No organizations found');
       } finally {
         setIsLoading(false);
@@ -54,27 +71,20 @@ const SearchPage = () => {
     fetchAllOrganizations();
   }, []);
 
-  // Update debounced search params
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchParams);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchParams]);
-
   // Fetch filtered organizations based on search params
   useEffect(() => {
     const fetchFilteredOrganizations = async () => {
       setIsLoading(true);
       try {
         const result = await searchOrganizations(debouncedSearch);
-        console.log('Fetched filtered organizations:', result); // Log the fetched filtered organizations
-        setOrganizations(result); // Ensure to access the organizations array from the response
+        setOrganizations(result.slice((currentPage - 1) * 10, currentPage * 10)); // Показать только текущую страницу
+        setTotalPages(Math.ceil(result.length / 10)); // Обновить количество страниц
         setError('');
         setHasSearched(true);
       } catch (error) {
         console.error('Error fetching filtered organizations:', error);
         setOrganizations([]);
+        setTotalPages(1);
         setError('No organizations found');
         setHasSearched(true);
       } finally {
@@ -85,10 +95,11 @@ const SearchPage = () => {
     if (debouncedSearch.zip_code || debouncedSearch.keyword || debouncedSearch.services.length > 0) {
       fetchFilteredOrganizations();
     } else {
-      setOrganizations(allOrganizations); // Display all organizations if no search parameters
+      setOrganizations(allOrganizations.slice((currentPage - 1) * 10, currentPage * 9));
+      setTotalPages(Math.ceil(allOrganizations.length / 10));
       setHasSearched(false);
     }
-  }, [debouncedSearch, allOrganizations]);
+  }, [debouncedSearch, allOrganizations, currentPage]);
 
   const handleServiceChange = (serviceName) => {
     setSearchParams((prevParams) => {
@@ -130,18 +141,21 @@ const SearchPage = () => {
           {isLoading ? (
             <div className="text-center">Loading...</div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {organizations.length > 0
-                ? organizations.map((org) => (
-                    <OrganizationCard
-                      key={org.id}
-                      org={org}
-                      toggleFavorite={toggleFavorite}
-                      handleCardClick={handleCardClick}
-                      favorites={favorites}
-                    />
-                  ))
-                : hasSearched && <div className="text-center">No organizations found</div>}
+            <div>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {organizations.length > 0
+                  ? organizations.map((org) => (
+                      <OrganizationCard
+                        key={org.id}
+                        org={org}
+                        toggleFavorite={toggleFavorite}
+                        handleCardClick={handleCardClick}
+                        favorites={favorites}
+                      />
+                    ))
+                  : hasSearched && <div className="text-center">No organizations found</div>}
+              </div>
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
             </div>
           )}
         </div>
