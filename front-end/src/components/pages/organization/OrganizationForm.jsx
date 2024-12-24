@@ -270,13 +270,13 @@ function OrganizationForm() {
             <div className="flex justify-center mt-8 mb-4">
               <button
                 type="submit"
-                className={`w-2/5 px-4 py-2 sm:text-xl rounded-md ${
+                className={`w-2/5 px-4 py-2 sm:text-xl  lg:text-lg rounded-md ${
                   isEditing
-                    ? 'border-2 border-red-500 text-red-500 bg-white hover:bg-red-100 hover:border-red-600 hover:text-red-600'
-                    : 'w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50'
+                    ? 'border-2 border-red-500 sm:text-xl  lg:text-lg  rounded-md  text-red-500 bg-white hover:bg-red-100 hover:border-red-600 hover:text-red-600'
+                    : 'w-2/5 px-4 py-2 sm:text-xl  lg:text-lg bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400'
                 }`}
               >
-                {isEditing ? 'Update Organization' : 'Create Organization'}
+                {isEditing ? 'Update' : 'Create'}
               </button>
             </div>
           </Form>
