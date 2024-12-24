@@ -122,7 +122,7 @@ class OrganizationsController < ApplicationController
         services_to_add.each do |service_id|
           OrgService.create(organization: @organization, service_id: service_id)
         end
-      elsif params[:organization][:service_ids].empty?
+      elsif params[:organization][:service_ids].present?
         # If no services are selected, remove all existing connections and their associated requests
         @organization.org_services.each do |org_service|
           org_service.requests.destroy_all

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { createOrganization, getOrganizationById } from '../../../utils/apiReqests';
+import { createOrganization, getOrganizationById, updateOrganization } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { states } from '../../../data/states';
@@ -17,7 +17,7 @@ function OrganizationForm() {
     mission: '',
     description: '',
   });
-  const [isOrganizationCreated, setIsOrganizationCreated] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchOrganization = async () => {
@@ -25,6 +25,7 @@ function OrganizationForm() {
         const fullData = await getOrganizationById();
         const data = fullData.organization;
         const values = {
+          id: data.id || '',
           name: data.name || '',
           address: {
             street: data.address?.street || '',
@@ -37,14 +38,10 @@ function OrganizationForm() {
           mission: data.mission || '',
           description: data.description || '',
         };
-        console.log('fetchOrganization');
-        console.log(data);
-        console.log(values);
         setFormValues(values);
-        setIsOrganizationCreated(true);
+        setIsEditing(true);
       } catch (error) {
         console.error('Failed to fetch organization:', error);
-        setIsOrganizationCreated(false);
       }
     };
     fetchOrganization();
@@ -72,17 +69,27 @@ function OrganizationForm() {
 
   const handleSubmit = async (values) => {
     try {
-      if (isOrganizationCreated) {
-        toast.info('Organization already exists!');
-        return;
+      let response;
+      if (isEditing) {
+        if (!values.id) {
+          throw new Error('Organization ID is missing');
+        }
+        response = await updateOrganization(values, values);
+        if (response) {
+          toast.success('Organization updated successfully!');
+        } else {
+          throw new Error('Failed to update organization');
+        }
+      } else {
+        response = await createOrganization(values);
+        if (response) {
+          toast.success('Organization created successfully!');
+          setFormValues({ ...values, id: response.id });
+        } else {
+          throw new Error('Failed to create organization');
+        }
       }
-      await createOrganization(values);
-      toast.success('Organization created successfully!');
-      setIsOrganizationCreated(true);
-
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 3000);
+      setTimeout(() => navigate('/dashboard'), 3000);
     } catch (error) {
       toast.error(error.message || 'An error occurred while creating the organization.');
     }
@@ -261,20 +268,16 @@ function OrganizationForm() {
             </div>
 
             <div className="flex justify-center mt-8 mb-4">
-              {!isOrganizationCreated && (
-                <button
-                  type="submit"
-                  className="w-2/5 px-4 py-2 sm:text-xl rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
-                >
-                  Create Organization
-                </button>
-              )}
-              {/* <button
-                type="button"
-                className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+              <button
+                type="submit"
+                className={`w-2/5 px-4 py-2 sm:text-xl rounded-md ${
+                  isEditing
+                    ? 'border-2 border-red-500 text-red-500 bg-white hover:bg-red-100 hover:border-red-600 hover:text-red-600'
+                    : 'w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50'
+                }`}
               >
-                Edit
-              </button> */}
+                {isEditing ? 'Update Organization' : 'Create Organization'}
+              </button>
             </div>
           </Form>
         )}
