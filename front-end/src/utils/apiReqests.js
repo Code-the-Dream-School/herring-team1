@@ -1,11 +1,8 @@
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_REACT_URL;
 
-if (!API_BASE_URL) {
-  throw new Error('API_BASE_URL is not defined. Please set it in your environment variables.');
-}
-
-console.log('API_BASE_URL:', API_BASE_URL);
+const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+console.log('x_csrf_token', x_csrf_token);
 
 export const register = async (email, password, confirmPassword, isOrganization) => {
   try {
@@ -27,8 +24,8 @@ export const login = async (email, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}auth/login`, {
       auth: {
-        email,
-        password,
+        email: email,
+        password: password,
       },
     });
     return response;
@@ -81,7 +78,6 @@ export const searchOrganizations = async (searchParams) => {
       params: searchParams,
     });
     console.log('Search response data:', response.data); // Log the response data
-    console.log('Response structure:', JSON.stringify(response.data, null, 2)); // Log the response structure
     if (response.data && Array.isArray(response.data.organizations)) {
       return response.data.organizations;
     } else {
@@ -155,6 +151,59 @@ export const uploadProfileImage = async (imageFile) => {
   }
 };
 
+export const getMyOrganization = async () => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') || null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}organizations/my_organization`, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+    console.log(response.data);
+    return response;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const fetchRequests = async () => {
+  try {
+    return await axios.get(`${API_BASE_URL}requests`, {});
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const postRequests = async (values, orgId, serviceId, statusId) => {
+  try {
+    const body = {
+      title: values.title,
+      description: values.description,
+      org_service_id: serviceId,
+      request_status_id: statusId,
+    };
+    console.log('POST request body:', body);
+
+    const response = await axios.post(`${API_BASE_URL}organizations/${orgId}/requests/`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': x_csrf_token,
+      },
+      credentials: 'include',
+    });
+
+    const responseBody = await response.data;
+    console.log('POST request response:', responseBody);
+  } catch (error) {
+    console.error('Error while submitting form:', error);
+  }
+};
+
 // Create a new organization
 export const createOrganization = async (organizationData) => {
   const csrfToken = localStorage.getItem('x_csrf_token');
@@ -193,7 +242,36 @@ export const createOrganization = async (organizationData) => {
   }
 };
 
-// Get organization by ID
+// export const updateOrganization = async (id, updatedData) => {
+//   const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+//   if (!x_csrf_token) {
+//     throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+//   }
+
+//   if (!id) {
+//     throw new Error('Organization ID is missing.');
+//   }
+//   console.log('Updating organization with data:', updatedData);
+
+//   try {
+//     const response = await axios.patch(
+//       `${API_BASE_URL}organizations/${id}`,
+//       { organization: updatedData },
+//       {
+//         headers: {
+//           'X-CSRF-Token': x_csrf_token,
+//         },
+//         withCredentials: true,
+//       }
+//     );
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error editing organization:', error.response?.data || error.message);
+//     throw error.response?.data || 'Failed to edit organization.';
+//   }
+// };
+
 export const getOrganizationById = async () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user?.id;

@@ -18,8 +18,8 @@ function RequestList({ requests, onEditRequest, onRemoveRequest }) {
         {requests.map((request, index) => (
           <tr key={index} className="text-xs sm:text-sm">
             <td className="border border-gray-300 p-2 text-center md:px-2 md:py-2">{index + 1}</td>
-            <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.service}</td>
-            <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.request}</td>
+            <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.name}</td>
+            <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.title}</td>
             <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.description}</td>
             <td className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">
               {request.status}
