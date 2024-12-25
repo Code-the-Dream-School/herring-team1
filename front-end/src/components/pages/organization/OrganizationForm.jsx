@@ -16,6 +16,7 @@ function OrganizationForm() {
     website: '',
     mission: '',
     description: '',
+    service_ids: [1, 2],
   });
   const [isEditing, setIsEditing] = useState(false);
 
@@ -37,6 +38,7 @@ function OrganizationForm() {
           website: data.website || '',
           mission: data.mission || '',
           description: data.description || '',
+          service_ids: data.services?.map((service) => service.id) || [],
         };
         setFormValues(values);
         setIsEditing(true);
