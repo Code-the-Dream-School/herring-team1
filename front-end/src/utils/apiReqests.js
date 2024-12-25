@@ -235,35 +235,34 @@ export const createOrganization = async (organizationData) => {
   }
 };
 
-// export const updateOrganization = async (id, updatedData) => {
-//   const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+export const updateOrganization = async (organization, updatedData) => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
 
-//   if (!x_csrf_token) {
-//     throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
-//   }
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
 
-//   if (!id) {
-//     throw new Error('Organization ID is missing.');
-//   }
-//   console.log('Updating organization with data:', updatedData);
+  if (!organization.id) {
+    throw new Error('Organization ID is undefined or missing.');
+  }
 
-//   try {
-//     const response = await axios.patch(
-//       `${API_BASE_URL}organizations/${id}`,
-//       { organization: updatedData },
-//       {
-//         headers: {
-//           'X-CSRF-Token': x_csrf_token,
-//         },
-//         withCredentials: true,
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error editing organization:', error.response?.data || error.message);
-//     throw error.response?.data || 'Failed to edit organization.';
-//   }
-// };
+  try {
+    const response = await axios.patch(
+      `${API_BASE_URL}organizations/${organization.id}`,
+      { organization: updatedData },
+      {
+        headers: {
+          'X-CSRF-Token': x_csrf_token,
+        },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error editing organization:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to edit organization.';
+  }
+};
 
 export const getOrganizationById = async () => {
   const user = JSON.parse(localStorage.getItem('user'));
