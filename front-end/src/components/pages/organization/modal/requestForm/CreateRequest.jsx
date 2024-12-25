@@ -47,7 +47,6 @@ function CreateRequest({ onSave, editingIndex, requests, onEditRequest }) {
           tabIndex="-1"
           style={{ display: 'block' }}
           aria-labelledby="ModalLabel"
-          aria-hidden="true"
         >
           <div className="overlayModal">
             <div className="modal-dialog">

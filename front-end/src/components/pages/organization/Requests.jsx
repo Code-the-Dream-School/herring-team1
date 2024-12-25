@@ -2,28 +2,34 @@ import { useState, useEffect } from 'react';
 import CreateRequest from './modal/requestForm/CreateRequest.jsx';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import RequestList from './RequestList.jsx';
-import { fetchRequests, getMyOrganization } from '../../../utils/apiReqests';
+import { fetchMyOrgRequests, getMyOrganization, deleteRequest } from '../../../utils/apiReqests';
 
 function Request() {
   const [requests, setRequests] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [isLoading, setLoading] = useState(true);
+  const [orgId, setOrgId] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchRequests()
-      .then(async (response) => {
+    const fetchData = async () => {
+      try {
+        // Fetch organization data to get organization_id
         const res = await getMyOrganization();
         const orgId = res.data.organization.id;
-        const filteredRequests = response.data.filter((request) => request.organization_id === orgId);
-        setRequests(filteredRequests);
+        setOrgId(orgId);
+        // Fetch requests using the organization_id
+        const reqResponse = await fetchMyOrgRequests(orgId);
+        setRequests(reqResponse);
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error fetching requests:', error);
         setError(error);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSaveRequest = (newRequest) => {
@@ -43,8 +49,25 @@ function Request() {
     setEditingIndex(index);
   };
 
-  const handleRemoveRequest = (index) => {
-    setRequests((prevRequests) => prevRequests.filter((_, i) => i !== index));
+  const handleRemoveRequest = async (index) => {
+    if (orgId === null) {
+      console.error('Organization ID is not available.');
+      return;
+    }
+
+    const { id } = requests[index];
+
+    try {
+      const response = await deleteRequest(id, orgId);
+      if (response && response.message === 'Request successfully deleted') {
+        setRequests((prevRequests) => prevRequests.filter((_, i) => i !== index));
+        console.log(`Request with ID: ${id} was successfully deleted.`);
+      } else {
+        console.error(`Failed to delete request with ID: ${id}`);
+      }
+    } catch (error) {
+      console.error('Error during deletion:', error.message);
+    }
   };
 
   return (

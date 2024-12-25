@@ -191,8 +191,7 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
       credentials: 'include',
     });
 
-    const responseBody = await response.data;
-    console.log('POST request response:', responseBody);
+    return response.data;
   } catch (error) {
     console.error('Error while submitting form:', error);
   }
@@ -293,5 +292,56 @@ export const getOrganizationById = async () => {
     console.error('Error getting organization:', error);
     console.log(error);
     throw error.response.data;
+  }
+};
+
+export const fetchMyOrgRequests = async (orgId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}organizations/${orgId}/requests`, {});
+
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const patchRequest = async (requestId, values, orgId, serviceId) => {
+  try {
+    const body = {
+      title: values.title,
+      description: values.description,
+      org_service_id: serviceId,
+      status: values.status,
+    };
+
+    const response = await axios.patch(`${API_BASE_URL}organizations/${orgId}/requests/${requestId}`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': x_csrf_token,
+      },
+      credentials: 'include',
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error while updating request:', error);
+    throw error;
+  }
+};
+
+export const deleteRequest = async (requestId, orgId) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}organizations/${orgId}/requests/${requestId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': x_csrf_token,
+      },
+      credentials: 'include',
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error while deleting request:', error);
+    throw error;
   }
 };
