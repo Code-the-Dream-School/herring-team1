@@ -146,6 +146,13 @@ export const searchOrganizations = async (zip_code, keyword, service) => {
 };
 
 export const getMyOrganization = async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.id;
+
+  if (!userId) {
+    throw new Error('Organization ID not found.');
+  }
+
   const x_csrf_token = localStorage.getItem('x_csrf_token') || null;
 
   if (!x_csrf_token) {
@@ -158,8 +165,8 @@ export const getMyOrganization = async () => {
       },
       withCredentials: true,
     });
-    console.log(response.data);
-    return response;
+
+    return response.data;
   } catch (error) {
     throw error.response.data;
   }
@@ -181,7 +188,6 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
       org_service_id: serviceId,
       request_status_id: statusId,
     };
-    console.log('POST request body:', body);
 
     const response = await axios.post(`${API_BASE_URL}organizations/${orgId}/requests/`, body, {
       headers: {

@@ -1,30 +1,13 @@
-import { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import InputWithLabel from './InputWithLabel.jsx';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { getMyOrganization, postRequests, patchRequest } from '../../../../../utils/apiReqests';
+import { postRequests, patchRequest } from '../../../../../utils/apiReqests';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { formatService } from '../../../../../utils/FormatServices.jsx';
 
-const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
-  const [orgId, setOrgId] = useState(null);
-  const [services, setServices] = useState([]);
-
-  useEffect(() => {
-    const fetchOrganization = async () => {
-      try {
-        const response = await getMyOrganization();
-        const orgId = response.data.organization.id;
-        const services = response.data.organization.org_services || [];
-        setServices(services);
-        setOrgId(orgId);
-      } catch (error) {
-        console.error('Error fetching organization data:', error);
-      }
-    };
-
-    fetchOrganization();
-  }, []);
-
+const CreateRequestForm = ({ onSave, onCancel, initialData, orgId, services }) => {
   const formik = useFormik({
     initialValues: {
       service: initialData?.name || services[0]?.name || '',
@@ -48,9 +31,19 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
         if (initialData?.id) {
           // PATCH for editing an existing request
           response = await patchRequest(initialData.id, values, orgId, serviceId);
+          if (response) {
+            toast.success('Request updated successfully!');
+          } else {
+            throw new Error('Failed to update the request');
+          }
         } else {
           // POST a new request
           response = await postRequests(values, orgId, serviceId);
+          if (response) {
+            toast.success('Request created successfully!');
+          } else {
+            throw new Error('Failed to create the request');
+          }
         }
         const result = await {
           ...response.request,
@@ -62,7 +55,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
         formik.resetForm();
       } catch (error) {
         console.warn('Error while submitting form:', error);
-        alert('An error occurred while saving the form. Please try again.');
+        toast.error('An error occurred while saving the form. Please try again.');
       }
     },
   });
@@ -83,7 +76,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
         >
           {services.map((service) => (
             <option key={service.id} value={service.name}>
-              {service.name}
+              {formatService(service.name)}
             </option>
           ))}
         </select>
@@ -170,6 +163,8 @@ CreateRequestForm.propTypes = {
   }),
   onSave: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  orgId: PropTypes.number.isRequired,
+  services: PropTypes.array.isRequired,
 };
 
 export default CreateRequestForm;

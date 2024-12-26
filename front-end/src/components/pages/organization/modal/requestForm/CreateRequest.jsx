@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import CreateRequestForm from './CreateRequestForm.jsx';
 import styles from './CreateRequest.module.css';
 
-function CreateRequest({ onSave, editingIndex, requests, onEditRequest }) {
+function CreateRequest({ onSave, editingIndex, requests, onEditRequest, services, orgId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -64,6 +64,8 @@ function CreateRequest({ onSave, editingIndex, requests, onEditRequest }) {
                     onSave={handleSave}
                     onCancel={handleCloseModal}
                     initialData={editingIndex !== null ? requests[editingIndex] : null}
+                    services={services}
+                    orgId={orgId}
                   />
                 </div>
               </div>
@@ -80,6 +82,8 @@ CreateRequest.propTypes = {
   editingIndex: PropTypes.number,
   requests: PropTypes.array.isRequired,
   onEditRequest: PropTypes.func.isRequired,
+  services: PropTypes.array.isRequired,
+  orgId: PropTypes.number,
 };
 
 export default CreateRequest;
