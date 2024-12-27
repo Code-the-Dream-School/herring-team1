@@ -1,6 +1,6 @@
 import { services } from '../data/services';
 
-export function formatServicesNames(orgServices) {
+export function formatServices(orgServices) {
   if (!orgServices || orgServices.length === 0) {
     return 'No services available.';
   }
@@ -12,6 +12,12 @@ export function formatServicesNames(orgServices) {
   });
 
   return serviceNames.join('; ');
+}
+
+export function formatAddress(address) {
+  const { address: street, city, state, zip_code } = address || {};
+
+  return [street || '', city || '', state || '', zip_code || ''].filter(Boolean).join(', ');
 }
 
 export const formatStatus = (status) => {
