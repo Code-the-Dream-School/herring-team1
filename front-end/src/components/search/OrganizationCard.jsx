@@ -27,7 +27,41 @@ const OrganizationCard = ({ org, toggleFavorite, handleCardClick, favorites }) =
       </button>
       <div className="cursor-pointer" onClick={() => handleCardClick(org.id)}>
         <h3 className="font-semibold text-xl">{org.name}</h3>
-        <p>{org.description}</p>
+        {org.logo && (
+          <img src={org.logo} alt={`${org.name} logo`} className="w-16 h-16 object-cover rounded-full mb-2" />
+        )}
+        <p className="truncate max-w-xs" title={org.description}>
+          {org.description}
+        </p>
+
+        {/* Requests and Services */}
+        <div className="mt-4">
+          <h4 className="font-semibold text-sm">Requests:</h4>
+          <ul>
+            {org.requests && org.requests.length > 0 ? (
+              org.requests.map((request, index) => (
+                <li key={index} className="text-sm">
+                  {request}
+                </li>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">No requests available.</p>
+            )}
+          </ul>
+        </div>
+
+        <div className="mt-4">
+          <h4 className="font-semibold text-sm">Services:</h4>
+          {org.services && org.services.length > 0 ? (
+            org.services.map((service, index) => (
+              <span key={index} className="bg-purple-300 text-purple-800 px-3 py-1 rounded-full text-sm mr-2">
+                {service}
+              </span>
+            ))
+          ) : (
+            <p className="text-sm text-gray-500">No services available.</p>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -38,6 +72,9 @@ OrganizationCard.propTypes = {
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     description: PropTypes.string,
+    logo: PropTypes.string,
+    requests: PropTypes.arrayOf(PropTypes.string),
+    services: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
   handleCardClick: PropTypes.func.isRequired,
