@@ -1,6 +1,6 @@
 import { services } from '../data/services';
 
-export function formatServices(orgServices) {
+export function formatServicesNames(orgServices) {
   if (!orgServices || orgServices.length === 0) {
     return 'No services available.';
   }
@@ -14,8 +14,13 @@ export function formatServices(orgServices) {
   return serviceNames.join('; ');
 }
 
-export function formatAddress(address) {
-  const { address: street, city, state, zip_code } = address || {};
+export const formatStatus = (status) => {
+  const requestStatus = {
+    open: 'Open',
+    in_progress: 'In progress',
+    closed: 'Closed',
+    canceled: 'Canceled',
+  };
 
-  return [street || '', city || '', state || '', zip_code || ''].filter(Boolean).join(', ');
-}
+  return requestStatus[status] || status;
+};

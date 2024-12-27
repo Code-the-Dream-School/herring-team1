@@ -1,18 +1,8 @@
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import PropTypes from 'prop-types';
+import { formatStatus } from '../../../utils/formatData.js';
 
 function RequestList({ requests, onEditRequest, onRemoveRequest }) {
-  const formatStatus = (status) => {
-    const requestStatus = {
-      open: 'Open',
-      in_progress: 'In progress',
-      closed: 'Closed',
-      canceled: 'Canceled',
-    };
-
-    return requestStatus[status] || status;
-  };
-
   return (
     <table className="table-auto w-full border-collapse border border-gray-300 mx-auto">
       <thead>

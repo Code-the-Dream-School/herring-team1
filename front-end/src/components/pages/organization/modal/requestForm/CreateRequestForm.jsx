@@ -5,7 +5,6 @@ import * as Yup from 'yup';
 import { postRequests, patchRequest } from '../../../../../utils/apiReqests';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { formatService } from '../../../../../utils/FormatServices.jsx';
 
 const CreateRequestForm = ({ onSave, onCancel, initialData, orgId, services }) => {
   const formik = useFormik({
@@ -76,7 +75,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData, orgId, services }) =
         >
           {services.map((service) => (
             <option key={service.id} value={service.name}>
-              {formatService(service.name)}
+              {service.name}
             </option>
           ))}
         </select>
@@ -126,7 +125,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData, orgId, services }) =
           className="text-sm bg-white border-gray-300 border rounded-lg p-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none"
         >
           <option value="open">Open</option>
-          <option value="in-progress">In progress</option>
+          <option value="in_progress">In progress</option>
           <option value="closed">Closed</option>
           <option value="canceled">Canceled</option>
         </select>
