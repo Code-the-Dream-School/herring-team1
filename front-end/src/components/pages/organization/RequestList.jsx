@@ -1,6 +1,6 @@
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import PropTypes from 'prop-types';
-import { formatStatus } from '../../../utils/formatData.js';
+import { formatStatus } from '../../../utils/formatData';
 
 function RequestList({ requests, onEditRequest, onRemoveRequest }) {
   return (
