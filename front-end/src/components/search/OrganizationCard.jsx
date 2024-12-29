@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
 
 const OrganizationCard = ({ org, toggleFavorite, handleCardClick, favorites }) => {
+  console.log('Organization data:', org);
+
   return (
     <div key={org.id} className="bg-white p-4 rounded-lg shadow-lg relative">
+      {/* Add to Favs */}
       <button onClick={() => toggleFavorite(org.id)} className="absolute top-4 right-4 text-red-500 hover:text-red-600">
         {favorites.includes(org.id) ? (
           <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
@@ -25,39 +28,52 @@ const OrganizationCard = ({ org, toggleFavorite, handleCardClick, favorites }) =
           </svg>
         )}
       </button>
+
       <div className="cursor-pointer" onClick={() => handleCardClick(org.id)}>
         <h3 className="font-semibold text-xl">{org.name}</h3>
+
+        {/* Logo */}
         {org.logo && (
-          <img src={org.logo} alt={`${org.name} logo`} className="w-16 h-16 object-cover rounded-full mb-2" />
+          <img
+            src={org.logo || 'https://via.placeholder.com/100?text=Logo'}
+            alt={`${org.name} logo`}
+            className="w-16 h-16 object-cover rounded-full mb-2"
+          />
         )}
+        {console.log('Logo:', org.logo)}
+
+        {/* Description */}
         <p className="truncate max-w-xs" title={org.description}>
           {org.description}
         </p>
 
-        {/* Requests and Services */}
+        {/* Requests */}
         <div className="mt-4">
           <h4 className="font-semibold text-sm">Requests:</h4>
-          <ul>
-            {org.requests && org.requests.length > 0 ? (
-              org.requests.map((request, index) => (
+          {org.requests && org.requests.length > 0 ? (
+            <ul>
+              {org.requests.map((request, index) => (
                 <li key={index} className="text-sm">
                   {request}
                 </li>
-              ))
-            ) : (
-              <p className="text-sm text-gray-500">No requests available.</p>
-            )}
-          </ul>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-gray-500">No requests available.</p>
+          )}
         </div>
 
+        {/* (org_services) */}
         <div className="mt-4">
           <h4 className="font-semibold text-sm">Services:</h4>
-          {org.services && org.services.length > 0 ? (
-            org.services.map((service, index) => (
-              <span key={index} className="bg-purple-300 text-purple-800 px-3 py-1 rounded-full text-sm mr-2">
-                {service}
-              </span>
-            ))
+          {org.org_services && org.org_services.length > 0 ? (
+            <div>
+              {org.org_services.map((service, index) => (
+                <span key={index} className="bg-purple-300 text-purple-800 px-3 py-1 rounded-full text-sm mr-2">
+                  {service.name}
+                </span>
+              ))}
+            </div>
           ) : (
             <p className="text-sm text-gray-500">No services available.</p>
           )}
@@ -69,11 +85,12 @@ const OrganizationCard = ({ org, toggleFavorite, handleCardClick, favorites }) =
 
 OrganizationCard.propTypes = {
   org: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     name: PropTypes.string.isRequired,
     description: PropTypes.string,
     logo: PropTypes.string,
     requests: PropTypes.arrayOf(PropTypes.string),
+    org_services: PropTypes.arrayOf(PropTypes.object),
     services: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   toggleFavorite: PropTypes.func.isRequired,

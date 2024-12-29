@@ -53,9 +53,9 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await fetchOrganizations();
-        setOrganizations(result.slice(0, 10)); // Первые 10 организаций для начальной страницы
-        setAllOrganizations(result);
-        setTotalPages(Math.ceil(result.length / 10)); // Рассчитать количество страниц
+        console.log('Fetched organizations:', result);
+        setOrganizations(result.slice(0, 10));
+        setTotalPages(Math.ceil(result.length / 10));
         setError('');
       } catch (error) {
         console.error('Error fetching organizations:', error);
@@ -77,8 +77,8 @@ const SearchPage = () => {
       setIsLoading(true);
       try {
         const result = await searchOrganizations(debouncedSearch);
-        setOrganizations(result.slice((currentPage - 1) * 10, currentPage * 10)); // Показать только текущую страницу
-        setTotalPages(Math.ceil(result.length / 10)); // Обновить количество страниц
+        setOrganizations(result.slice((currentPage - 1) * 10, currentPage * 10));
+        setTotalPages(Math.ceil(result.length / 10));
         setError('');
         setHasSearched(true);
       } catch (error) {
