@@ -42,47 +42,27 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
             <h3 className="font-semibold text-xl">{org.name}</h3>
 
             {/* Logo */}
-            {org.logo && (
-              <img
-                src={org.logo || 'https://via.placeholder.com/100?text=Logo'}
-                alt={`${org.name} logo`}
-                className="w-16 h-16 object-cover rounded-full mb-2"
-              />
-            )}
-            {console.log('Logo:', org.logo)}
+            <img src={org.logo} alt={`${org.name} logo`} className="w-16 h-16 object-cover rounded-full mb-2" />
 
             {/* Description */}
             <p className="truncate max-w-xs" title={org.description}>
               {org.description}
             </p>
 
-            {/* Requests */}
-            <div className="mt-4">
-              <h4 className="font-semibold text-sm">Requests:</h4>
-              {org.requests && org.requests.length > 0 ? (
-                <ul>
-                  {org.requests.map((request, index) => (
-                    <li key={index} className="text-sm">
-                      {request}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-gray-500">No requests available.</p>
-              )}
-            </div>
+            {/* Request */}
+            <p className="truncate max-w-xs" title={org.request}>
+              {org.request}
+            </p>
 
             {/* Services */}
             <div className="mt-4">
               <h4 className="font-semibold text-sm">Services:</h4>
-              {org.services && org.services.length > 0 ? (
-                <div>
-                  {org.services.map((service, index) => (
-                    <span key={index} className="bg-purple-300 text-purple-800 px-3 py-1 rounded-full text-sm mr-2">
-                      {service}
-                    </span>
-                  ))}
-                </div>
+              {org.services ? (
+                org.services.split(', ').map((service, index) => (
+                  <span key={index} className="bg-purple-300 text-purple-800 px-3 py-1 rounded-full text-sm mr-2">
+                    {service}
+                  </span>
+                ))
               ) : (
                 <p className="text-sm text-gray-500">No services available.</p>
               )}
@@ -101,8 +81,8 @@ OrganizationList.propTypes = {
       name: PropTypes.string.isRequired,
       logo: PropTypes.string,
       description: PropTypes.string,
-      requests: PropTypes.arrayOf(PropTypes.string),
-      services: PropTypes.arrayOf(PropTypes.string),
+      request: PropTypes.string,
+      services: PropTypes.string,
     })
   ).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
