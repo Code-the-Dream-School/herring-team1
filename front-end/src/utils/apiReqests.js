@@ -210,6 +210,18 @@ export const createOrganization = async (organizationData) => {
   }
 };
 
+export const fetchOrganizations = async (params = {}) => {
+  try {
+    const endpoint = Object.keys(params).length > 0 ? 'search' : 'organizations';
+    const response = await axios.get(`${API_BASE_URL}${endpoint}`, { params });
+    console.log('Response data:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching organizations:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
 // export const updateOrganization = async (id, updatedData) => {
 //   const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
 
@@ -239,7 +251,6 @@ export const createOrganization = async (organizationData) => {
 //     throw error.response?.data || 'Failed to edit organization.';
 //   }
 // };
-
 export const getOrganizationById = async () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user?.id;
