@@ -1,5 +1,7 @@
 # This controller is responsible for handling search requests by zipcode, keywords and services
 class SearchController < ApplicationController
+  include Pagination
+
   def search
     # Check if all parameters are blank
     if params_blank?
@@ -15,10 +17,10 @@ class SearchController < ApplicationController
     puts "Filtered Organizations: #{organizations.inspect}"
 
     # Paginate the organizations collection
-    paginated_organizations = organizations.page(params[:page]).per(params[:per_page] || 6)
+    paginated_organizations = paginate(organizations)
 
     # Check if any organizations were found, if not, render an error
-    if paginated_organizations.empty?
+    if paginated_organizations[:collection].empty?
       render_error('No search results found', :not_found)
     else
       render_organizations(paginated_organizations)
@@ -77,23 +79,25 @@ class SearchController < ApplicationController
     end.flatten.uniq
   end
 
-  def render_organizations(organizations)
+  def render_organizations(paginated_organizations)
     render json: {
-      current_page: organizations.current_page,
-      total_pages: organizations.total_pages,
-      total_count: organizations.total_count,
-      organizations: organizations.map { |org| format_organization(org) }
+      current_page: paginated_organizations[:current_page],
+      total_pages: paginated_organizations[:total_pages],
+      total_count: paginated_organizations[:total_count],
+      organizations: paginated_organizations[:collection].map { |org| format_organization(org) }
     }
   end
 
   def format_organization(org)
-    services = org.services.pluck(:name)
+    services = org.services.pluck(:name).join(', ')
+    requests = org.requests.pluck(:title).join(', ')
     {
       id: org.id, # Ensure to include the organization ID
       name: org.name,
       logo: org.logo&.attached? ? org.logo.url : 'https://via.placeholder.com/100?text=Logo',
-      request: org.description,
-      services: services.join(', ')
+      description: org.description,
+      request: requests,
+      services: services
     }
   end
 
