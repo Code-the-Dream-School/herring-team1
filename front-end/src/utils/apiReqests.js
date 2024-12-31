@@ -24,8 +24,8 @@ export const login = async (email, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}auth/login`, {
       auth: {
-        email: email,
-        password: password,
+        email,
+        password,
       },
     });
     return response;
@@ -54,35 +54,6 @@ export const logout = async () => {
     return response;
   } catch (error) {
     console.error('Logout error:', error);
-  }
-};
-
-export const fetchOrganizations = async (params = {}) => {
-  try {
-    const endpoint = Object.keys(params).length > 0 ? 'search' : 'organizations';
-    const response = await axios.get(`${API_BASE_URL}${endpoint}`, { params });
-    console.log('Response data:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching organizations:', error.response?.data || error.message);
-    throw error;
-  }
-};
-
-export const searchOrganizations = async (searchParams) => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}search`, {
-      params: searchParams,
-    });
-    console.log('Search response data:', response.data); // Log the response data
-    if (response.data && Array.isArray(response.data.organizations)) {
-      return response.data.organizations;
-    } else {
-      throw new Error('Filtered organizations data is not an array');
-    }
-  } catch (error) {
-    console.error('Error fetching filtered organizations:', error);
-    throw error;
   }
 };
 
@@ -296,5 +267,31 @@ export const getOrganizationById = async () => {
     console.error('Error getting organization:', error);
     console.log(error);
     throw error.response.data;
+  }
+};
+
+//get filtered organizations
+export const searchOrganizations = async (params) => {
+  try {
+    console.log('API request to search organizations with params:', params);
+    const response = await axios.get(`${API_BASE_URL}search`, { params });
+    console.log('API response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error searching organizations:', error);
+    throw error.response?.data || 'Failed to search organizations.';
+  }
+};
+//get all organizations
+export const getAllOrganizations = async (page = 1, perPage = 6) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}organizations`, {
+      params: { page, per_page: perPage },
+    });
+    console.log('All organizations response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching all organizations:', error);
+    throw error;
   }
 };

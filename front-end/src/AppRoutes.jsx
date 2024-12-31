@@ -5,7 +5,7 @@ import HomePage from './components/pages/HomePage.jsx';
 import Login from './components/auth/Login.jsx';
 import Header from './components/layouts/Header.jsx';
 import Footer from './components/layouts/Footer.jsx';
-import SearchPage from './components/pages/SearchPage.jsx';
+import SearchPage from './components/search/SearchPage.jsx';
 import TeamPage from './components/pages/TeamPage.jsx';
 import Dashboard from './components/navbars/Dashboard.jsx';
 import Auth from './components/auth/Auth.jsx';

@@ -24,6 +24,13 @@ const DropdownMenu = ({ selectedServices, handleServiceChange }) => {
     };
   }, []);
 
+  const handleSelect = (service) => {
+    const newSelectedServices = selectedServices.includes(service)
+      ? selectedServices.filter((s) => s !== service)
+      : [...selectedServices, service];
+    handleServiceChange(newSelectedServices);
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -37,23 +44,19 @@ const DropdownMenu = ({ selectedServices, handleServiceChange }) => {
       </button>
       {isDropdownVisible && (
         <div className="absolute top-12 bg-white shadow-lg rounded-lg w-full z-10">
-          {services.map(
-            (service) =>
-              !selectedServices.includes(service.name) && (
-                <div key={service.id} className="flex items-center p-2 hover:bg-gray-100">
-                  <input
-                    type="checkbox"
-                    id={service.name}
-                    checked={selectedServices.includes(service.name)}
-                    onChange={() => handleServiceChange(service.name)}
-                    className="mr-2"
-                  />
-                  <label htmlFor={service.name} className="text-sm">
-                    {service.name}
-                  </label>
-                </div>
-              )
-          )}
+          <ul className="p-3">
+            {services.map((service) => (
+              <li key={service.name} className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedServices.includes(service.name)}
+                  onChange={() => handleSelect(service.name)}
+                  className="mr-2"
+                />
+                {service.name}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
