@@ -1,3 +1,4 @@
+//SearchForm component for searching services by zip code and keyword
 import PropTypes from 'prop-types';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import DropdownMenu from './DropdownMenu.jsx';
@@ -36,8 +37,6 @@ const SearchForm = ({
   handleServiceChange,
   onSearch,
 }) => {
-  console.log('Rendering SearchForm with searchParams:', searchParams);
-
   return (
     <div className="bg-light_purple min-h-[20vh] flex flex-col justify-center items-center p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
@@ -55,7 +54,6 @@ const SearchForm = ({
             value={searchParams.zip_code}
             onChange={(e) => {
               const newSearchParams = { ...searchParams, zip_code: e.target.value };
-              console.log('Updated searchParams:', newSearchParams);
               setSearchParams(newSearchParams);
             }}
           />
@@ -73,7 +71,6 @@ const SearchForm = ({
             value={searchParams.keyword}
             onChange={(e) => {
               const newSearchParams = { ...searchParams, keyword: e.target.value };
-              console.log('Updated searchParams:', newSearchParams);
               setSearchParams(newSearchParams);
             }}
           />

@@ -1,4 +1,8 @@
+//This page is the main search page where users can search for organizations based on services, zip code, and keyword.
+//  It displays a list of organizations and allows users to navigate through the pages of results.
+//  Users can also add organizations to their favorites and view more details about an organization by clicking on a card.
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SearchForm from './SearchForm.jsx';
 import OrganizationList from './OrganizationList.jsx';
 import Pagination from './Pagination.jsx';
@@ -14,15 +18,14 @@ const SearchPage = () => {
     zip_code: '',
     keyword: '',
   });
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchOrganizations = async () => {
       try {
-        console.log('Fetching organizations...');
         const data = await getAllOrganizations(currentPage);
-        console.log('Fetched organizations:', data);
         if (data && data.organizations) {
           setOrganizations(data.organizations);
           setCurrentPage(data.current_page || 1);
@@ -43,9 +46,7 @@ const SearchPage = () => {
   const handleSearch = async (params) => {
     setLoading(true);
     try {
-      console.log('Searching organizations with params:', params);
       const data = await searchOrganizations({ ...params, page: currentPage });
-      console.log('Search results:', data);
       if (data && data.organizations) {
         setOrganizations(data.organizations);
         setCurrentPage(data.current_page || 1);
@@ -62,7 +63,6 @@ const SearchPage = () => {
   };
 
   const handlePageChange = (page) => {
-    console.log('Page change to:', page);
     setCurrentPage(page);
   };
 
@@ -80,8 +80,7 @@ const SearchPage = () => {
   };
 
   const handleCardClick = (id) => {
-    console.log('Card clicked:', id);
-    // Add your logic for handling card click here
+    navigate(`/organizations/${id}`);
   };
 
   if (loading) {
