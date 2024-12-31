@@ -12,7 +12,7 @@ class SearchController < ApplicationController
     organizations = Organization.all
     organizations = filter_by_zip_code(organizations) if zip_code.present?
     organizations = filter_by_keyword(organizations) if keyword.present?
-    organizations = filter_by_service(organizations) if service.present?    
+    organizations = filter_by_service(organizations) if service.present?
 
     # Paginate the organizations collection
     paginated_organizations = paginate(organizations)
