@@ -17,7 +17,7 @@ class OrganizationsController < ApplicationController
       current_page: paginated_organizations[:current_page],
       total_pages: paginated_organizations[:total_pages],
       total_count: paginated_organizations[:total_count],
-      organizations: paginated_organizations[:collection].map { |organization|
+      organizations: paginated_organizations[:collection].map do |organization|
         {
           id: organization.id,
           auth_id: organization.auth_id,
@@ -37,7 +37,7 @@ class OrganizationsController < ApplicationController
           end,
           address: organization.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
         }
-      }
+      end
     }, status: :ok
   end
 
