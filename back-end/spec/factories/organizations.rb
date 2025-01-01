@@ -22,6 +22,5 @@ FactoryBot.define do
       end
       create(:address, organization: organization)
     end
-
   end
 end
