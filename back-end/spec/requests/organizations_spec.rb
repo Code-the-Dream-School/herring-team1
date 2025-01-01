@@ -1,7 +1,7 @@
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe "Organizations", type: :request do
-  # rubocop:disable Metrics/BlockLength
   before(:all) do
     load Rails.root.join('db', 'seeds.rb')
     puts "Service count creating: #{Service.count}"
@@ -147,5 +147,5 @@ RSpec.describe "Organizations", type: :request do
       expect(response).to have_http_status(:unauthorized)
     end
   end
-  # rubocop:enable Metrics/BlockLength
 end
+# rubocop:enable Metrics/BlockLength

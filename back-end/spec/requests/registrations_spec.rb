@@ -1,7 +1,7 @@
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe "Registrations", type: :request do
-  # rubocop:disable Metrics/BlockLength
   describe 'POST /auth' do
     let(:valid_email) { Faker::Internet.unique.email }
     let(:strong_password) { 'V3ry$tr0ngP@6$m0rd4!' }
@@ -134,5 +134,5 @@ RSpec.describe "Registrations", type: :request do
       end
     end
   end
-  # rubocop:enable Metrics/BlockLength
 end
+# rubocop:enable Metrics/BlockLength
