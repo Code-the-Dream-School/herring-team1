@@ -318,7 +318,11 @@ export const fetchMyOrgRequests = async (orgId) => {
 
     return response.data;
   } catch (error) {
-    throw error.response.data;
+    if (error.response && error.response.status === 404) {
+      return [];
+    } else {
+      throw error.response ? error.response.data : error;
+    }
   }
 };
 
@@ -359,6 +363,6 @@ export const deleteRequest = async (requestId, orgId) => {
     return response.data;
   } catch (error) {
     console.error('Error while deleting request:', error);
-throw error;
+    throw error;
   }
 };
