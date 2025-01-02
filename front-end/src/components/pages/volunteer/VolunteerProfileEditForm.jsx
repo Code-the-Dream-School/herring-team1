@@ -76,7 +76,6 @@ function EditVolunteer() {
 
     try {
       await updateVolunteerById(formData.id, formData);
-      console.log('Volunteer updated successfully');
       navigate('/dashboard');
     } catch (err) {
       console.error('Error updating volunteer:', err);
