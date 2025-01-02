@@ -56,6 +56,8 @@ gem "rack", "2.2.8.1"
 gem 'rack-cors'
 gem "rack-session", "1.0.2"
 
+gem 'kaminari'
+
 gem "rubocop", "~> 1.68", require: false
 
 gem "rubocop-github", "~> 0.20.0", require: false

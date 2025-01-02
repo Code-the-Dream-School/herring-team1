@@ -1,5 +1,7 @@
 # This controller is responsible for handling search requests by zipcode, keywords and services
 class SearchController < ApplicationController
+  include Pagination
+
   def search
     # Check if all parameters are blank
     if params_blank?
@@ -12,11 +14,14 @@ class SearchController < ApplicationController
     organizations = filter_by_keyword(organizations) if keyword.present?
     organizations = filter_by_service(organizations) if service.present?
 
+    # Paginate the organizations collection
+    paginated_organizations = paginate(organizations)
+
     # Check if any organizations were found, if not, render an error
-    if organizations.empty?
+    if paginated_organizations[:collection].empty?
       render_error('No search results found', :not_found)
     else
-      render_organizations(organizations.uniq)
+      render_organizations(paginated_organizations)
     end
   end
 
@@ -33,24 +38,26 @@ class SearchController < ApplicationController
     return organizations.none if addresses.empty?
 
     # Get organization ids associated with the found addresses
-    organization_ids = addresses.select { |address| address.addressable_type == 'Organization' }
-                                .map(&:addressable_id)
-                                .uniq
+    organization_ids = addresses.pluck(:organization_id).uniq
     organizations.where(id: organization_ids)
   end
 
   # Filter organizations by keyword
   def filter_by_keyword(organizations)
+    keyword = params[:keyword].to_s.downcase
+    keyword_pattern = "%#{keyword}%"
     organizations.where(
-      'name ILIKE :keyword OR description ILIKE :keyword OR id IN (:service_org_ids)',
-      keyword: "%#{keyword}%",
+      'LOWER(name) LIKE :keyword OR LOWER(description) LIKE :keyword OR id IN (:service_org_ids)',
+      keyword: keyword_pattern,
       service_org_ids: org_ids_by_service_keyword(keyword)
     )
   end
 
   # Filter organizations by service
   def filter_by_service(organizations)
-    service_ids = Service.where('name ILIKE ?', "%#{service}%").pluck(:id)
+    service = params[:service].to_s.downcase
+    service_pattern = "%#{service}%"
+    service_ids = Service.where('LOWER(name) LIKE ?', service_pattern).pluck(:id)
     return organizations.none if service_ids.empty?
 
     organizations.joins(:org_services).where(org_services: { service_id: service_ids })
@@ -65,21 +72,30 @@ class SearchController < ApplicationController
 
   # Get organization IDs by matching service keywords
   def org_ids_by_service_keyword(keyword)
-    Service.where('name ILIKE ?', "%#{keyword}%").includes(:org_services).map do |service|
+    Service.where('LOWER(name) LIKE ?', "%#{keyword}%").includes(:org_services).map do |service|
       service.org_services.pluck(:organization_id)
     end.flatten.uniq
   end
 
-  def render_organizations(organizations)
-    render json: organizations.map { |org| format_organization(org) }
+  def render_organizations(paginated_organizations)
+    render json: {
+      current_page: paginated_organizations[:current_page],
+      total_pages: paginated_organizations[:total_pages],
+      total_count: paginated_organizations[:total_count],
+      organizations: paginated_organizations[:collection].map { |org| format_organization(org) }
+    }
   end
 
   def format_organization(org)
+    services = org.services.pluck(:name).join(', ')
+    requests = org.requests.pluck(:title).join(', ')
     {
+      id: org.id, # Ensure to include the organization ID
       name: org.name,
-      request: org.description,
-      logo: org.logo.attached? ? org.logo.url : 'placeholder_logo_url',
-      services: org.org_services.map { |os| service_name(os.service_id) }
+      logo: org.logo&.attached? ? org.logo.url : 'https://via.placeholder.com/100?text=Logo',
+      description: org.description,
+      request: requests,
+      services: services
     }
   end
 
