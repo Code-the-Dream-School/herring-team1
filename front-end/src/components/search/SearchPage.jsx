@@ -24,6 +24,7 @@ const SearchPage = () => {
 
   useEffect(() => {
     const fetchOrganizations = async () => {
+      setLoading(true);
       try {
         const data = await getAllOrganizations(currentPage);
         if (data && data.organizations) {
@@ -64,13 +65,14 @@ const SearchPage = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    handleSearch(searchParams);
   };
 
   const handleRemoveService = (service) => {
-    setSearchParams((prevParams) => ({
-      ...prevParams,
-      services: prevParams.services.filter((s) => s !== service),
-    }));
+    const updatedServices = searchParams.services.filter((s) => s !== service);
+    const updatedParams = { ...searchParams, services: updatedServices };
+    setSearchParams(updatedParams);
+    handleSearch(updatedParams);
   };
 
   const toggleFavorite = (id) => {

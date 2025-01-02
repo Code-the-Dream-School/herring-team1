@@ -1,34 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { getOrganizationById } from '../../../utils/apiReqests';
 import CreateApplication from './modal/applicationForm/CreateApplication.jsx';
 import logoExample from '../../assets/images_default/logo_example.png';
 import { FaEnvelope, FaGlobe, FaHeart, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
 
 function InfoPage() {
+  const { id } = useParams();
+  const [organization, setOrganization] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFirstAccordionOpen, setIsFirstAccordionOpen] = useState(true);
   const [isSecondAccordionOpen, setIsSecondAccordionOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
-  const organizationLogo = null;
+  useEffect(() => {
+    const fetchOrganization = async () => {
+      try {
+        const data = await getOrganizationById(id);
+        setOrganization(data.organization);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const [formData] = useState({
-    logo: organizationLogo || logoExample,
-    name: 'Helping Hands',
-    address: '123 Main St',
-    city: 'Springfield',
-    state: 'MA',
-    zipCode: '01103',
-    phone: '413-555-1234',
-    email: 'contact@habitat.org',
-    website: 'https://www.habitatspringfield.org/',
-    description:
-      'Habitat for Humanity is a global nonprofit housing organization working in local communities across all 50 states in the U.S. With the help of volunteers and donors, we build homes for families in need, providing them with affordable housing and the opportunity to break the cycle of poverty.',
-    mission:
-      'Habitat for Humanity believes every man, woman, and child should have a decent, safe, and affordable place to live. We build and repair houses all over the world using volunteer labor and donations.',
-    services: ['Donation Center', 'Clothing Assistance'],
-    requestService: 'Clothes donation',
-    requestDescription:
-      'Help deliver clothing donations to families in need. Volunteers needed for sorting, packing, and delivery to local communities.',
-  });
+    fetchOrganization();
+  }, [id]);
+
+  const toggleFavorite = (id) => {
+    setFavorites((prevFavorites) =>
+      prevFavorites.includes(id) ? prevFavorites.filter((favId) => favId !== id) : [...prevFavorites, id]
+    );
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!organization) {
+    return <div>No organization found.</div>;
+  }
 
   return (
     <div>
@@ -78,39 +96,51 @@ function InfoPage() {
               {/* First line */}
               <div className="flex items-center justify-between lg:ml-10 mt-5 mb-5">
                 <div className="lg:w-20 xs:w-16 md:w-18">
-                  <img src={formData.logo} alt={`${formData.name} logo`} className="w-full h-full object-contain" />
+                  <img
+                    src={organization.logo || logoExample}
+                    alt={`${organization.name} logo`}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-                <h1 className="font-bold text-lg flex-1 text-center">{formData.name}</h1>
-                <FaHeart className="text-2xl text-red-500 lg:mr-10" />
+                <h1 className="font-bold text-lg flex-1 text-center">{organization.name}</h1>
+                <FaHeart
+                  className={`text-2xl lg:mr-10 ${favorites.includes(organization.id) ? 'text-red-600' : 'text-red-200'}`}
+                  onClick={() => toggleFavorite(organization.id)}
+                />
               </div>
               <div className="mb-3 lg:ml-10">
                 <div className="flex items-center mb-2">
                   <FaMapMarkerAlt className="mr-2" />
                   <span>
-                    {formData.address}, {formData.city}, {formData.state} {formData.zipCode}
+                    {organization.address.street}, {organization.address.city}, {organization.address.state}{' '}
+                    {organization.address.zip_code}
                   </span>
                 </div>
                 <div className="flex items-center mb-2">
                   <FaPhoneAlt className="mr-2" />
-                  <span>{formData.phone}</span>
+                  <span>{organization.phone}</span>
                 </div>
                 <div className="flex items-center mb-2">
                   <FaEnvelope className="mr-2" />
-                  <a href={`mailto:${formData.email}`}>{formData.email}</a>
+                  <a href={`mailto:${organization.email}`}>{organization.email}</a>
                 </div>
                 <div className="flex items-center mb-2">
                   <FaGlobe className="mr-2" />
-                  <a href={formData.website} target="_blank" rel="noopener noreferrer">
-                    {formData.website}
+                  <a href={organization.website} target="_blank" rel="noopener noreferrer">
+                    {organization.website}
                   </a>
                 </div>
                 <div className="mb-2">
                   <strong>Description:</strong>
-                  <p>{formData.description}</p>
+                  <p>{organization.description}</p>
+                </div>
+                <div className="mb-2">
+                  <strong>Mission:</strong>
+                  <p>{organization.mission}</p>
                 </div>
                 <div className="mb-2">
                   <strong>Services:</strong>
-                  <p>{formData.services.join(', ')}</p>
+                  <p>{organization.org_services.map((service) => service.name).join(', ')}</p>
                 </div>
               </div>
             </div>
@@ -161,11 +191,19 @@ function InfoPage() {
               <div className="flex-1 ">
                 <div className="mb-2">
                   <strong>Request: </strong>
-                  <span>{formData.requestService}</span>
+                  <span>
+                    {organization.requests && organization.requests.length > 0
+                      ? organization.requests.map((request) => request.title).join(', ')
+                      : 'No requests available.'}
+                  </span>
                 </div>
                 <div className="mb-2">
                   <strong>Description: </strong>
-                  <span>{formData.requestDescription}</span>
+                  <span>
+                    {organization.requests && organization.requests.length > 0
+                      ? organization.requests.map((request) => request.description).join(', ')
+                      : 'No requests available.'}
+                  </span>
                 </div>
               </div>
               <div className="mt-4 md:mt-0 md:ml-4">
