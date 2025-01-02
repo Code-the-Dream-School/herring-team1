@@ -1,6 +1,7 @@
 # OrganizationsController handles the CRUD operations for organizations.
 class OrganizationsController < ApplicationController
   include AuthenticationCheck
+  include Pagination
 
   before_action :is_auth_logged_in, except: [:index, :show]
   before_action :ensure_is_organization, only: [:create]
@@ -10,27 +11,33 @@ class OrganizationsController < ApplicationController
   # GET all organizations
   def index
     @organizations = Organization.includes(:auth, :org_services, :address, org_services: :service)
+    paginated_organizations = paginate(@organizations)
 
-    render json: @organizations.map { |organization|
-      {
-        id: organization.id,
-        auth_id: organization.auth_id,
-        name: organization.name,
-        website: organization.website,
-        phone: organization.phone,
-        description: organization.description,
-        mission: organization.mission,
-        logo: organization.logo,
-        email: organization.auth.email,
-        org_services: organization.org_services.map do |org_service|
-          {
-            id: org_service.id,
-            service_id: org_service.service_id,
-            name: org_service.service.name
-          }
-        end,
-        address: organization.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
-      }
+    render json: {
+      current_page: paginated_organizations[:current_page],
+      total_pages: paginated_organizations[:total_pages],
+      total_count: paginated_organizations[:total_count],
+      organizations: paginated_organizations[:collection].map do |organization|
+        {
+          id: organization.id,
+          auth_id: organization.auth_id,
+          name: organization.name,
+          website: organization.website,
+          phone: organization.phone,
+          description: organization.description,
+          mission: organization.mission,
+          logo: organization.logo,
+          email: organization.auth.email,
+          org_services: organization.org_services.map do |org_service|
+            {
+              id: org_service.id,
+              service_id: org_service.service_id,
+              name: org_service.service.name
+            }
+          end,
+          address: organization.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+        }
+      end
     }, status: :ok
   end
 
@@ -222,7 +229,7 @@ class OrganizationsController < ApplicationController
 
   # Permit the necessary parameters
   def organization_params
-    params.require(:organization).permit(:name, :website, :phone, :description, :mission, :logo)
+    params.require(:organization).permit(:name, :website, :phone, :description, :mission, :logo, service_ids: [])
   end
 
   def address_params
