@@ -56,7 +56,6 @@ function VolunteerProfile() {
 
   return (
     <div className="p-14">
-      <h1 className="text-2xl font-bold mb-4">Volunteer Profile</h1>
       <div className="md:mt-6">
         {/* Name */}
         {(formData.firstName || formData.lastName) && (
