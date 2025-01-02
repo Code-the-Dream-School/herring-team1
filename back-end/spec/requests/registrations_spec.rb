@@ -1,3 +1,4 @@
+# Tests for the Auth controller.
 require 'rails_helper'
 
 # rubocop:disable Metrics/BlockLength

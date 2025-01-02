@@ -1,3 +1,4 @@
+# Tests for the Organization controller.
 require 'rails_helper'
 
 # rubocop:disable Metrics/BlockLength
