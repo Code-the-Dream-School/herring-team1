@@ -252,3 +252,100 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
     console.error('Error while submitting form:', error);
   }
 };
+
+// Create a new organization
+export const createOrganization = async (organizationData) => {
+  const csrfToken = localStorage.getItem('x_csrf_token');
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  console.log('csrfToken:', csrfToken);
+  console.log(user);
+
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure it is set correctly.');
+  }
+
+  if (!user?.id) {
+    throw new Error('User ID is missing. Ensure the user is logged in.');
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}organizations`,
+      {
+        organization: {
+          ...organizationData,
+          auth_id: user?.id,
+        },
+      },
+      {
+        headers: { 'X-CSRF-Token': csrfToken },
+        withCredentials: true,
+      }
+    );
+    console.log('Organization created successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating organization:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to create organization.';
+  }
+};
+
+export const updateOrganization = async (organization, updatedData) => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+
+  if (!organization.id) {
+    throw new Error('Organization ID is undefined or missing.');
+  }
+
+  try {
+    const response = await axios.patch(
+      `${API_BASE_URL}organizations/${organization.id}`,
+      { organization: updatedData },
+      {
+        headers: {
+          'X-CSRF-Token': x_csrf_token,
+        },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error editing organization:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to edit organization.';
+  }
+};
+
+export const getOrganizationById = async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.id;
+
+  if (!userId) {
+    throw new Error('Organization ID not found.');
+  }
+
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const url = `${API_BASE_URL}organizations/my_organization`;
+    const response = await axios.get(url, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error getting organization:', error);
+    console.log(error);
+    throw error.response.data;
+  }
+};
