@@ -1,9 +1,8 @@
+//This component displays the selected filters for the search results.
 import PropTypes from 'prop-types';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 
 const SelectedFilters = ({ searchParams, setSearchParams, handleRemoveService }) => {
-  console.log('Rendering SelectedFilters with searchParams:', searchParams);
-
   return (
     (searchParams.zip_code || searchParams.keyword || searchParams.services.length > 0) && (
       <div className="mt-4 bg-purple-100 p-4 rounded-lg">

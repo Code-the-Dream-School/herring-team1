@@ -1,8 +1,7 @@
+// This component is used to display pagination buttons for the search results.
 import PropTypes from 'prop-types';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  console.log('Rendering Pagination with currentPage:', currentPage, 'totalPages:', totalPages);
-
   if (!currentPage || !totalPages) {
     return null;
   }

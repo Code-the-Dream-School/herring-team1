@@ -1,8 +1,9 @@
+//This component displays a list of organizations. It takes in an array of organizations and renders a card for each organization.
+//  The card displays the organization's name, logo, description, request, and services. The user can click on the card to view more details about the organization.
+//  The user can also click on the heart icon to add or remove the organization from their favorites list.
 import PropTypes from 'prop-types';
 
 const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favorites }) => {
-  console.log('Rendering OrganizationList with organizations:', organizations);
-
   if (!organizations || organizations.length === 0) {
     return <div>No organizations found.</div>;
   }
@@ -42,27 +43,51 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
             <h3 className="font-semibold text-xl">{org.name}</h3>
 
             {/* Logo */}
-            <img src={org.logo} alt={`${org.name} logo`} className="w-16 h-16 object-cover rounded-full mb-2" />
+            <div className="flex justify-center">
+              {org.logo ? (
+                <img src={org.logo} alt={`logo`} className="w-16 h-16 object-cover rounded-full" />
+              ) : (
+                <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
+                  <span className="text-gray-500">LOGO</span>
+                </div>
+              )}
+            </div>
 
             {/* Description */}
             <p className="truncate max-w-xs" title={org.description}>
               {org.description}
             </p>
 
-            {/* Request */}
-            <p className="truncate max-w-xs" title={org.request}>
-              {org.request}
-            </p>
+            {/* Requests */}
+            <div className="mt-4">
+              <h4 className="font-semibold text-sm">Requests:</h4>
+              {org.requests && org.requests.length > 0 ? (
+                <ul>
+                  {org.requests.map((request, index) => (
+                    <li key={index} className="text-sm">
+                      {request}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-gray-500">No requests available.</p>
+              )}
+            </div>
 
-            {/* Services */}
+            {/* (org_services) */}
             <div className="mt-4">
               <h4 className="font-semibold text-sm">Services:</h4>
-              {org.services ? (
-                org.services.split(', ').map((service, index) => (
-                  <span key={index} className="bg-purple-300 text-purple-800 px-3 py-1 rounded-full text-sm mr-2">
-                    {service}
-                  </span>
-                ))
+              {org.org_services && org.org_services.length > 0 ? (
+                <div className="flex flex-wrap">
+                  {org.org_services.map((service, index) => (
+                    <span
+                      key={index}
+                      className="bg-purple-300 text-purple-800 px-3 py-1 rounded-full text-sm mr-2 mb-2"
+                    >
+                      {service.name}
+                    </span>
+                  ))}
+                </div>
               ) : (
                 <p className="text-sm text-gray-500">No services available.</p>
               )}

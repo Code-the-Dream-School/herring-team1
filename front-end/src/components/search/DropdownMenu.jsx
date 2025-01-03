@@ -1,3 +1,4 @@
+//This component displays a dropdown menu for selecting services.
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
