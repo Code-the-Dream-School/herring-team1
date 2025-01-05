@@ -1,8 +1,8 @@
-//SearchForm component for searching services by zip code and keyword
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import DropdownMenu from './DropdownMenu.jsx';
-import React from 'react';
+import OrganizationList from '../search/OrganizationList.jsx';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -37,6 +37,27 @@ const SearchForm = ({
   handleServiceChange,
   onSearch,
 }) => {
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchPerformed, setSearchPerformed] = useState(false);
+
+  const handleSearch = async () => {
+    setSearchPerformed(true);
+    const queryParams = new URLSearchParams(searchParams).toString();
+    try {
+      const response = await fetch(`/search?${queryParams}`, {
+        method: 'GET',
+      });
+      const data = await response.json();
+      const filteredResults = data.organizations.filter((org) => org.address.zip_code === searchParams.zip_code);
+      setSearchResults(filteredResults);
+      if (onSearch) {
+        onSearch(filteredResults);
+      }
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    }
+  };
+
   return (
     <div className="bg-light_purple min-h-[20vh] flex flex-col justify-center items-center p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
@@ -59,7 +80,7 @@ const SearchForm = ({
           />
           <MagnifyingGlassIcon
             className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-            onClick={onSearch}
+            onClick={handleSearch}
           />
         </div>
 
@@ -76,9 +97,22 @@ const SearchForm = ({
           />
           <MagnifyingGlassIcon
             className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-            onClick={onSearch}
+            onClick={handleSearch}
           />
         </div>
+      </div>
+      <div className="w-full mt-4">
+        {searchPerformed &&
+          (searchResults.length > 0 ? (
+            <OrganizationList
+              organizations={searchResults}
+              toggleFavorite={() => {}}
+              handleCardClick={() => {}}
+              favorites={[]}
+            />
+          ) : (
+            <p>No results found</p>
+          ))}
       </div>
     </div>
   );
