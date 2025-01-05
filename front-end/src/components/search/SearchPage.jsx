@@ -21,11 +21,14 @@ const SearchPage = () => {
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
   const fetchOrganizations = async (page = 1) => {
     setLoading(true);
     try {
+      console.log('Fetching organizations for page', page);
       const data = await getAllOrganizations(page);
+      console.log('Organizations data:', data);
       if (data && data.organizations) {
         setOrganizations(data.organizations);
         setCurrentPage(data.current_page || 1);
@@ -41,23 +44,32 @@ const SearchPage = () => {
   };
 
   useEffect(() => {
-    fetchOrganizations(currentPage);
-  }, [currentPage]);
+    if (!searchParams.zip_code && !searchParams.keyword && searchParams.services.length === 0) {
+      fetchOrganizations(currentPage);
+    }
+  }, [currentPage, searchParams]);
 
   const handleSearch = async (params, page = 1) => {
     setLoading(true);
+    setSearchPerformed(true);
     try {
+      console.log('Searching organizations with params:', { ...params, page });
       const data = await searchOrganizations({ ...params, page });
       if (data && data.organizations) {
+        console.log(
+          'Fetched organizations:',
+          data.organizations.map((org) => org.zip_code)
+        );
         setOrganizations(data.organizations);
         setCurrentPage(data.current_page || 1);
-        setTotalPages(data.total_pages || 1);
+        setTotalPages(data.total_pages || Math.ceil(data.total_count / 6)); // Ensure total_pages is calculated correctly
         setSearchParams(params);
       } else {
         console.error('Invalid data format:', data);
       }
     } catch (error) {
       console.error('Search error:', error);
+      setOrganizations([]);
     } finally {
       setLoading(false);
     }
@@ -110,7 +122,9 @@ const SearchPage = () => {
           handleRemoveService={handleRemoveService}
         />
         <div className="mt-8">
-          {organizations.length > 0 ? (
+          {searchPerformed && organizations.length === 0 ? (
+            <div>No Organizations found.</div>
+          ) : (
             <>
               <OrganizationList
                 organizations={organizations}
@@ -120,8 +134,6 @@ const SearchPage = () => {
               />
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
             </>
-          ) : (
-            <div>No organizations found.</div>
           )}
         </div>
       </div>

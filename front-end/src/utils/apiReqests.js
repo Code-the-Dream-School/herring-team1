@@ -274,8 +274,13 @@ export const searchOrganizations = async (params) => {
     console.log('API response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error searching organizations:', error);
-    throw error.response?.data || 'Failed to search organizations.';
+    if (error.response && error.response.status === 404) {
+      console.error('No search results found:', error.response.data);
+      return { organizations: [], total_count: 0, total_pages: 0 };
+    } else {
+      console.error('Error searching organizations:', error.response?.data || error.message);
+      throw error.response?.data || 'Failed to search organizations.';
+    }
   }
 };
 //get all organizations

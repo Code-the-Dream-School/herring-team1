@@ -44,8 +44,12 @@ const SearchForm = ({
   const handleSearch = async () => {
     setSearchPerformed(true);
     try {
+      console.log('Searching organizations with params:', searchParams);
       const data = await searchOrganizations(searchParams);
-      console.log('Search results:', data); // Log the response
+      console.log(
+        'Search results:',
+        data.organizations.map((org) => org.zip_code)
+      ); // Log the zip codes
       setSearchResults(data.organizations);
       if (onSearch) {
         onSearch(searchParams); // Pass searchParams to onSearch
@@ -99,17 +103,14 @@ const SearchForm = ({
         </div>
       </div>
       <div className="w-full mt-4">
-        {searchPerformed &&
-          (searchResults.length > 0 ? (
-            <OrganizationList
-              organizations={searchResults}
-              toggleFavorite={() => {}}
-              handleCardClick={() => {}}
-              favorites={[]}
-            />
-          ) : (
-            <p>No results found</p>
-          ))}
+        {searchPerformed && searchResults.length > 0 && (
+          <OrganizationList
+            organizations={searchResults}
+            toggleFavorite={() => {}}
+            handleCardClick={() => {}}
+            favorites={[]}
+          />
+        )}
       </div>
     </div>
   );
