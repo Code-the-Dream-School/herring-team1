@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import DropdownMenu from './DropdownMenu.jsx';
 import OrganizationList from '../search/OrganizationList.jsx';
+import { searchOrganizations } from '../../utils/apiReqests';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -42,16 +43,12 @@ const SearchForm = ({
 
   const handleSearch = async () => {
     setSearchPerformed(true);
-    const queryParams = new URLSearchParams(searchParams).toString();
     try {
-      const response = await fetch(`/search?${queryParams}`, {
-        method: 'GET',
-      });
-      const data = await response.json();
-      const filteredResults = data.organizations.filter((org) => org.address.zip_code === searchParams.zip_code);
-      setSearchResults(filteredResults);
+      const data = await searchOrganizations(searchParams);
+      console.log('Search results:', data); // Log the response
+      setSearchResults(data.organizations);
       if (onSearch) {
-        onSearch(filteredResults);
+        onSearch(searchParams); // Pass searchParams to onSearch
       }
     } catch (error) {
       console.error('Error fetching search results:', error);

@@ -22,32 +22,32 @@ const SearchPage = () => {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchOrganizations = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllOrganizations(currentPage);
-        if (data && data.organizations) {
-          setOrganizations(data.organizations);
-          setCurrentPage(data.current_page || 1);
-          setTotalPages(data.total_pages || 1);
-        } else {
-          console.error('Invalid data format:', data);
-        }
-      } catch (error) {
-        console.error('Error fetching organizations:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrganizations();
-  }, [currentPage]);
-
-  const handleSearch = async (params) => {
+  const fetchOrganizations = async (page = 1) => {
     setLoading(true);
     try {
-      const data = await searchOrganizations({ ...params, page: currentPage });
+      const data = await getAllOrganizations(page);
+      if (data && data.organizations) {
+        setOrganizations(data.organizations);
+        setCurrentPage(data.current_page || 1);
+        setTotalPages(data.total_pages || 1);
+      } else {
+        console.error('Invalid data format:', data);
+      }
+    } catch (error) {
+      console.error('Error fetching organizations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrganizations(currentPage);
+  }, [currentPage]);
+
+  const handleSearch = async (params, page = 1) => {
+    setLoading(true);
+    try {
+      const data = await searchOrganizations({ ...params, page });
       if (data && data.organizations) {
         setOrganizations(data.organizations);
         setCurrentPage(data.current_page || 1);
@@ -65,7 +65,11 @@ const SearchPage = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    handleSearch(searchParams);
+    if (searchParams.zip_code || searchParams.keyword || searchParams.services.length > 0) {
+      handleSearch(searchParams, page);
+    } else {
+      fetchOrganizations(page);
+    }
   };
 
   const handleRemoveService = (service) => {
