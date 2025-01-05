@@ -306,3 +306,46 @@ export const getAllOrganizations = async (page = 1, perPage = 6) => {
     throw error;
   }
 };
+
+export const getMyOrgRequests = async (orgId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}organizations/${orgId}/requests`, {});
+
+    return response;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return [];
+    }
+    throw error.response ? error.response.data : error;
+  }
+};
+
+export const getOneOrganizationById = async (id) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.id;
+
+  if (!userId) {
+    throw new Error('Organization ID not found.');
+  }
+
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const url = `${API_BASE_URL}organizations/${id}`;
+    const response = await axios.get(url, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error getting organization:', error);
+    console.log(error);
+    throw error.response.data;
+  }
+};
