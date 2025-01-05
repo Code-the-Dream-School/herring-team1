@@ -85,7 +85,7 @@ function InfoPage() {
     };
 
     fetchData();
-  }, []);
+  }, [id, error]);
 
   if (!org || Object.keys(org).length === 0) {
     return <div>No organization data available.</div>;
@@ -240,6 +240,7 @@ function InfoPage() {
               </span>
             </div>
             {isSecondAccordionOpen && (
+              /* eslint-disable-next-line react/jsx-no-useless-fragment */
               <>
                 {requestsLoading ? (
                   <p className="text-center">Loading...</p>
