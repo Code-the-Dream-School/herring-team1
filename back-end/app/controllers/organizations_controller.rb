@@ -229,7 +229,7 @@ class OrganizationsController < ApplicationController
 
   # Permit the necessary parameters
   def organization_params
-    params.require(:organization).permit(:name, :website, :phone, :description, :mission, :logo, service_ids: [])
+    params.require(:organization).permit(:name, :website, :phone, :description, :mission, :logo)
   end
 
   def address_params
