@@ -29,7 +29,7 @@ const teamMembers = [
   },
   {
     name: 'Vera Fesianava',
-    description: 'Ruby On Rails Developer',
+    description: 'Full Stack Developer',
     image: veraImage,
     github: 'https://github.com/verafes',
   },
