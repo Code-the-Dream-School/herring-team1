@@ -19,3 +19,14 @@ export function formatAddress(address) {
 
   return [street || '', city || '', state || '', zip_code || ''].filter(Boolean).join(', ');
 }
+
+export const formatStatus = (status) => {
+  const requestStatus = {
+    open: 'Open',
+    in_progress: 'In progress',
+    closed: 'Closed',
+    canceled: 'Canceled',
+  };
+
+  return requestStatus[status] || status;
+};

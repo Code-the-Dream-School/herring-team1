@@ -1,44 +1,18 @@
-import { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import InputWithLabel from './InputWithLabel.jsx';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { getMyOrganization, postRequests } from '../../../../../utils/apiReqests';
+import { postRequests, patchRequest } from '../../../../../utils/apiReqests';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
-  const [orgId, setOrgId] = useState(null);
-  const [services, setServices] = useState([]);
-
-  const requestStatus = {
-    0: 'Open',
-    1: 'Closed',
-    2: 'Canceled',
-    3: 'Pending',
-  };
-
-  useEffect(() => {
-    const fetchOrganization = async () => {
-      try {
-        const response = await getMyOrganization();
-        const orgId = response.data.organization.id;
-        const services = response.data.organization.org_services || [];
-
-        setOrgId(orgId);
-        setServices(services);
-      } catch (error) {
-        console.error('Error fetching organization data:', error);
-      }
-    };
-
-    fetchOrganization();
-  }, []);
-
+const CreateRequestForm = ({ onSave, onCancel, initialData, orgId, services }) => {
   const formik = useFormik({
     initialValues: {
-      service: initialData?.service || services[0]?.name || '',
+      service: initialData?.name || services[0]?.name || '',
       title: initialData?.title || '',
       description: initialData?.description || '',
-      status: initialData?.status || 'Open',
+      status: initialData?.status || '',
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -51,18 +25,36 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
         // pick up data for selected from all org services
         const selectedService = services.find((service) => service.name === values.service);
         const serviceId = selectedService ? selectedService.id : null;
-        const statusId = Object.keys(requestStatus).find((key) => requestStatus[key] === values.status);
-        // const serviceName = selectedService ? selectedService.name : null;
 
-        // post a new request
-        const response = await postRequests(values, orgId, serviceId, statusId);
-        const result = await response.request;
+        let response;
+        if (initialData?.id) {
+          // PATCH for editing an existing request
+          response = await patchRequest(initialData.id, values, orgId, serviceId);
+          if (response) {
+            toast.success('Request updated successfully!');
+          } else {
+            throw new Error('Failed to update the request');
+          }
+        } else {
+          // POST a new request
+          response = await postRequests(values, orgId, serviceId);
+          if (response) {
+            toast.success('Request created successfully!');
+          } else {
+            throw new Error('Failed to create the request');
+          }
+        }
+        const result = await {
+          ...response.request,
+          service: values.service,
+        };
+
         onSave(result);
 
         formik.resetForm();
       } catch (error) {
         console.warn('Error while submitting form:', error);
-        alert('An error occurred while saving the form. Please try again.');
+        toast.error('An error occurred while saving the form. Please try again.');
       }
     },
   });
@@ -90,7 +82,6 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
         {formik.touched.service && formik.touched.service && (
           <div className="text-red-500 text-sm">{formik.errors.service}</div>
         )}
-        {/*<p>{formatServices(formData.service)}</p>*/}
       </div>
       <div className="mt-3">
         <InputWithLabel
@@ -133,10 +124,10 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
           onChange={formik.handleChange}
           className="text-sm bg-white border-gray-300 border rounded-lg p-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none"
         >
-          <option value="Open">Open</option>
-          <option value="Closed">Rejected</option>
-          <option value="Canceled">Canceled</option>
-          <option value="Pending">Closed</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In progress</option>
+          <option value="closed">Closed</option>
+          <option value="canceled">Canceled</option>
         </select>
         {formik.touched.status && formik.errors.status && (
           <div className="text-red-500 text-sm pl-3">{formik.errors.status}</div>
@@ -163,13 +154,16 @@ const CreateRequestForm = ({ onSave, onCancel, initialData }) => {
 
 CreateRequestForm.propTypes = {
   initialData: PropTypes.shape({
-    service: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
   }),
   onSave: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  orgId: PropTypes.number.isRequired,
+  services: PropTypes.array.isRequired,
 };
 
 export default CreateRequestForm;
