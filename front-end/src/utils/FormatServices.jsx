@@ -69,4 +69,9 @@ export function formatService(serviceName) {
   );
 }
 
+export function getServiceIcon(serviceName) {
+  const serviceDetails = servicesMap.find((s) => s.name === serviceName);
+  return serviceDetails?.icon;
+}
+
 export default formatServices;

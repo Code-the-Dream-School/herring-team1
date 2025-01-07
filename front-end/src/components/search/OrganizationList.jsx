@@ -3,7 +3,6 @@
 //  The user can also click on the heart icon to add or remove the organization from their favorites list.
 import PropTypes from 'prop-types';
 import { servicesMap } from '../../utils/FormatServices.jsx';
-import { FaQuestionCircle } from 'react-icons/fa';
 
 const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favorites }) => {
   return (
@@ -79,8 +78,7 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
                 <div className="flex flex-wrap">
                   {org.org_services && org.org_services.length > 0 ? (
                     org.org_services.map((service, index) => {
-                      const serviceDetails = servicesMap.find((s) => s.name === service.name);
-                      const serviceIcon = serviceDetails?.icon || <FaQuestionCircle className="mr-2 text-gray-500" />;
+                      const serviceIcon = servicesMap.find((s) => s.name === service.name)?.icon;
                       return (
                         <span key={index} className="flex items-center mr-2 mb-2">
                           {serviceIcon}

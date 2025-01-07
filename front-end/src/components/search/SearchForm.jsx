@@ -4,6 +4,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import DropdownMenu from './DropdownMenu.jsx';
 import OrganizationList from '../search/OrganizationList.jsx';
 import { searchOrganizations } from '../../utils/apiReqests';
+import { getServiceIcon } from '../../utils/FormatServices.jsx';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -46,13 +47,18 @@ const SearchForm = ({
     try {
       console.log('Searching organizations with params:', searchParams);
       const data = await searchOrganizations(searchParams);
-      console.log(
-        'Search results:',
-        data.organizations.map((org) => org.zip_code)
-      ); // Log the zip codes
-      setSearchResults(data.organizations);
+      console.log('Search results:', data.organizations);
+      setSearchResults(
+        data.organizations.map((org) => ({
+          ...org,
+          org_services: org.services.split(',').map((serviceName) => ({
+            name: serviceName.trim(),
+            icon: getServiceIcon(serviceName.trim()),
+          })),
+        }))
+      );
       if (onSearch) {
-        onSearch(searchParams); // Pass searchParams to onSearch
+        onSearch(searchParams);
       }
     } catch (error) {
       console.error('Error fetching search results:', error);

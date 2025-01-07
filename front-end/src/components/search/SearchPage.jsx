@@ -8,6 +8,7 @@ import OrganizationList from './OrganizationList.jsx';
 import Pagination from './Pagination.jsx';
 import { searchOrganizations, getAllOrganizations } from '../../utils/apiReqests';
 import SelectedFilters from './SelectedFilters.jsx';
+import { getServiceIcon } from '../../utils/FormatServices.jsx';
 
 const SearchPage = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -56,13 +57,18 @@ const SearchPage = () => {
       console.log('Searching organizations with params:', { ...params, page });
       const data = await searchOrganizations({ ...params, page });
       if (data && data.organizations) {
-        console.log(
-          'Fetched organizations:',
-          data.organizations.map((org) => org.zip_code)
+        console.log('Fetched organizations:', data.organizations);
+        setOrganizations(
+          data.organizations.map((org) => ({
+            ...org,
+            org_services: org.services.split(',').map((serviceName) => ({
+              name: serviceName.trim(),
+              icon: getServiceIcon(serviceName.trim()),
+            })),
+          }))
         );
-        setOrganizations(data.organizations);
         setCurrentPage(data.current_page || 1);
-        setTotalPages(data.total_pages || Math.ceil(data.total_count / 6)); // Ensure total_pages is calculated correctly
+        setTotalPages(data.total_pages || Math.ceil(data.total_count / 6));
         setSearchParams(params);
       } else {
         console.error('Invalid data format:', data);
