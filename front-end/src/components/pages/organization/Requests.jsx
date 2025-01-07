@@ -22,19 +22,20 @@ function Request() {
       try {
         // Fetch organization data to get organization_id
         const res = await getMyOrganization();
+        console.log('res', res);
         if (!res) {
           throw new Error('Failed to fetch organization data');
         }
         const orgId = res.organization.id;
         setOrgId(orgId);
-
+        console.log('orgId', orgId);
         const services = res.organization.org_services || [];
         setServices(services);
 
         // Fetch requests using the organization_id
         if (services && services.length > 0) {
           const reqResponse = await fetchMyOrgRequests(orgId);
-
+          console.log('!!reqResponse', reqResponse);
           if (reqResponse && Array.isArray(reqResponse) && reqResponse.length > 0) {
             setRequests(reqResponse);
           } else {

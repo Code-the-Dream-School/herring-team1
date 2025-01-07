@@ -168,7 +168,7 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
         'Content-Type': 'application/json',
         'X-CSRF-TOKEN': x_csrf_token,
       },
-      credentials: 'include',
+      credentials: true,
     });
 
     return response.data;
@@ -314,26 +314,9 @@ export const getAllOrganizations = async (page = 1, perPage = 6) => {
 
 //get one organization by id
 export const getOneOrganizationById = async (id) => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const userId = user?.id;
-
-  if (!userId) {
-    throw new Error('Organization ID not found.');
-  }
-
-  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
-
-  if (!x_csrf_token) {
-    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
-  }
   try {
     const url = `${API_BASE_URL}organizations/${id}`;
-    const response = await axios.get(url, {
-      headers: {
-        'X-CSRF-Token': x_csrf_token,
-      },
-      withCredentials: true,
-      });
+    const response = await axios.get(url, {});
 
     return response.data;
   } catch (error) {
@@ -342,7 +325,7 @@ export const getOneOrganizationById = async (id) => {
   }
 };
 
-export const getMyOrgRequests = async (orgId) => {
+export const fetchMyOrgRequests = async (orgId) => {
   try {
     const response = await axios.get(`${API_BASE_URL}organizations/${orgId}/requests`, {});
 

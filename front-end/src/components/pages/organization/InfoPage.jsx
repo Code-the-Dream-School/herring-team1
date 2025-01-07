@@ -2,22 +2,23 @@ import { useEffect, useState } from 'react'; //, useRef
 import { useParams } from 'react-router-dom';
 import RequestCard from '../cards/RequestCard.jsx';
 import logoExample from '../../assets/images_default/logo_example.png';
-import { FaEnvelope, FaGlobe, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
-import { getMyOrgRequests, getOneOrganizationById } from '../../../utils/apiReqests';
+import { FaEnvelope, FaGlobe, FaHeart, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
+import { fetchMyOrgRequests, getOneOrganizationById } from '../../../utils/apiReqests';
 import formatServices from '../../../utils/FormatServices.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function InfoPage() {
   const { id } = useParams();
-  const [org, setOrg] = useState({});
+  const [organization, setOrganization] = useState({});
   // eslint-disable-next-line no-unused-vars
   const [services, setServices] = useState([]);
   const [requests, setRequests] = useState([]);
-  const [isLoading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [requestsLoading, setRequestsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [requestsError, setRequestsError] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
   const [isFirstAccordionOpen, setIsFirstAccordionOpen] = useState(true);
   const [isSecondAccordionOpen, setIsSecondAccordionOpen] = useState(false);
@@ -26,7 +27,6 @@ function InfoPage() {
     const fetchData = async () => {
       try {
         const response = await getOneOrganizationById(id);
-        console.log('response', response);
 
         if (!response) {
           console.error('Error fetching organization:', error);
@@ -35,7 +35,7 @@ function InfoPage() {
           setLoading(false);
           return;
         }
-        setOrg(response.organization);
+        setOrganization(response.organization);
 
         const orgServices = response.organization.org_services || [];
         setServices(orgServices);
@@ -43,12 +43,11 @@ function InfoPage() {
         if (orgServices.length > 0) {
           try {
             setRequestsLoading(true);
-            const reqResponse = await getMyOrgRequests(id);
-            console.log('reqResponse', reqResponse);
-            if (reqResponse.data) {
-              const requests = Array.isArray(reqResponse.data) ? reqResponse.data : Object.values(reqResponse.data);
-              console.log('reqResponse data', reqResponse.data);
-              setRequests(requests || []);
+            const reqResponse = await fetchMyOrgRequests(id);
+
+            if (reqResponse) {
+              const requests = Array.isArray(reqResponse) ? reqResponse : Object.values(reqResponse);
+              setRequests(requests);
               setIsSecondAccordionOpen(false);
             } else {
               setRequests([]);
@@ -87,9 +86,15 @@ function InfoPage() {
     fetchData();
   }, [id, error]);
 
-  if (!org || Object.keys(org).length === 0) {
+  if (!organization || Object.keys(organization).length === 0) {
     return <div>No organization data available.</div>;
   }
+
+  const toggleFavorite = (id) => {
+    setFavorites((prevFavorites) =>
+      prevFavorites.includes(id) ? prevFavorites.filter((favId) => favId !== id) : [...prevFavorites, id]
+    );
+  };
 
   return (
     <div>
@@ -106,7 +111,7 @@ function InfoPage() {
         pauseOnHover
       />
       {/*First Accordion - Organization details*/}
-      {isLoading ? (
+      {loading ? (
         <p className="text-center">Loading...</p>
       ) : error ? (
         <p className="text-center text-red-500 font-semibold">Error: {error.message}</p>
@@ -152,47 +157,51 @@ function InfoPage() {
               </span>
             </div>
             {isFirstAccordionOpen && (
-              <div key={org.id} className="md:mt-6 mb-4">
+              <div key={organization.id} className="md:mt-6 mb-4">
                 {/* First line */}
                 <div className="flex items-center justify-between lg:ml-7 mt-5 mb-5">
                   <div className="lg:w-20 xs:w-16 md:w-18">
                     <img
-                      src={org?.logo || logoExample}
-                      alt={`${org?.name || 'Organization'} logo`}
+                      src={organization?.logo || logoExample}
+                      alt={`${organization?.name || 'Organization'} logo`}
                       className="w-full h-full object-contain"
                     />
                   </div>
-                  <h1 className="font-bold text-lg flex-1 text-center">{org?.name}</h1>
-                  {/*<FaHeart className="text-2xl text-red-500 lg:mr-10" />*/}
+                  <h1 className="font-bold text-lg flex-1 text-center">{organization?.name}</h1>
+                  <FaHeart
+                    className={`text-2xl lg:mr-10 ${favorites.includes(organization.id) ? 'text-red-600' : 'text-red-200'}`}
+                    onClick={() => toggleFavorite(organization.id)}
+                  />
                 </div>
                 <div className="mb-3 lg:ml-7">
                   <div className="flex items-center mb-2">
                     <FaMapMarkerAlt className="mr-2" />
                     <span>
-                      {org?.address?.street}, {org?.address?.city}, {org?.address?.state} {org?.address?.zipCode}
+                      {organization?.address?.street}, {organization?.address?.city}, {organization?.address?.state},{' '}
+                      {organization?.address?.zipCode}
                     </span>
                   </div>
                   <div className="flex items-center mb-2">
                     <FaPhoneAlt className="mr-2" />
-                    <span>{org?.phone}</span>
+                    <span>{organization?.phone}</span>
                   </div>
                   <div className="flex items-center mb-2">
                     <FaEnvelope className="mr-2" />
-                    <a href={`mailto:${org?.email}`}>{org?.email}</a>
+                    <a href={`mailto:${organization?.email}`}>{organization?.email}</a>
                   </div>
                   <div className="flex items-center mb-2">
                     <FaGlobe className="mr-2" />
-                    <a href={org?.website} target="_blank" rel="noopener noreferrer">
-                      {org?.website}
+                    <a href={organization?.website} target="_blank" rel="noopener noreferrer">
+                      {organization?.website}
                     </a>
                   </div>
                   <div className="mb-2">
                     <strong>Description:</strong>
-                    <div>{org?.description}</div>
+                    <div>{organization?.description}</div>
                   </div>
                   <div className="mb-2 text-left">
                     <strong>Services:</strong>
-                    <div>{formatServices(org?.org_services)}</div>
+                    <div>{formatServices(organization?.org_services)}</div>
                   </div>
                 </div>
               </div>
@@ -249,7 +258,6 @@ function InfoPage() {
                 ) : (
                   <div className="md:mt-3 flex md:flex-row md:items-start pt-3">
                     <div className="flex-1">
-                      {/*{console.log('requests', requests)}*/}
                       {Array.isArray(requests) && requests.length > 0 ? (
                         requests.map((request) => (
                           <div key={request.id} className="flex items-start mb-4">
