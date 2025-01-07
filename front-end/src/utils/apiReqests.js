@@ -120,6 +120,13 @@ export const uploadProfileImage = async (imageFile) => {
 };
 
 export const getMyOrganization = async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.id;
+
+  if (!userId) {
+    throw new Error('Organization ID not found.');
+  }
+
   const x_csrf_token = localStorage.getItem('x_csrf_token') || null;
 
   if (!x_csrf_token) {
@@ -132,8 +139,8 @@ export const getMyOrganization = async () => {
       },
       withCredentials: true,
     });
-    console.log(response.data);
-    return response;
+
+    return response.data;
   } catch (error) {
     throw error.response.data;
   }
@@ -155,7 +162,6 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
       org_service_id: serviceId,
       request_status_id: statusId,
     };
-    console.log('POST request body:', body);
 
     const response = await axios.post(`${API_BASE_URL}organizations/${orgId}/requests/`, body, {
       headers: {
@@ -165,8 +171,7 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
       credentials: 'include',
     });
 
-    const responseBody = await response.data;
-    console.log('POST request response:', responseBody);
+    return response.data;
   } catch (error) {
     console.error('Error while submitting form:', error);
   }
@@ -307,19 +312,7 @@ export const getAllOrganizations = async (page = 1, perPage = 6) => {
   }
 };
 
-export const getMyOrgRequests = async (orgId) => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}organizations/${orgId}/requests`, {});
-
-    return response;
-  } catch (error) {
-    if (error.response && error.response.status === 404) {
-      return [];
-    }
-    throw error.response ? error.response.data : error;
-  }
-};
-
+//get one organization by id
 export const getOneOrganizationById = async (id) => {
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user?.id;
@@ -340,12 +333,66 @@ export const getOneOrganizationById = async (id) => {
         'X-CSRF-Token': x_csrf_token,
       },
       withCredentials: true,
-    });
+      });
 
     return response.data;
   } catch (error) {
     console.error('Error getting organization:', error);
-    console.log(error);
     throw error.response.data;
+  }
+};
+
+export const getMyOrgRequests = async (orgId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}organizations/${orgId}/requests`, {});
+
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return [];
+    } else {
+      throw error.response ? error.response.data : error;
+    }
+  }
+};
+
+export const patchRequest = async (requestId, values, orgId, serviceId) => {
+  try {
+    const body = {
+      title: values.title,
+      description: values.description,
+      org_service_id: serviceId,
+      status: values.status,
+    };
+
+    const response = await axios.patch(`${API_BASE_URL}organizations/${orgId}/requests/${requestId}`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': x_csrf_token,
+      },
+      credentials: 'include',
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error while updating request:', error);
+    throw error;
+  }
+};
+
+export const deleteRequest = async (requestId, orgId) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}organizations/${orgId}/requests/${requestId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': x_csrf_token,
+      },
+      credentials: 'include',
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error while deleting request:', error);
+    throw error;
   }
 };

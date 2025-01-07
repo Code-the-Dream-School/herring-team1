@@ -12,7 +12,7 @@ import {
   FaQuestionCircle,
 } from 'react-icons/fa';
 
-// Define the services array with icons
+// services array with icons
 const servicesMap = [
   { value: 1, name: 'Food service', icon: <FaUtensils className="mr-2" /> },
   { value: 2, name: 'Transportation', icon: <FaCar className="mr-2" /> },
@@ -26,7 +26,7 @@ const servicesMap = [
   { value: 10, name: 'Health&Medicine', icon: <FaClinicMedical className="mr-2" /> },
 ];
 
-// Function to format services
+// format services
 function formatServices(services) {
   if (!services || services.length === 0) {
     return 'No services available.';
@@ -34,10 +34,10 @@ function formatServices(services) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1">
       {services.map((service) => {
-        // Find the matching service from the `services` array
+        // matching service from the servicesMap array
         const serviceDetails = servicesMap.find((s) => s.value === service.service_id);
 
-        // Use the icon and name from the `services` array
+        // adding icon and name from the servicesMap array
         const serviceIcon = serviceDetails?.icon || <FaQuestionCircle className="mr-2 text-gray-500" />;
         const serviceName = serviceDetails?.name || 'Unknown Service';
 
@@ -52,11 +52,12 @@ function formatServices(services) {
   );
 }
 
+// format one service
 export function formatService(serviceName) {
-  // Find the matching service from the `servicesMap` array
+  // matching service from the servicesMap array
   const serviceDetails = servicesMap.find((s) => s.name === serviceName);
 
-  // to add icon and name from the `servicesMap` array
+  // add icon and name from the servicesMap array
   const serviceIcon = serviceDetails?.icon || <FaQuestionCircle className="mr-2 text-gray-500" />;
   const formattedName = serviceDetails?.name || 'Unknown Service';
 
