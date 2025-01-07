@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
-import { getMyVolunteer, updateVolunteerById } from '../../../utils/apiReqests';
-import { states } from '../../../data/states';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createVolunteer } from '../../../utils/apiReqests';
+import { states } from '../../../data/states';
 
-function EditVolunteer() {
+function CreateVolunteer() {
   const [formData, setFormData] = useState({
-    id: '',
     first_name: '',
     last_name: '',
-    email: '',
     phone: '',
     about: '',
     address: {
@@ -18,42 +16,10 @@ function EditVolunteer() {
       zip_code: '',
     },
   });
-
-  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({});
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  //Fetch volunteer data on mount
-  useEffect(() => {
-    const fetchVolunteerData = async () => {
-      try {
-        const volunteerData = await getMyVolunteer();
-        setFormData({
-          id: volunteerData.id || '',
-          first_name: volunteerData.first_name || '',
-          last_name: volunteerData.last_name || '',
-          email: volunteerData.email || '',
-          phone: volunteerData.phone || '',
-          about: volunteerData.about || '',
-          address: {
-            street: volunteerData.address?.street || '',
-            city: volunteerData.address?.city || '',
-            state: volunteerData.address?.state || '',
-            zip_code: volunteerData.address?.zip_code || '',
-          },
-        });
-      } catch (err) {
-        console.error('Error fetching volunteer data:', err);
-        setError('Failed to load volunteer data. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVolunteerData();
-  }, []);
-
-  //Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -70,65 +36,87 @@ function EditVolunteer() {
     }
   };
 
-  //Handle form submission
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.first_name.trim()) newErrors.first_name = 'First Name is required';
+    if (!formData.last_name.trim()) newErrors.last_name = 'Last Name is required';
+    if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
+    if (!formData.about.trim()) newErrors.about = 'About is required';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validateForm()) {
+      console.error('Form validation failed:', errors);
+      return;
+    }
+
     try {
-      await updateVolunteerById(formData.id, formData);
+      await createVolunteer(formData);
       navigate('/dashboard');
     } catch (err) {
-      console.error('Error updating volunteer:', err);
-      setError('Failed to update volunteer. Please try again.');
+      console.error('Error creating volunteer:', err);
+      setError('Failed to create volunteer. Please try again.');
     }
   };
 
-  //Show loading or error messages
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-
   return (
     <div className="px-8 sm:px-24 md:px-48 lg:px-64 py-12">
-      <h1 className="text-2xl font-semibold mb-4 text-center">Edit Your Information</h1>
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-semibold mb-4">Please add your information</h1>
+        <p className="text-gray-600">Ensure all details are correct and up-to-date to help us serve you better.</p>
+      </div>
+      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
       <form onSubmit={handleSubmit}>
-        {/* Name Fields */}
         <div className="flex space-x-4 mb-4">
           <div className="w-1/2">
-            <label className="block text-sm font-bold">First Name</label>
+            <label className="block text-sm font-bold">First Name *</label>
             <input
               type="text"
               name="first_name"
               value={formData.first_name}
               onChange={handleInputChange}
-              className="border rounded px-2 py-1 w-full"
+              className={`border rounded px-2 py-1 w-full shadow-md ${
+                errors.first_name ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {errors.first_name && <p className="text-red-500 text-sm">{errors.first_name}</p>}
           </div>
           <div className="w-1/2">
-            <label className="block text-sm font-bold">Last Name</label>
+            <label className="block text-sm font-bold">Last Name *</label>
             <input
               type="text"
               name="last_name"
               value={formData.last_name}
               onChange={handleInputChange}
-              className="border rounded px-2 py-1 w-full"
+              className={`border rounded px-2 py-1 w-full shadow-md ${
+                errors.last_name ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {errors.last_name && <p className="text-red-500 text-sm">{errors.last_name}</p>}
           </div>
         </div>
 
-        {/* Phone */}
         <div className="mb-4">
-          <label className="block text-sm font-bold">Phone</label>
+          <label className="block text-sm font-bold">Phone *</label>
           <input
             type="text"
             name="phone"
             value={formData.phone}
+            placeholder="e.g., 1234567890"
             onChange={handleInputChange}
-            className="border rounded px-2 py-1 w-full"
+            className={`border rounded px-2 py-1 w-full shadow-md ${
+              errors.phone ? 'border-red-500' : 'border-gray-300'
+            }`}
           />
+          {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
         </div>
 
-        {/* Address */}
-        <h2 className="text-lg font-semibold mt-6 mb-2">Address</h2>
         <div className="mb-4">
           <label className="block text-sm font-bold">Street</label>
           <input
@@ -136,7 +124,7 @@ function EditVolunteer() {
             name="street"
             value={formData.address.street}
             onChange={handleInputChange}
-            className="border rounded px-2 py-1 w-full"
+            className="border rounded px-2 py-1 w-full shadow-md border-gray-300"
           />
 
           <label className="block text-sm font-bold mt-2">City</label>
@@ -145,7 +133,7 @@ function EditVolunteer() {
             name="city"
             value={formData.address.city}
             onChange={handleInputChange}
-            className="border rounded px-2 py-1 w-full"
+            className="border rounded px-2 py-1 w-full shadow-md border-gray-300"
           />
 
           <div className="flex space-x-4 mt-2">
@@ -172,30 +160,26 @@ function EditVolunteer() {
                 name="zip_code"
                 value={formData.address.zip_code}
                 onChange={handleInputChange}
-                className="border rounded px-2 py-1 w-full"
+                className="border rounded px-2 py-1 w-full shadow-md border-gray-300"
               />
             </div>
           </div>
         </div>
+        <label className="block text-sm font-bold">About *</label>
+        <textarea
+          name="about"
+          value={formData.about}
+          onChange={handleInputChange}
+          className={`border rounded px-2 py-1 w-full shadow-md ${errors.about ? 'border-red-500' : 'border-gray-300'}`}
+        />
+        {errors.about && <p className="text-red-500 text-sm">{errors.about}</p>}
 
-        {/* About */}
-        <div className="mb-4">
-          <label className="block text-sm font-bold">About</label>
-          <textarea
-            name="about"
-            value={formData.about}
-            onChange={handleInputChange}
-            className="border rounded px-2 py-1 w-full"
-          />
-        </div>
-
-        {/* Submit Button */}
         <div className="flex justify-center mt-6">
           <button
             type="submit"
-            className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
+            className="px-4 py-2 bg-orangeButton text-white rounded border transition hover:shadow-lg"
           >
-            Save
+            Create
           </button>
         </div>
       </form>
@@ -203,4 +187,4 @@ function EditVolunteer() {
   );
 }
 
-export default EditVolunteer;
+export default CreateVolunteer;

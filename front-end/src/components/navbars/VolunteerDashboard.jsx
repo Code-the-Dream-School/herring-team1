@@ -3,7 +3,7 @@ import VolunteerProfile from '../pages/volunteer/VolunteerProfile.jsx';
 import Volunteering from '../pages/volunteer/Volunteering.jsx';
 import Favorites from '../pages/volunteer/Favorites.jsx';
 import defaultProfileImage from '../assets/images_default/profile_default.jpg';
-import { getVolunteerById, uploadProfileImage } from '../../utils/apiReqests';
+import { getMyVolunteer, uploadProfileImage } from '../../utils/apiReqests';
 
 const volunteerDashboard = [
   { text: 'Profile', link: '/profile' },
@@ -22,7 +22,7 @@ function VolunteerDashboard() {
     const fetchVolunteerData = async () => {
       try {
         setLoading(true);
-        const volunteerData = await getVolunteerById();
+        const volunteerData = await getMyVolunteer();
         setUserProfileImage(volunteerData.profile_img?.url || defaultProfileImage);
         const formattedDate = new Date(volunteerData.created_at).toLocaleDateString('en-US', {
           year: 'numeric',
@@ -47,8 +47,9 @@ function VolunteerDashboard() {
     setError(null);
 
     try {
-      const response = await uploadProfileImage(file);
-      setUserProfileImage(response.imageUrl);
+      const volunteerData = await getMyVolunteer();
+      const response = await uploadProfileImage(volunteerData.id, file);
+      setUserProfileImage(response.imageUrl || defaultProfileImage);
     } catch (err) {
       setError(err.error || 'Failed to upload image. Please try again.');
       console.error('Error uploading profile image:', err);

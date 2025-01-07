@@ -1,8 +1,7 @@
 import axios from 'axios';
-const API_BASE_URL = import.meta.env.VITE_REACT_URL;
+const API_BASE_URL = import.meta.env.VITE_REACT_URL || 'http://127.0.0.1:3000/';
 
 const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
-console.log('x_csrf_token', x_csrf_token);
 
 export const register = async (email, password, confirmPassword, isOrganization) => {
   try {
@@ -57,36 +56,96 @@ export const logout = async () => {
   }
 };
 
-export const getVolunteerById = async () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const related_entity_id = user.related_entity_id;
-  if (!user || !user.related_entity_id) {
-    throw new Error('Related entity ID not found.');
+// export const fetchOrganizations = async () => {
+//   try {
+//     const response = await axios.get(`${API_BASE_URL}organizations`, {});
+//     return response;
+//   } catch (error) {
+//     throw error.response.data;
+//   }
+// };
+
+//create volunteer
+export const createVolunteer = async (volunteerData) => {
+  const csrfToken = localStorage.getItem('x_csrf_token');
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure you are logged in.');
   }
 
   try {
-    const response = await axios.get(`http://127.0.0.1:3000/volunteers/${related_entity_id}`);
+    const response = await axios.post(
+      `/volunteers`,
+      { volunteer: volunteerData },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
+        withCredentials: true,
+      }
+    );
+
+    console.log('Volunteer created successfully:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching volunteer data:', error);
-    throw error.response?.data || 'Failed to fetch volunteer data.';
+    console.error('Error creating volunteer:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to create volunteer.';
   }
 };
 
-export const updateVolunteerById = async (updatedData) => {
-  const user = JSON.parse(localStorage.getItem('user'));
+//get my_volunteer
+export const getMyVolunteer = async () => {
   const csrfToken = localStorage.getItem('x_csrf_token');
-  const related_entity_id = user.related_entity_id;
-  if (!user || !user.related_entity_id) {
-    throw new Error('Related entity ID not found.');
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure you are logged in.');
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}volunteers/my_volunteer`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching current volunteer data:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to fetch current volunteer data.';
+  }
+};
+
+// //get volunteer by id
+// export const getVolunteerById = async () => {
+//   const user = JSON.parse(localStorage.getItem('user'));
+//   const related_entity_id = user.id;
+//   if (!user || !user.related_entity_id) {
+//     throw new Error('Related entity ID not found.');
+//   }
+
+//   try {
+//     const response = await axios.get(`http://127.0.0.1:3000/volunteers/${related_entity_id}`);
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error fetching volunteer data:', error);
+//     throw error.response?.data || 'Failed to fetch volunteer data.';
+//   }
+// };
+
+// Update volunteer by ID
+export const updateVolunteerById = async (id, updatedData) => {
+  const csrfToken = localStorage.getItem('x_csrf_token');
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure you are logged in.');
   }
 
   try {
     const response = await axios.patch(
-      `http://127.0.0.1:3000/volunteers/${related_entity_id}`,
+      `/volunteers/${id}`,
       { volunteer: updatedData },
       {
         headers: {
+          'Content-Type': 'application/json',
           'X-CSRF-Token': csrfToken,
         },
         withCredentials: true,
@@ -99,23 +158,28 @@ export const updateVolunteerById = async (updatedData) => {
   }
 };
 
-export const uploadProfileImage = async (imageFile) => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const related_entity_id = user.related_entity_id;
+//upload volunteer image
+export const uploadProfileImage = async (id, imageFile) => {
+  const csrfToken = localStorage.getItem('x_csrf_token');
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure you are logged in.');
+  }
 
   const formData = new FormData();
   formData.append('profile_img', imageFile);
 
   try {
-    const response = await axios.post(`http://127.0.0.1:3000/volunteers/${related_entity_id}/upload_image`, formData, {
+    const response = await axios.post(`/volunteers/${id}/upload_image`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'X-CSRF-Token': csrfToken,
       },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
-    console.error('Error uploading profile image:', error);
-    throw error.response?.data || error.message;
+    console.error('Error uploading profile image:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to upload profile image.';
   }
 };
 
