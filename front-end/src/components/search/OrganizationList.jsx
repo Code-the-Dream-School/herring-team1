@@ -72,24 +72,26 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
               )}
             </div>
 
-            {/* (org_services) */}
+            {/* Services */}
             <div className="mt-4">
-              <h4 className="font-semibold text-sm">Services:</h4>
-              {org.org_services && org.org_services.length > 0 ? (
+              <div className="flex items-center">
+                <h4 className="font-semibold text-sm mr-2">Services:</h4>
                 <div className="flex flex-wrap">
-                  {org.org_services.map((service, index) => {
-                    const serviceDetails = servicesMap.find((s) => s.name === service.name);
-                    const serviceIcon = serviceDetails?.icon || <FaQuestionCircle className="mr-2 text-gray-500" />;
-                    return (
-                      <span key={index} className="flex items-center mr-2 mb-2">
-                        {serviceIcon}
-                      </span>
-                    );
-                  })}
+                  {org.org_services && org.org_services.length > 0 ? (
+                    org.org_services.map((service, index) => {
+                      const serviceDetails = servicesMap.find((s) => s.name === service.name);
+                      const serviceIcon = serviceDetails?.icon || <FaQuestionCircle className="mr-2 text-gray-500" />;
+                      return (
+                        <span key={index} className="flex items-center mr-2 mb-2">
+                          {serviceIcon}
+                        </span>
+                      );
+                    })
+                  ) : (
+                    <p className="text-sm text-gray-500">No services available.</p>
+                  )}
                 </div>
-              ) : (
-                <p className="text-sm text-gray-500">No services available.</p>
-              )}
+              </div>
             </div>
           </div>
         </div>
