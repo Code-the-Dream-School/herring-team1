@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getVolunteerById } from '../../../utils/apiReqests';
+import { getMyVolunteer } from '../../../utils/apiReqests';
 
 function VolunteerProfile() {
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    street: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    about: '',
+    profileImg: '',
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -11,18 +22,19 @@ function VolunteerProfile() {
   useEffect(() => {
     const fetchVolunteerData = async () => {
       try {
-        const volunteerData = await getVolunteerById();
-        const latestAddress = volunteerData.addresses?.[volunteerData.addresses.length - 1] || {};
+        const volunteerData = await getMyVolunteer();
+
         setFormData({
           firstName: volunteerData.first_name || '',
           lastName: volunteerData.last_name || '',
           email: volunteerData.email || '',
           phone: volunteerData.phone || '',
-          address: latestAddress.address || '',
-          city: latestAddress.city || '',
-          state: latestAddress.state || '',
-          zipCode: latestAddress.zip_code || '',
+          street: volunteerData.address?.street || '',
+          city: volunteerData.address?.city || '',
+          state: volunteerData.address?.state || '',
+          zipCode: volunteerData.address?.zip_code || '',
           about: volunteerData.about || '',
+          profileImg: volunteerData.profile_img?.url || '',
         });
       } catch (err) {
         console.error('Error fetching volunteer data:', err);
@@ -39,16 +51,13 @@ function VolunteerProfile() {
     navigate('/edit_volunteer');
   };
 
-  // const handleDelete = () => {
-  //   console.info('Delete profile functionality to be implemented.');
-  // };
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div className="p-14">
       <div className="md:mt-6">
+        {/* Name */}
         {(formData.firstName || formData.lastName) && (
           <>
             <label className="block text-sm font-bold">Name</label>
@@ -58,6 +67,7 @@ function VolunteerProfile() {
           </>
         )}
 
+        {/* Email */}
         {formData.email && (
           <>
             <label className="block text-sm font-bold">Email</label>
@@ -65,6 +75,7 @@ function VolunteerProfile() {
           </>
         )}
 
+        {/* Phone */}
         {formData.phone && (
           <>
             <label className="block text-sm font-bold">Phone</label>
@@ -72,11 +83,12 @@ function VolunteerProfile() {
           </>
         )}
 
-        {(formData.address || formData.city || formData.state || formData.zipCode) && (
+        {/* Address */}
+        {(formData.street || formData.city || formData.state || formData.zipCode) && (
           <>
             <label className="block text-sm font-bold">Address</label>
             <p>
-              {formData.address && `${formData.address}, `}
+              {formData.street && `${formData.street}, `}
               {formData.city && `${formData.city}, `}
               {formData.state && `${formData.state}, `}
               {formData.zipCode}
@@ -84,6 +96,7 @@ function VolunteerProfile() {
           </>
         )}
 
+        {/* About */}
         {formData.about && (
           <>
             <label className="block text-sm font-bold">About</label>
@@ -91,6 +104,8 @@ function VolunteerProfile() {
           </>
         )}
       </div>
+
+      {/* Buttons */}
       <div className="mt-6 flex space-x-4 xs:justify-center md:justify-start">
         <button
           onClick={handleEdit}
@@ -98,12 +113,6 @@ function VolunteerProfile() {
         >
           Edit
         </button>
-        {/* <button
-          onClick={handleDelete}
-          className="px-4 py-2 bg-white text-orangeButton rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg"
-        >
-          Delete
-        </button> */}
       </div>
     </div>
   );

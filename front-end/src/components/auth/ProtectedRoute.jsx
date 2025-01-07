@@ -19,10 +19,10 @@ const ProtectedRoute = ({ children }) => {
         setIsAuthorized(true);
       } else {
         try {
-          const response = await fetch(`http://127.0.0.1:3000/volunteers/${user.related_entity_id}`);
+          const response = await fetch(`/volunteers/my_volunteer`);
           const data = await response.json();
 
-          if (data.first_name && data.last_name) {
+          if (data.first_name && data.last_name && data.phone) {
             setIsAuthorized(true);
           } else {
             setIsAuthorized(false);
@@ -44,7 +44,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthorized) {
-    return <Navigate to="/edit_volunteer" replace />;
+    return <Navigate to="/create_volunteer" replace />;
   }
 
   return children;

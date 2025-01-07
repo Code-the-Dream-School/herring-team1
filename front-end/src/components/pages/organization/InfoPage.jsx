@@ -4,6 +4,8 @@ import { getOrganizationById } from '../../../utils/apiReqests';
 import CreateApplication from './modal/applicationForm/CreateApplication.jsx';
 import logoExample from '../../assets/images_default/logo_example.png';
 import { FaEnvelope, FaGlobe, FaHeart, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function InfoPage() {
   const { id } = useParams();
@@ -50,7 +52,19 @@ function InfoPage() {
 
   return (
     <div>
-      {/*First Accordion*/}
+      {/* ToastContainer */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      {/* First Accordion - Organization details */}
       <div className="min-h-screen max-w-[80%] mx-auto mt-10">
         <div className="mb-1">
           <div

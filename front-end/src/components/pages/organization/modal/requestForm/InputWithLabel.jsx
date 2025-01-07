@@ -17,7 +17,7 @@ function InputWithLabel({ id, type = 'text', name, value, onChange, placeholder,
         {children}
       </label>
       <input
-        className="form-control border border-gray-300 rounded px-3 py-1 w-full shadow-md shadow-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none placeholder:text-small"
+        className="form-control text-sm border border-gray-300 rounded px-3 py-1 w-full shadow-md shadow-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none placeholder:text-small"
         ref={inputRef}
         id={id}
         type={type}
