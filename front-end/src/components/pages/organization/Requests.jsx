@@ -115,7 +115,7 @@ function Request() {
       <div className=" flex flex-col items-center ">
         <div className="flex flex-col sm:flex-row w-full sm:justify-between gap-4">
           {/* Search Section - to be implemented*/}
-          <div className="relative w-full sm:w-2/3 bg-light_purple justify-center items-center">
+          <div className="relative w-full sm:w-2/3 justify-center items-center">
             <div className="relative p-2">
               <input
                 type="text"
