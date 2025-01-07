@@ -25,6 +25,11 @@ RSpec.describe "Registrations", type: :request do
         expect(json['message']).to eq('Signed up successfully.')
         expect(json['user']['email']).to eq(valid_email)
         expect(json['user']['isOrganization']).to eq(true)
+
+        auth_id = json['user']['id']
+        expect(auth_id).to be_present
+        auth = Auth.find(auth_id)
+        expect(auth).to be_persisted
       end
     end
 
@@ -66,7 +71,7 @@ RSpec.describe "Registrations", type: :request do
     end
   end
 
-  describe "POST /auth and /organizations" do
+  describe "POST /auth/login" do
     let(:registration_params) do
       {
         auth: {
@@ -97,11 +102,45 @@ RSpec.describe "Registrations", type: :request do
         'Arts&Culture',
         'Health&Medicine'
       )
-      puts "Service count: #{Service.count}"
     end
 
     let(:email) { Faker::Internet.unique.email }
     let(:password) { 'V3ry$tr0ngP@6$m0rd4!' }
+
+    it 'logs in as an organization successfully' do
+      auth = create(:auth, email: email, isOrganization: true)
+      expect(auth).to be_persisted
+
+      login_params = { auth: { email: auth.email, password: password } }
+      post '/auth/login', params: login_params.to_json, headers: {
+        'Content-Type' => 'application/json'
+      }
+      expect(response).to have_http_status(201)
+      expect(json['message']).to eq('You are logged in.')
+      expect(json['user']['id']).to eq(auth.id)
+      expect(json['user']['email']).to eq(auth.email)
+      expect(json['user']['isOrganization']).to eq(auth.isOrganization)
+    end
+
+    it 'logs in and sets the session correctly' do
+      auth = create(:auth, email: email, isOrganization: true)
+      expect(auth).to be_persisted
+
+      login_params = { auth: { email: auth.email, password: password } }
+      post '/auth/login', params: login_params.to_json, headers: {
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json'
+      }
+      expect(response).to have_http_status(201)
+      expect(json['message']).to eq('You are logged in.')
+
+      session_data = session.to_hash
+
+      # Verify the session data
+      expect(session_data['session_id']).to be_present
+      expect(session_data['warden.user.auth.key']).to be_present
+      expect(session_data['_csrf_token']).to be_present
+    end
 
     it 'creates an organization with address and services using the factory' do
       auth = create(:auth, email: email, isOrganization: true)

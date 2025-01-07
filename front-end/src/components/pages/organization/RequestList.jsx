@@ -1,5 +1,6 @@
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 import PropTypes from 'prop-types';
+import { formatStatus } from '../../../utils/formatData';
 
 function RequestList({ requests, onEditRequest, onRemoveRequest }) {
   return (
@@ -22,7 +23,7 @@ function RequestList({ requests, onEditRequest, onRemoveRequest }) {
             <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.title}</td>
             <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.description}</td>
             <td className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">
-              {request.status}
+              {formatStatus(request.status)}
             </td>
             <td className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">
               <div className="flex flex-row justify-center">
