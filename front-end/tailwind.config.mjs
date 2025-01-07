@@ -18,7 +18,10 @@ export default {
       },
       textColor: {
         'custom-red': '#E53E3E',
-      }
+      },
+      boxShadow: {
+        'custom': '4px 4px 10px rgba(0, 0, 0, 0.1)',
+      },
     },
     screens: {
       'xs': '320px',  

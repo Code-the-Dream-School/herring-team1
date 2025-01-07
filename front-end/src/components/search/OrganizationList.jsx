@@ -2,12 +2,9 @@
 //  The card displays the organization's name, logo, description, request, and services. The user can click on the card to view more details about the organization.
 //  The user can also click on the heart icon to add or remove the organization from their favorites list.
 import PropTypes from 'prop-types';
+import { servicesMap } from '../../utils/FormatServices.jsx';
 
 const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favorites }) => {
-  if (!organizations || organizations.length === 0) {
-    return <div>No organizations found.</div>;
-  }
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {organizations.map((org) => (
@@ -54,7 +51,7 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
             </div>
 
             {/* Description */}
-            <p className="truncate max-w-xs" title={org.description}>
+            <p className="truncate max-w-xs pt-4" title={org.description}>
               {org.description}
             </p>
 
@@ -74,23 +71,25 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
               )}
             </div>
 
-            {/* (org_services) */}
+            {/* Services */}
             <div className="mt-4">
-              <h4 className="font-semibold text-sm">Services:</h4>
-              {org.org_services && org.org_services.length > 0 ? (
+              <div className="flex items-center">
+                <h4 className="font-semibold text-sm mr-2">Services:</h4>
                 <div className="flex flex-wrap">
-                  {org.org_services.map((service, index) => (
-                    <span
-                      key={index}
-                      className="bg-purple-300 text-purple-800 px-3 py-1 rounded-full text-sm mr-2 mb-2"
-                    >
-                      {service.name}
-                    </span>
-                  ))}
+                  {org.org_services && org.org_services.length > 0 ? (
+                    org.org_services.map((service, index) => {
+                      const serviceIcon = servicesMap.find((s) => s.name === service.name)?.icon;
+                      return (
+                        <span key={index} className="flex items-center mr-2 mb-2">
+                          {serviceIcon}
+                        </span>
+                      );
+                    })
+                  ) : (
+                    <p className="text-sm text-gray-500">No services available.</p>
+                  )}
                 </div>
-              ) : (
-                <p className="text-sm text-gray-500">No services available.</p>
-              )}
+              </div>
             </div>
           </div>
         </div>

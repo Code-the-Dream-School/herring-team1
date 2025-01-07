@@ -8,6 +8,7 @@ import OrganizationList from './OrganizationList.jsx';
 import Pagination from './Pagination.jsx';
 import { searchOrganizations, getAllOrganizations } from '../../utils/apiReqests';
 import SelectedFilters from './SelectedFilters.jsx';
+import { getServiceIcon } from '../../utils/FormatServices.jsx';
 
 const SearchPage = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -21,42 +22,60 @@ const SearchPage = () => {
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
-  useEffect(() => {
-    const fetchOrganizations = async () => {
-      try {
-        const data = await getAllOrganizations(currentPage);
-        if (data && data.organizations) {
-          setOrganizations(data.organizations);
-          setCurrentPage(data.current_page || 1);
-          setTotalPages(data.total_pages || 1);
-        } else {
-          console.error('Invalid data format:', data);
-        }
-      } catch (error) {
-        console.error('Error fetching organizations:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrganizations();
-  }, [currentPage]);
-
-  const handleSearch = async (params) => {
+  const fetchOrganizations = async (page = 1) => {
     setLoading(true);
     try {
-      const data = await searchOrganizations({ ...params, page: currentPage });
+      console.log('Fetching organizations for page', page);
+      const data = await getAllOrganizations(page);
+      console.log('Organizations data:', data);
       if (data && data.organizations) {
         setOrganizations(data.organizations);
         setCurrentPage(data.current_page || 1);
         setTotalPages(data.total_pages || 1);
+      } else {
+        console.error('Invalid data format:', data);
+      }
+    } catch (error) {
+      console.error('Error fetching organizations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!searchParams.zip_code && !searchParams.keyword && searchParams.services.length === 0) {
+      fetchOrganizations(currentPage);
+    }
+  }, [currentPage, searchParams]);
+
+  const handleSearch = async (params, page = 1) => {
+    setLoading(true);
+    setSearchPerformed(true);
+    try {
+      console.log('Searching organizations with params:', { ...params, page });
+      const data = await searchOrganizations({ ...params, page });
+      if (data && data.organizations) {
+        console.log('Fetched organizations:', data.organizations);
+        setOrganizations(
+          data.organizations.map((org) => ({
+            ...org,
+            org_services: org.services.split(',').map((serviceName) => ({
+              name: serviceName.trim(),
+              icon: getServiceIcon(serviceName.trim()),
+            })),
+          }))
+        );
+        setCurrentPage(data.current_page || 1);
+        setTotalPages(data.total_pages || Math.ceil(data.total_count / 6));
         setSearchParams(params);
       } else {
         console.error('Invalid data format:', data);
       }
     } catch (error) {
       console.error('Search error:', error);
+      setOrganizations([]);
     } finally {
       setLoading(false);
     }
@@ -64,13 +83,18 @@ const SearchPage = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    if (searchParams.zip_code || searchParams.keyword || searchParams.services.length > 0) {
+      handleSearch(searchParams, page);
+    } else {
+      fetchOrganizations(page);
+    }
   };
 
   const handleRemoveService = (service) => {
-    setSearchParams((prevParams) => ({
-      ...prevParams,
-      services: prevParams.services.filter((s) => s !== service),
-    }));
+    const updatedServices = searchParams.services.filter((s) => s !== service);
+    const updatedParams = { ...searchParams, services: updatedServices };
+    setSearchParams(updatedParams);
+    handleSearch(updatedParams);
   };
 
   const toggleFavorite = (id) => {
@@ -104,7 +128,9 @@ const SearchPage = () => {
           handleRemoveService={handleRemoveService}
         />
         <div className="mt-8">
-          {organizations.length > 0 ? (
+          {searchPerformed && organizations.length === 0 ? (
+            <div>No Organizations found.</div>
+          ) : (
             <>
               <OrganizationList
                 organizations={organizations}
@@ -114,8 +140,6 @@ const SearchPage = () => {
               />
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
             </>
-          ) : (
-            <div>No organizations found.</div>
           )}
         </div>
       </div>

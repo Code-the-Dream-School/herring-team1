@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.jsx';
 import { useState, useEffect } from 'react';
 import { logout } from '../../utils/apiReqests';
+import { FaSignOutAlt } from 'react-icons/fa';
 
 export default function Header() {
   const { user, deleteUser } = useAuth();
@@ -77,15 +78,12 @@ export default function Header() {
                 className="h-6 w-6 transform hover:scale-110"
               />
             </NavLink>
-            <NavLink
-              to="/auth/login"
+            <button
               onClick={logoutUser}
-              className={({ isActive }) =>
-                `rounded-md w-[110px] h-[30px]  text-white flex items-center justify-center  font-bold  bg-light_grey ${isActive ? 'w-[110px] h-[30px] text-white bg-purple hover:bg-gray-400 font-bold flex items-center justify-center rounded-md' : 'text-gray-700 hover:bg-light_grey'}`
-              }
+              className="rounded-md w-[30px] h-[30px] pb-1 text-white flex items-center justify-center transform hover:scale-110"
             >
-              Logout
-            </NavLink>
+              <FaSignOutAlt className="text-gray-800" />
+            </button>
           </>
         ) : (
           <NavLink
@@ -149,15 +147,12 @@ export default function Header() {
                     className="h-6 w-6 transform hover:scale-110"
                   />
                 </NavLink>
-                <NavLink
-                  to="/auth/login"
+                <button
                   onClick={logoutUser}
-                  className={({ isActive }) =>
-                    `rounded-md w-[110px] h-[30px]  text-white flex items-center justify-center  font-bold  bg-light_grey ${isActive ? 'w-[110px] h-[30px] text-white bg-purple hover:bg-gray-400 font-bold flex items-center justify-center rounded-md' : 'text-gray-700 hover:bg-light_grey rounded-md'}`
-                  }
+                  className="rounded-md w-[30px] h-[30px] text-white flex items-center justify-center font-bold bg-light_grey hover:bg-gray-400"
                 >
-                  Logout
-                </NavLink>
+                  <FaSignOutAlt className="text-gray-800" />
+                </button>
               </>
             ) : (
               <NavLink
