@@ -2,6 +2,8 @@
 //  The card displays the organization's name, logo, description, request, and services. The user can click on the card to view more details about the organization.
 //  The user can also click on the heart icon to add or remove the organization from their favorites list.
 import PropTypes from 'prop-types';
+import { servicesMap } from '../../utils/FormatServices.jsx';
+import { FaQuestionCircle } from 'react-icons/fa';
 
 const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favorites }) => {
   return (
@@ -50,7 +52,7 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
             </div>
 
             {/* Description */}
-            <p className="truncate max-w-xs" title={org.description}>
+            <p className="truncate max-w-xs pt-4" title={org.description}>
               {org.description}
             </p>
 
@@ -75,14 +77,15 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
               <h4 className="font-semibold text-sm">Services:</h4>
               {org.org_services && org.org_services.length > 0 ? (
                 <div className="flex flex-wrap">
-                  {org.org_services.map((service, index) => (
-                    <span
-                      key={index}
-                      className="bg-purple-300 text-purple-800 px-3 py-1 rounded-full text-sm mr-2 mb-2"
-                    >
-                      {service.name}
-                    </span>
-                  ))}
+                  {org.org_services.map((service, index) => {
+                    const serviceDetails = servicesMap.find((s) => s.name === service.name);
+                    const serviceIcon = serviceDetails?.icon || <FaQuestionCircle className="mr-2 text-gray-500" />;
+                    return (
+                      <span key={index} className="flex items-center mr-2 mb-2">
+                        {serviceIcon}
+                      </span>
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-sm text-gray-500">No services available.</p>

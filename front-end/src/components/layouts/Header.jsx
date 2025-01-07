@@ -80,7 +80,7 @@ export default function Header() {
             </NavLink>
             <button
               onClick={logoutUser}
-              className="rounded-md w-[30px] h-[30px] text-white flex items-center justify-center font-bold bg-light_grey hover:bg-gray-400"
+              className="rounded-md w-[30px] h-[30px] pb-1 text-white flex items-center justify-center transform hover:scale-110"
             >
               <FaSignOutAlt className="text-gray-800" />
             </button>
