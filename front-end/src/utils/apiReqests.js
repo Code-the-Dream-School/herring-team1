@@ -168,7 +168,7 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
         'Content-Type': 'application/json',
         'X-CSRF-TOKEN': x_csrf_token,
       },
-      credentials: 'include',
+      credentials: true,
     });
 
     return response.data;
@@ -309,6 +309,19 @@ export const getAllOrganizations = async (page = 1, perPage = 6) => {
   } catch (error) {
     console.error('Error fetching all organizations:', error);
     throw error;
+  }
+};
+
+//get one organization by id
+export const getOneOrganizationById = async (id) => {
+  try {
+    const url = `${API_BASE_URL}organizations/${id}`;
+    const response = await axios.get(url, {});
+
+    return response.data;
+  } catch (error) {
+    console.error('Error getting organization:', error);
+    throw error.response.data;
   }
 };
 
