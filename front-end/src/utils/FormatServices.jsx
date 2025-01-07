@@ -13,7 +13,7 @@ import {
 } from 'react-icons/fa';
 
 // services array with icons
-const servicesMap = [
+export const servicesMap = [
   { value: 1, name: 'Food service', icon: <FaUtensils className="mr-2" /> },
   { value: 2, name: 'Transportation', icon: <FaCar className="mr-2" /> },
   { value: 3, name: 'Education', icon: <FaGraduationCap className="mr-2" /> },
