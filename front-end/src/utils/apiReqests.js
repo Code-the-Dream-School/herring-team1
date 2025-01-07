@@ -56,14 +56,14 @@ export const logout = async () => {
   }
 };
 
-export const fetchOrganizations = async () => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}organizations`, {});
-    return response;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
+// export const fetchOrganizations = async () => {
+//   try {
+//     const response = await axios.get(`${API_BASE_URL}organizations`, {});
+//     return response;
+//   } catch (error) {
+//     throw error.response.data;
+//   }
+// };
 
 //create volunteer
 export const createVolunteer = async (volunteerData) => {
