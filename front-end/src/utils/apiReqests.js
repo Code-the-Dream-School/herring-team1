@@ -23,8 +23,8 @@ export const login = async (email, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}auth/login`, {
       auth: {
-        email,
-        password,
+        email: email,
+        password: password,
       },
     });
     return response;
@@ -320,21 +320,35 @@ export const updateOrganization = async (organization, updatedData) => {
   }
 };
 
-export const getOrganizationById = async (id) => {
+export const getOrganizationById = async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?.id;
+
+  if (!userId) {
+    throw new Error('Organization ID not found.');
+  }
+
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
   try {
-    const response = await axios.get(`${API_BASE_URL}organizations/${id}`, {
+    const url = `${API_BASE_URL}organizations/my_organization`;
+    const response = await axios.get(url, {
       headers: {
         'X-CSRF-Token': x_csrf_token,
       },
       withCredentials: true,
     });
+
     return response.data;
   } catch (error) {
     console.error('Error getting organization:', error);
-    throw error.response?.data || 'Failed to get organization.';
+    console.log(error);
+    throw error.response.data;
   }
 };
-
 //get filtered organizations
 export const searchOrganizations = async (params) => {
   try {

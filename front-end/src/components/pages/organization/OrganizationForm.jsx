@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { createOrganization, getMyOrganization, updateOrganization } from '../../../utils/apiReqests';
+import { createOrganization, getOrganizationById, updateOrganization } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { states } from '../../../data/states';
@@ -23,8 +23,7 @@ function OrganizationForm() {
   useEffect(() => {
     const fetchOrganization = async () => {
       try {
-        // const fullData = await getOrganizationById();
-        const fullData = await getMyOrganization();
+        const fullData = await getOrganizationById();
         const data = fullData.organization;
         const values = {
           id: data.id || '',
