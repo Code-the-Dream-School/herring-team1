@@ -183,33 +183,6 @@ export const uploadProfileImage = async (id, imageFile) => {
   }
 };
 
-export const getMyOrganization = async () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const userId = user?.id;
-
-  if (!userId) {
-    throw new Error('Organization ID not found.');
-  }
-
-  const x_csrf_token = localStorage.getItem('x_csrf_token') || null;
-
-  if (!x_csrf_token) {
-    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
-  }
-  try {
-    const response = await axios.get(`${API_BASE_URL}organizations/my_organization`, {
-      headers: {
-        'X-CSRF-Token': x_csrf_token,
-      },
-      withCredentials: true,
-    });
-
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
 export const fetchRequests = async () => {
   try {
     return await axios.get(`${API_BASE_URL}requests`, {});
@@ -320,7 +293,7 @@ export const updateOrganization = async (organization, updatedData) => {
   }
 };
 
-export const getOrganizationById = async () => {
+export const getMyOrganization = async () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user?.id;
 

@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { createOrganization, getOrganizationById, updateOrganization } from '../../../utils/apiReqests';
+import { createOrganization, getMyOrganization, updateOrganization } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { states } from '../../../data/states';
+import CustomMultiSelect from './CustomMultiSelect.jsx';
+import { servicesMap } from '../../../data/services.jsx';
 
 function OrganizationForm() {
   const navigate = useNavigate();
@@ -16,14 +18,14 @@ function OrganizationForm() {
     website: '',
     mission: '',
     description: '',
-    service_ids: [1, 2],
+    service_ids: [],
   });
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchOrganization = async () => {
       try {
-        const fullData = await getOrganizationById();
+        const fullData = await getMyOrganization();
         const data = fullData.organization;
         const values = {
           id: data.id || '',
@@ -38,7 +40,7 @@ function OrganizationForm() {
           website: data.website || '',
           mission: data.mission || '',
           description: data.description || '',
-          service_ids: data.services?.map((service) => service.id) || [],
+          service_ids: data.org_services?.map((service) => service.service_id) || [],
         };
         setFormValues(values);
         setIsEditing(true);
@@ -65,6 +67,7 @@ function OrganizationForm() {
     website: Yup.string()
       .required('Website is required')
       .matches(/^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/, 'Enter a valid URL'),
+    service_ids: Yup.array().of(Yup.number()).min(1, 'Select at least one service').required('Services are required'),
     mission: Yup.string().required('Mission statement is required').max(500),
     description: Yup.string().required('Organization description is required').max(500),
   });
@@ -234,6 +237,23 @@ function OrganizationForm() {
                     <Field type="file" id="logo" name="logo" accept="image/*" className="hidden" />
                   </label>
                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="service_ids" className="block text-gray-800 text-small">
+                  Services
+                </label>
+                <Field
+                  name="service_ids"
+                  component={CustomMultiSelect}
+                  options={servicesMap}
+                  placeholder="Select services..."
+                  isMulti={true}
+                  className="w-full text-sm bg-white border-gray-300 border rounded-lg shadow-md p-2"
+                />
+                <ErrorMessage name="service_ids" component="div" className="text-red-500 text-xs" />
               </div>
             </div>
 

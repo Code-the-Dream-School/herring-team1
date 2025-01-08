@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { services } from '../../data/services';
+import { servicesMap } from '../../data/services.jsx';
 
 const DropdownMenu = ({ selectedServices, handleServiceChange }) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -46,15 +46,15 @@ const DropdownMenu = ({ selectedServices, handleServiceChange }) => {
       {isDropdownVisible && (
         <div className="absolute top-12 bg-white shadow-lg rounded-lg w-full z-10">
           <ul className="p-3">
-            {services.map((service) => (
-              <li key={service.name} className="flex items-center">
+            {servicesMap.map((service) => (
+              <li key={service.label} className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={selectedServices.includes(service.name)}
-                  onChange={() => handleSelect(service.name)}
+                  checked={selectedServices.includes(service.label)}
+                  onChange={() => handleSelect(service.label)}
                   className="mr-2"
                 />
-                {service.name}
+                {service.label}
               </li>
             ))}
           </ul>

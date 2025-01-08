@@ -7,25 +7,23 @@ function RequestList({ requests, onEditRequest, onRemoveRequest }) {
     <table className="table-auto w-full border-collapse border border-gray-300 mx-auto">
       <thead>
         <tr className="bg-light_purple">
-          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">#</th>
-          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">Service</th>
-          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">Request</th>
-          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">Description</th>
-          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">Status</th>
-          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2" />
+          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm w-10">#</th>
+          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm w-1/4">Title</th>
+          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm w-1/2">Description</th>
+          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm w-1/6">Service</th>
+          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm w-20">Status</th>
+          <th className="border border-gray-300 p-2 text-center text-xs sm:text-sm w-20" />
         </tr>
       </thead>
       <tbody>
         {requests.map((request, index) => (
           <tr key={index} className="text-xs sm:text-sm">
-            <td className="border border-gray-300 p-2 text-center md:px-2 md:py-2">{index + 1}</td>
-            <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.name}</td>
-            <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.title}</td>
-            <td className="border border-gray-300 p-2 text-xs sm:text-sm md:px-2 md:py-2">{request.description}</td>
-            <td className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">
-              {formatStatus(request.status)}
-            </td>
-            <td className="border border-gray-300 p-2 text-center text-xs sm:text-sm md:px-2 md:py-2">
+            <td className="border border-gray-300 p-2 text-center w-10">{index + 1}</td>
+            <td className="border border-gray-300 p-2 w-1/4 break-words">{request.title}</td>
+            <td className="border border-gray-300 p-2 w-1/2 break-words">{request.description}</td>
+            <td className="border border-gray-300 p-2 w-1/6 break-words">{request.name}</td>
+            <td className="border border-gray-300 p-2 text-center w-20 break-words">{formatStatus(request.status)}</td>
+            <td className="border border-gray-300 p-2 text-center w-20">
               <div className="flex flex-row justify-center">
                 <button
                   type="button"
