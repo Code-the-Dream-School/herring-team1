@@ -1,30 +1,5 @@
-import {
-  FaUtensils,
-  FaCar,
-  FaGraduationCap,
-  FaFutbol,
-  FaLandmark,
-  FaHome,
-  FaBalanceScale,
-  FaPalette,
-  FaTheaterMasks,
-  FaClinicMedical,
-  FaQuestionCircle,
-} from 'react-icons/fa';
-
-// services array with icons
-export const servicesMap = [
-  { value: 1, name: 'Food service', icon: <FaUtensils className="mr-2" /> },
-  { value: 2, name: 'Transportation', icon: <FaCar className="mr-2" /> },
-  { value: 3, name: 'Education', icon: <FaGraduationCap className="mr-2" /> },
-  { value: 4, name: 'Sports&Recreation', icon: <FaFutbol className="mr-2" /> },
-  { value: 5, name: 'Attractions', icon: <FaLandmark className="mr-2" /> },
-  { value: 6, name: 'Housing&Facilities', icon: <FaHome className="mr-2" /> },
-  { value: 7, name: 'Legal&Advocacy', icon: <FaBalanceScale className="mr-2" /> },
-  { value: 8, name: 'Hobbies&Crafts', icon: <FaPalette className="mr-2" /> },
-  { value: 9, name: 'Arts&Culture', icon: <FaTheaterMasks className="mr-2" /> },
-  { value: 10, name: 'Health&Medicine', icon: <FaClinicMedical className="mr-2" /> },
-];
+import { FaQuestionCircle } from 'react-icons/fa';
+import { servicesMap } from '../data/services.jsx';
 
 // format services
 function formatServices(services) {
@@ -55,11 +30,11 @@ function formatServices(services) {
 // format one service
 export function formatService(serviceName) {
   // matching service from the servicesMap array
-  const serviceDetails = servicesMap.find((s) => s.name === serviceName);
+  const serviceDetails = servicesMap.find((s) => s.label === serviceName);
 
   // add icon and name from the servicesMap array
   const serviceIcon = serviceDetails?.icon || <FaQuestionCircle className="mr-2 text-gray-500" />;
-  const formattedName = serviceDetails?.name || 'Unknown Service';
+  const formattedName = serviceDetails?.label || 'Unknown Service';
 
   return (
     <div className="flex items-center">
@@ -70,7 +45,7 @@ export function formatService(serviceName) {
 }
 
 export function getServiceIcon(serviceName) {
-  const serviceDetails = servicesMap.find((s) => s.name === serviceName);
+  const serviceDetails = servicesMap.find((s) => s.label === serviceName);
   return serviceDetails?.icon;
 }
 
