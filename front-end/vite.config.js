@@ -24,12 +24,6 @@ export default defineConfig({
       secure: false,
       rewrite: (path) => path.replace(/^\/organizations/, '/organizations'),
       },
-      '/volunteers': {
-        target: 'http://127.0.0.1:3000/',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/volunteers/, "/volunteers"),
-      },
       '/requests': {
         target: 'http://127.0.0.1:3000/',
         changeOrigin: true,
