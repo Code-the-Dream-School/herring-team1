@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { loginSchema } from '../../schemas';
-import { useAuth } from '../../context/useAuth.jsx';
-import { login } from '../../utils/apiReqests';
+import { useGlobal } from '../../context/useGlobal.jsx';
+import { login, getMyOrganization, getMyVolunteer } from '../../utils/apiReqests';
 
 function Login() {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { dispatch } = useGlobal();
 
   const onSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
@@ -14,7 +14,19 @@ function Login() {
       const auth = response.data;
       localStorage.setItem('user', JSON.stringify(auth.user));
       localStorage.setItem('x_csrf_token', response.headers.get('x-csrf-token'));
-      setUser(auth.user);
+      dispatch({ type: 'SET_USER', payload: auth.user });
+      dispatch({ type: 'SET_IS_LOGGED_IN', payload: true });
+      try {
+        if (auth.user.isOrganization) {
+          const response = await getMyOrganization();
+          dispatch({ type: 'SET_MY_ORGANIZATION', payload: response.organization });
+        } else {
+          const response = await getMyVolunteer();
+          dispatch({ type: 'SET_VOLUNTEER', payload: response.volunteer });
+        }
+      } catch (error) {
+        console.log(error);
+      }
       navigate('/dashboard');
     } catch (error) {
       console.error('Error:', error);

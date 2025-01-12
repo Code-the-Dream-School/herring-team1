@@ -2,39 +2,31 @@ import { useState, useEffect, useRef } from 'react';
 import CreateRequest from './modal/requestForm/CreateRequest.jsx';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import RequestList from './RequestList.jsx';
-import { fetchMyOrgRequests, getMyOrganization, deleteRequest } from '../../../utils/apiReqests';
+import { fetchMyOrgRequests, deleteRequest } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useGlobal } from '../../../context/GlobalProvider.jsx';
 
 function Request() {
   const [requests, setRequests] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [isLoading, setLoading] = useState(true);
-  const [orgId, setOrgId] = useState(null);
   const [services, setServices] = useState([]);
   const [error, setError] = useState(null);
   const hasFetched = useRef(false);
+  const { myOrganization } = useGlobal();
 
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     const fetchData = async () => {
       try {
-        // Fetch organization data to get organization_id
-        const res = await getMyOrganization();
-        console.log('res', res);
-        if (!res) {
-          throw new Error('Failed to fetch organization data');
-        }
-        const orgId = res.organization.id;
-        setOrgId(orgId);
-        console.log('orgId', orgId);
-        const services = res.organization.org_services || [];
+        const services = myOrganization.org_services || [];
         setServices(services);
 
         // Fetch requests using the organization_id
         if (services && services.length > 0) {
-          const reqResponse = await fetchMyOrgRequests(orgId);
+          const reqResponse = await fetchMyOrgRequests(myOrganization.id);
           console.log('!!reqResponse', reqResponse);
           if (reqResponse && Array.isArray(reqResponse) && reqResponse.length > 0) {
             setRequests(reqResponse);
@@ -56,6 +48,7 @@ function Request() {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSaveRequest = (newRequest) => {
@@ -76,16 +69,10 @@ function Request() {
   };
 
   const handleRemoveRequest = async (index) => {
-    if (orgId === null) {
-      console.error('Organization ID is not available.');
-      toast.error('Organization ID is not available.');
-      return;
-    }
-
     const { id } = requests[index];
 
     try {
-      const response = await deleteRequest(id, orgId);
+      const response = await deleteRequest(id, myOrganization.id);
       if (response && response.message === 'Request successfully deleted') {
         setRequests((prevRequests) => prevRequests.filter((_, i) => i !== index));
         toast.success('Request deleted successfully!');
@@ -133,7 +120,7 @@ function Request() {
             requests={requests}
             onEditRequest={handleEditRequest}
             services={services}
-            orgId={orgId}
+            orgId={myOrganization.id}
           />
         </div>
       </div>

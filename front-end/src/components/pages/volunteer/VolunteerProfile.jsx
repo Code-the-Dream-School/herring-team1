@@ -1,108 +1,39 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyVolunteer } from '../../../utils/apiReqests';
+
+import { useGlobal } from '../../../context/useGlobal.jsx';
 
 function VolunteerProfile() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    street: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    about: '',
-    profileImg: '',
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchVolunteerData = async () => {
-      try {
-        const volunteerData = await getMyVolunteer();
-
-        setFormData({
-          firstName: volunteerData.first_name || '',
-          lastName: volunteerData.last_name || '',
-          email: volunteerData.email || '',
-          phone: volunteerData.phone || '',
-          street: volunteerData.address?.street || '',
-          city: volunteerData.address?.city || '',
-          state: volunteerData.address?.state || '',
-          zipCode: volunteerData.address?.zip_code || '',
-          about: volunteerData.about || '',
-          profileImg: volunteerData.profile_img?.url || '',
-        });
-      } catch (err) {
-        console.error('Error fetching volunteer data:', err);
-        setError('Failed to load volunteer data. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVolunteerData();
-  }, []);
+  const { volunteer } = useGlobal();
 
   const handleEdit = () => {
     navigate('/edit_volunteer');
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-
   return (
     <div className="p-14">
       <div className="md:mt-6">
-        {/* Name */}
-        {(formData.firstName || formData.lastName) && (
-          <>
-            <label className="block text-sm font-bold">Name</label>
-            <p>
-              {formData.firstName} {formData.lastName}
-            </p>
-          </>
-        )}
+        <p className="block text-sm font-bold">Name</p>
+        <p>
+          {volunteer.first_name} {volunteer.last_name}
+        </p>
 
-        {/* Email */}
-        {formData.email && (
-          <>
-            <label className="block text-sm font-bold">Email</label>
-            <p>{formData.email}</p>
-          </>
-        )}
+        <label className="block text-sm font-bold">Email</label>
+        <p>{volunteer.email}</p>
 
-        {/* Phone */}
-        {formData.phone && (
-          <>
-            <label className="block text-sm font-bold">Phone</label>
-            <p>{formData.phone}</p>
-          </>
-        )}
+        <p className="block text-sm font-bold">Phone</p>
+        <p>{volunteer.phone}</p>
 
-        {/* Address */}
-        {(formData.street || formData.city || formData.state || formData.zipCode) && (
-          <>
-            <label className="block text-sm font-bold">Address</label>
-            <p>
-              {formData.street && `${formData.street}, `}
-              {formData.city && `${formData.city}, `}
-              {formData.state && `${formData.state}, `}
-              {formData.zipCode}
-            </p>
-          </>
-        )}
+        <p className="block text-sm font-bold">Address</p>
+        <p>
+          {volunteer.address.street && `${volunteer.address.street}, `}
+          {volunteer.address.city && `${volunteer.address.city}, `}
+          {volunteer.address.state && `${volunteer.address.state} `}
+          {volunteer.address.zipCode && `${volunteer.address.zipCode}`}
+        </p>
 
-        {/* About */}
-        {formData.about && (
-          <>
-            <label className="block text-sm font-bold">About</label>
-            <p>{formData.about}</p>
-          </>
-        )}
+        <label className="block text-sm font-bold">About</label>
+        <p>{volunteer.about}</p>
       </div>
 
       {/* Buttons */}

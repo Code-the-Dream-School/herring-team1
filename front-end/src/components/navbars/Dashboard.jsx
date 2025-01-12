@@ -1,9 +1,9 @@
 import VolunteerDashboard from './VolunteerDashboard.jsx';
 import OrganizationDashboard from './OrganizationDashboard.jsx';
-import { useAuth } from '../../context/useAuth.jsx';
+import { useGlobal } from '../../context/useGlobal.jsx';
 
 function Dashboard() {
-  const { user } = useAuth();
+  const { user } = useGlobal();
 
   return user.isOrganization ? <OrganizationDashboard /> : <VolunteerDashboard />;
 }

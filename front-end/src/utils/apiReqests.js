@@ -1,8 +1,6 @@
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_REACT_URL || 'http://127.0.0.1:3000/';
 
-const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
-
 export const register = async (email, password, confirmPassword, isOrganization) => {
   try {
     const response = await axios.post(`${API_BASE_URL}auth`, {
@@ -115,23 +113,6 @@ export const getMyVolunteer = async () => {
   }
 };
 
-// //get volunteer by id
-// export const getVolunteerById = async () => {
-//   const user = JSON.parse(localStorage.getItem('user'));
-//   const related_entity_id = user.id;
-//   if (!user || !user.related_entity_id) {
-//     throw new Error('Related entity ID not found.');
-//   }
-
-//   try {
-//     const response = await axios.get(`http://127.0.0.1:3000/volunteers/${related_entity_id}`);
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error fetching volunteer data:', error);
-//     throw error.response?.data || 'Failed to fetch volunteer data.';
-//   }
-// };
-
 // Update volunteer by ID
 export const updateVolunteerById = async (id, updatedData) => {
   const csrfToken = localStorage.getItem('x_csrf_token');
@@ -199,11 +180,15 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
       org_service_id: serviceId,
       request_status_id: statusId,
     };
+    const csrfToken = localStorage.getItem('x_csrf_token');
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Ensure you are logged in.');
+    }
 
     const response = await axios.post(`${API_BASE_URL}organizations/${orgId}/requests/`, body, {
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': x_csrf_token,
+        'X-CSRF-TOKEN': csrfToken,
       },
       credentials: true,
     });
@@ -218,9 +203,6 @@ export const postRequests = async (values, orgId, serviceId, statusId) => {
 export const createOrganization = async (organizationData) => {
   const csrfToken = localStorage.getItem('x_csrf_token');
   const user = JSON.parse(localStorage.getItem('user'));
-
-  console.log('csrfToken:', csrfToken);
-  console.log(user);
 
   if (!csrfToken) {
     throw new Error('CSRF token not found. Ensure it is set correctly.');
@@ -264,20 +246,20 @@ export const fetchOrganizations = async (params = {}) => {
   }
 };
 
-export const updateOrganization = async (organization, updatedData) => {
+export const updateOrganization = async (id, updatedData) => {
   const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
 
   if (!x_csrf_token) {
     throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
   }
 
-  if (!organization.id) {
+  if (!id) {
     throw new Error('Organization ID is undefined or missing.');
   }
 
   try {
     const response = await axios.patch(
-      `${API_BASE_URL}organizations/${organization.id}`,
+      `${API_BASE_URL}organizations/${id}`,
       { organization: updatedData },
       {
         headers: {
@@ -319,7 +301,7 @@ export const getMyOrganization = async () => {
   } catch (error) {
     console.error('Error getting organization:', error);
     console.log(error);
-    throw error.response.data;
+    throw new Error("You don't have organization");
   }
 };
 //get filtered organizations
@@ -389,6 +371,12 @@ export const patchRequest = async (requestId, values, orgId, serviceId) => {
       status: values.status,
     };
 
+    const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+    if (!x_csrf_token) {
+      throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+    }
+
     const response = await axios.patch(`${API_BASE_URL}organizations/${orgId}/requests/${requestId}`, body, {
       headers: {
         'Content-Type': 'application/json',
@@ -405,6 +393,11 @@ export const patchRequest = async (requestId, values, orgId, serviceId) => {
 };
 
 export const deleteRequest = async (requestId, orgId) => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
   try {
     const response = await axios.delete(`${API_BASE_URL}organizations/${orgId}/requests/${requestId}`, {
       headers: {

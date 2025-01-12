@@ -29,3 +29,43 @@ export const applicationSchema = yup.object({
   lastName: yup.string().required('Last Name is required.'),
   about: yup.string().required('About is required.'),
 });
+
+export const organizationSchema = yup.object({
+  name: yup.string().required('Organization name is required'),
+  address: yup.object({
+    street: yup.string().required('Street is required'),
+    city: yup.string().required('City is required'),
+    state: yup.string().required('State is required'),
+    zip_code: yup
+      .string()
+      .required('Zip Code is required')
+      .matches(/^[0-9]{5}$/, 'Zip Code must be exactly 5 digits'),
+  }),
+  phone: yup
+    .string()
+    .required('Phone number is required')
+    .matches(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
+  website: yup
+    .string()
+    .required('Website is required')
+    .matches(/^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/, 'Enter a valid URL'),
+  service_ids: yup.array().of(yup.number()).min(1, 'Select at least one service').required('Services are required'),
+  mission: yup.string().required('Mission statement is required').max(500),
+  description: yup.string().required('Organization description is required').max(500),
+});
+
+export const volunteerSchema = yup.object().shape({
+  first_name: yup.string().trim().required('First Name is required'),
+  last_name: yup.string().trim().required('Last Name is required'),
+  phone: yup
+    .string()
+    .matches(/^\+?\d{10,15}$/, 'Phone must be a valid number')
+    .required('Phone is required'),
+  about: yup.string().trim().required('About is required'),
+  address: yup.object().shape({
+    street: yup.string().trim(),
+    city: yup.string().trim(),
+    state: yup.string().trim(),
+    zip_code: yup.string().trim(),
+  }),
+});

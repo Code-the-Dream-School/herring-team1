@@ -11,8 +11,7 @@ import Dashboard from './components/navbars/Dashboard.jsx';
 import Auth from './components/auth/Auth.jsx';
 import NotFound from './components/pages/NotFound.jsx';
 import InfoPage from './components/pages/organization/InfoPage.jsx';
-import EditVolunteer from './components/pages/volunteer/VolunteerProfileEditForm.jsx';
-import CreateVolunteer from './components/pages/volunteer/CreateVolunteer.jsx';
+import VolunteerForm from './components/pages/volunteer/VolunteerForm.jsx';
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 
 function AppRoutes() {
@@ -37,8 +36,8 @@ function AppRoutes() {
         />{' '}
         <Route path="/organizations/:id" element={<InfoPage />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="/create_volunteer" element={<CreateVolunteer />} />
-        <Route path="/edit_volunteer" element={<EditVolunteer />} />
+        <Route path="/create_volunteer" element={<VolunteerForm type="create" />} />
+        <Route path="/edit_volunteer" element={<VolunteerForm type="edit" />} />
       </Routes>
       <Footer />
     </BrowserRouter>
