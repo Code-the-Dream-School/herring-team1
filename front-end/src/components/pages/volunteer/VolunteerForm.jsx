@@ -9,20 +9,37 @@ import PropTypes from 'prop-types';
 function VolunteerForm({ type }) {
   const navigate = useNavigate();
   const { dispatch, volunteer } = useGlobal();
+  let initialValues;
 
-  const initialValues = {
-    first_name: volunteer.first_name || '',
-    last_name: volunteer.last_name || '',
-    email: volunteer.email || '',
-    phone: volunteer.phone || '',
-    about: volunteer.about || '',
-    address: {
-      street: volunteer.address?.street || '',
-      city: volunteer.address?.city || '',
-      state: volunteer.address?.state || '',
-      zip_code: volunteer.address?.zip_code || '',
-    },
-  };
+  if (volunteer) {
+    initialValues = {
+      first_name: volunteer.first_name,
+      last_name: volunteer.last_name,
+      email: volunteer.email,
+      phone: volunteer.phone,
+      about: volunteer.about,
+      address: {
+        street: volunteer.address?.street,
+        city: volunteer.address?.city,
+        state: volunteer.address?.state,
+        zip_code: volunteer.address?.zip_code,
+      },
+    };
+  } else {
+    initialValues = {
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      about: '',
+      address: {
+        street: '',
+        city: '',
+        state: '',
+        zip_code: '',
+      },
+    };
+  }
 
   const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
     try {
