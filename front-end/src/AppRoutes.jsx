@@ -14,6 +14,8 @@ import InfoPage from './components/pages/organization/InfoPage.jsx';
 import EditVolunteer from './components/pages/volunteer/VolunteerProfileEditForm.jsx';
 import CreateVolunteer from './components/pages/volunteer/CreateVolunteer.jsx';
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
+import PrivacyPage from './components/pages/PrivacyPage.jsx';
+import LegalPage from './components/pages/LegalPage.jsx';
 
 function AppRoutes() {
   return (
@@ -39,6 +41,8 @@ function AppRoutes() {
         <Route path="*" element={<NotFound />} />
         <Route path="/create_volunteer" element={<CreateVolunteer />} />
         <Route path="/edit_volunteer" element={<EditVolunteer />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/legal" element={<LegalPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
