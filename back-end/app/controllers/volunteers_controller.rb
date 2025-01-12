@@ -117,17 +117,10 @@ class VolunteersController < ApplicationController
 
     if volunteer
       render json: {
-        id: volunteer.id,
-        auth_id: volunteer.auth_id,
-        first_name: volunteer.first_name,
-        last_name: volunteer.last_name,
-        phone: volunteer.phone,
-        about: volunteer.about,
-        profile_img: volunteer.profile_img,
-        email: volunteer.auth.email,
-        address: volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code]),
-        created_at: volunteer.created_at,
-        updated_at: volunteer.updated_at
+        volunteer: volunteer.as_json(only: [:id, :auth_id, :first_name, :last_name, :phone, :about, :profile_img, :created_at, :updated_at]).merge(
+          email: volunteer.auth.email,
+          address: volunteer.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+        )
       }, status: :ok
     else
       render json: { message: 'You do not own a volunteer profile' }, status: :not_found
