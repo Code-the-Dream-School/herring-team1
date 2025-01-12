@@ -5,8 +5,8 @@ function Footer() {
   return (
     <footer className="bg-light_purple text-white text-center py-4 mt-auto">
       <div className="container text-small mx-auto px-4">
-        <div className="flex justify-center space-x-6 mb-4">
-          <a href="#nav" className="hover:underline text-white">
+        <div className="flex flex-wrap justify-center space-x-4 md:space-x-6 lg:space-x-8 mb-4 text-sm sm:text-xs lg:text-sm">
+          <a href="#" className="hover:underline text-white">
             <i className="fas fa-chevron-up" />
           </a>
           <Link to="/" className="hover:underline text-white">
@@ -31,19 +31,19 @@ function Footer() {
             Login
           </Link>
         </div>
-        <div className="flex flex-col md:flex-row justify-center items-center mt-4 text-sm space-y-4 md:space-y-0 md:space-x-8">
+        <div className="flex flex-col md:flex-row justify-center items-center text-center space-x-4 mt-2 text-sm sm:text-xs lg:text-sm">
           <div className="flex items-center space-x-8">
-            <p>All rights reserved &copy; CareConnect {new Date().getFullYear()} </p>
-            <div>
-              <a href="/privacy" className="hover:underline">
+            <p>All rights reserved &copy;&nbsp;CareConnect {new Date().getFullYear()} </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 text-center">
+              <Link to="/privacy" className="hover:underline whitespace-nowrap">
                 Privacy Policy
-              </a>{' '}
-              <span className="mx-2">|</span>
-              <a href="/legal" className="hover:underline">
+              </Link>
+              <span className="mx-2 sm:inline-block hidden">|</span>
+              <Link to="/legal" className="hover:underline whitespace-nowrap">
                 Legal Info
-              </a>
+              </Link>
             </div>
-            <Link to="/team" className="hover:text-white hover:underline">
+            <Link to="/team" className="hover:text-white hover:underline whitespace-nowrap">
               <i className="fas fa-users mr-2" />
               The Team
             </Link>
