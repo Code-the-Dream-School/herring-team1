@@ -33,12 +33,15 @@ function OrganizationDashboard() {
 
   return (
     <div>
-      <nav id="nav" className="flex justify-center items-center space-x-0 p-10">
+      <nav id="nav" className="flex justify-center items-center p-10 mb-4 sm:mb-0 w-full overflow-hidden">
         {organizationDashboard.map((item, index) => (
-          <div key={index} className="flex items-center justify-center">
-            <div className="flex items-center justify-center" style={{ minHeight: '40px', minWidth: '250px' }}>
+          <div key={index} className="flex items-center justify-center mb-4 sm:mb-0" style={{ minHeight: '2.5rem' }}>
+            <div
+              className="flex items-center justify-center min-w-[4rem] sm:min-w-[6rem] md:min-w-[8rem]"
+              style={{ minHeight: '2.5rem', maxWidth: '100%', fontSize: '1rem' }}
+            >
               <span
-                className={`cursor-pointer ${currentPage === item.text ? 'text-purple font-bold' : 'font-normal'}`}
+                className={`cursor-pointer ${currentPage === item.text ? 'text-purple font-bold' : 'font-normal'}  text-sm sm:text-base`}
                 style={{ textAlign: 'center' }}
                 onClick={() => setCurrentPage(item.text)}
               >
@@ -46,12 +49,12 @@ function OrganizationDashboard() {
               </span>
             </div>
             {index < organizationDashboard.length - 1 && (
-              <div className="border-l border-gray-500 mx-4" style={{ height: '30px' }} />
+              <div className="border-l border-gray-500 mx-2 sm:mx-3 lg:mx-10 h-6" style={{ height: '30px' }} />
             )}
           </div>
         ))}
       </nav>
-      <div className="p-10">{renderContent()}</div>
+      <div className="px-10 lg:mt-10 md:mt-10 sm:py-0 sm:px-10 sm:mt-0">{renderContent()}</div>
     </div>
   );
 }
