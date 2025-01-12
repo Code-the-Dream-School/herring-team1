@@ -5,7 +5,7 @@ import RequestList from './RequestList.jsx';
 import { fetchMyOrgRequests, deleteRequest } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useGlobal } from '../../../context/GlobalProvider.jsx';
+import { useGlobal } from '../../../context/useGlobal.jsx';
 
 function Request() {
   const [requests, setRequests] = useState([]);
