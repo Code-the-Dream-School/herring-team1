@@ -18,9 +18,22 @@ function Login() {
       dispatch({ type: 'SET_IS_LOGGED_IN', payload: true });
 
       if (auth.user.isOrganization) {
-        const organizationResponse = await getMyOrganization();
-        dispatch({ type: 'SET_MY_ORGANIZATION', payload: organizationResponse.organization });
-        navigate('/dashboard');
+        try {
+          const organizationResponse = await getMyOrganization();
+          if (!organizationResponse.organization) {
+            navigate('/dashboard');
+          } else {
+            dispatch({ type: 'SET_MY_ORGANIZATION', payload: organizationResponse.organization });
+            navigate('/dashboard');
+          }
+        } catch (orgError) {
+          if (orgError.message === "You don't have organization") {
+            navigate('/dashboard');
+          } else {
+            console.error('Error fetching volunteer profile:', orgError);
+            setErrors({ submit: 'Failed to fetch volunteer profile' });
+          }
+        }
       } else {
         try {
           const volunteerResponse = await getMyVolunteer();
