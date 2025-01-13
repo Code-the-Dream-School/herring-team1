@@ -4,7 +4,7 @@ import { GlobalStateContext } from './GlobalStateContext';
 import { getMyOrganization, getMyVolunteer } from '../utils/apiReqests';
 
 const initialState = {
-  user: localStorage.getItem('user') ? localStorage.getItem('user') : null,
+  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
   isLoggedIn: localStorage.getItem('user') ? true : false,
   myOrganization: null,
   volunteer: null,
