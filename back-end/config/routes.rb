@@ -11,6 +11,9 @@ Rails.application.routes.draw do
       get :available_services
     end
     get '/my_organization', to: 'organizations#my_organization', on: :collection
+    member do
+      post :upload_logo
+    end
     resources :requests, only: [:index, :show, :create, :update, :destroy]
   end
 

@@ -15,4 +15,7 @@ class Organization < ApplicationRecord
   validates :description, presence: true
   validates :mission, presence: true
   validates :phone, format: { with: /\A\+?\d{10,15}\z/, message: "must be a valid phone number" }
+
+  mount_uploader :logo, ImageUploader
+
 end
