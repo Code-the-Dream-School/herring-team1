@@ -95,15 +95,15 @@ function VolunteerForm({ type }) {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-800 text-small">Street</label>
+              <label className="block text-gray-800 text-small">Street *</label>
               <Field name="address.street" type="text" className="border rounded px-2 py-1 w-full shadow-md" />
-              <label className="block text-gray-800 text-small mt-2">City</label>
+              <label className="block text-gray-800 text-small mt-2">City *</label>
               <Field name="address.city" type="text" className="border rounded px-2 py-1 w-full shadow-md" />
               <div className="flex space-x-4 mt-2">
                 <div className="w-1/2">
-                  <label className="block text-gray-800 text-small">State</label>
+                  <label className="block text-gray-800 text-small">State *</label>
                   <Field name="address.state" as="select" className="border rounded px-2 py-1 w-full shadow-md">
-                    <option value="">Select State</option>
+                    <option value="">Select State *</option>
                     {states.map((state) => (
                       <option key={state} value={state}>
                         {state}
@@ -112,7 +112,7 @@ function VolunteerForm({ type }) {
                   </Field>
                 </div>
                 <div className="w-1/2">
-                  <label className="block text-gray-800 text-small">Zip Code</label>
+                  <label className="block text-gray-800 text-small">Zip Code *</label>
                   <Field name="address.zip_code" type="text" className="border rounded px-2 py-1 w-full shadow-md" />
                 </div>
               </div>

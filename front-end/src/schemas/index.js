@@ -63,9 +63,9 @@ export const volunteerSchema = yup.object().shape({
     .required('Phone is required'),
   about: yup.string().trim().required('About is required'),
   address: yup.object().shape({
-    street: yup.string().trim(),
-    city: yup.string().trim(),
-    state: yup.string().trim(),
-    zip_code: yup.string().trim(),
+    street: yup.string().trim().required('Street is required'),
+    city: yup.string().trim().required('City is required'),
+    state: yup.string().trim().required('State is required'),
+    zip_code: yup.string().trim().required('Zip Code is required'),
   }),
 });
