@@ -14,7 +14,7 @@ function formatServices(services) {
 
         // adding icon and name from the servicesMap array
         const serviceIcon = serviceDetails?.icon || <FaQuestionCircle className="mr-2 text-gray-500" />;
-        const serviceName = serviceDetails?.name || 'Unknown Service';
+        const serviceName = serviceDetails?.label || 'Unknown Service';
 
         return (
           <div key={service.id} className="flex items-center">

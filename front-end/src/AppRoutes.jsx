@@ -13,6 +13,8 @@ import NotFound from './components/pages/NotFound.jsx';
 import InfoPage from './components/pages/organization/InfoPage.jsx';
 import VolunteerForm from './components/pages/volunteer/VolunteerForm.jsx';
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
+import PrivacyPage from './components/pages/PrivacyPage.jsx';
+import LegalPage from './components/pages/LegalPage.jsx';
 
 function AppRoutes() {
   return (
@@ -38,6 +40,8 @@ function AppRoutes() {
         <Route path="*" element={<NotFound />} />
         <Route path="/create_volunteer" element={<VolunteerForm type="create" />} />
         <Route path="/edit_volunteer" element={<VolunteerForm type="edit" />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/legal" element={<LegalPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
