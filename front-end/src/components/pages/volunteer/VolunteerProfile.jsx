@@ -43,7 +43,7 @@ function VolunteerProfile() {
               {volunteer.address.street && `${volunteer.address.street}, `}
               {volunteer.address.city && `${volunteer.address.city}, `}
               {volunteer.address.state && `${volunteer.address.state} `}
-              {volunteer.address.zipCode && `${volunteer.address.zipCode}`}
+              {volunteer.address.zip_code && `${volunteer.address.zip_code}`}
             </p>
           </>
         )}
