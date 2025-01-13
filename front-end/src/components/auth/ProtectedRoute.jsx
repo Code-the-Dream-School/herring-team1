@@ -25,11 +25,11 @@ const ProtectedRoute = ({ children }) => {
     return children;
   }
 
-  if (user.isOrganization && !volunteer) {
+  if (!volunteer) {
     return <Navigate to="/create_volunteer" replace />;
-  } else {
-    return children;
   }
+
+  return children;
 };
 
 ProtectedRoute.propTypes = {

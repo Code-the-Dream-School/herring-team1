@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import Register from './components/auth/Register.jsx';
 import HomePage from './components/pages/HomePage.jsx';
@@ -18,7 +18,7 @@ import LegalPage from './components/pages/LegalPage.jsx';
 
 function AppRoutes() {
   return (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <>
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -44,7 +44,7 @@ function AppRoutes() {
         <Route path="/legal" element={<LegalPage />} />
       </Routes>
       <Footer />
-    </BrowserRouter>
+    </>
   );
 }
 
