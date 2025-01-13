@@ -13,27 +13,47 @@ function VolunteerProfile() {
   return (
     <div className="p-14">
       <div className="md:mt-6">
-        <p className="block text-sm font-bold">Name</p>
-        <p className="py-2">
-          {volunteer.first_name} {volunteer.last_name}
-        </p>
+        {volunteer?.first_name && volunteer?.last_name && (
+          <>
+            <p className="block text-sm font-bold">Name</p>
+            <p className="py-2">
+              {volunteer.first_name} {volunteer.last_name}
+            </p>
+          </>
+        )}
 
-        <p className="block text-sm font-bold">Email</p>
-        <p className="py-2">{volunteer.email}</p>
+        {volunteer?.email && (
+          <>
+            <p className="block text-sm font-bold">Email</p>
+            <p className="py-2">{volunteer.email}</p>
+          </>
+        )}
 
-        <p className="block text-sm font-bold">Phone</p>
-        <p className="py-2">{volunteer.phone}</p>
+        {volunteer?.phone && (
+          <>
+            <p className="block text-sm font-bold">Phone</p>
+            <p className="py-2">{volunteer.phone}</p>
+          </>
+        )}
 
-        <p className="block text-sm font-bold">Address</p>
-        <p className="py-2">
-          {volunteer.address.street && `${volunteer.address.street}, `}
-          {volunteer.address.city && `${volunteer.address.city}, `}
-          {volunteer.address.state && `${volunteer.address.state} `}
-          {volunteer.address.zipCode && `${volunteer.address.zipCode}`}
-        </p>
+        {volunteer?.address && (
+          <>
+            <p className="block text-sm font-bold">Address</p>
+            <p className="py-2">
+              {volunteer.address.street && `${volunteer.address.street}, `}
+              {volunteer.address.city && `${volunteer.address.city}, `}
+              {volunteer.address.state && `${volunteer.address.state} `}
+              {volunteer.address.zipCode && `${volunteer.address.zipCode}`}
+            </p>
+          </>
+        )}
 
-        <label className="block text-sm font-bold">About</label>
-        <p className="py-2">{volunteer.about}</p>
+        {volunteer?.about && (
+          <>
+            <label className="block text-sm font-bold">About</label>
+            <p className="py-2">{volunteer.about}</p>
+          </>
+        )}
       </div>
 
       {/* Buttons */}
