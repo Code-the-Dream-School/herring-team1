@@ -1,6 +1,7 @@
-import { useReducer } from 'react';
+import { useReducer, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { GlobalStateContext } from './GlobalStateContext';
+import { getMyOrganization, getMyVolunteer } from '../utils/apiReqests';
 
 const initialState = {
   user: localStorage.getItem('user') ? localStorage.getItem('user') : null,
@@ -32,6 +33,26 @@ const reducer = (state, action) => {
 
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (state.user) {
+          if (state.user.isOrganization) {
+            const response = await getMyOrganization();
+            dispatch({ type: SET_MY_ORGANIZATION, payload: response.organization });
+          } else {
+            const response = await getMyVolunteer();
+            dispatch({ type: SET_VOLUNTEER, payload: response.volunteer });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [state.user]);
 
   return <GlobalStateContext.Provider value={{ ...state, dispatch }}>{children}</GlobalStateContext.Provider>;
 };
