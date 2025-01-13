@@ -30,8 +30,8 @@ function Login() {
           if (orgError.message === "You don't have organization") {
             navigate('/dashboard');
           } else {
-            console.error('Error fetching volunteer profile:', orgError);
-            setErrors({ submit: 'Failed to fetch volunteer profile' });
+            console.error('Error fetching organization profile:', orgError);
+            setErrors({ submit: 'Failed to fetch organization profile' });
           }
         }
       } else {
