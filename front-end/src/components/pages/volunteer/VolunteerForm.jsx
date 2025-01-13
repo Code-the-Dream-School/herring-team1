@@ -72,19 +72,19 @@ function VolunteerForm({ type }) {
             {errors.general && <p className="text-red-500 text-center mb-4">{errors.general}</p>}
             <div className="flex space-x-4 mb-4">
               <div className="w-1/2">
-                <label className="block text-sm font-bold">First Name *</label>
+                <label className="block text-gray-800 text-small">First Name *</label>
                 <Field name="first_name" type="text" className="border rounded px-2 py-1 w-full shadow-md" />
                 <ErrorMessage name="first_name" component="p" className="text-red-500 text-sm" />
               </div>
               <div className="w-1/2">
-                <label className="block text-sm font-bold">Last Name *</label>
+                <label className="block text-gray-800 text-small">Last Name *</label>
                 <Field name="last_name" type="text" className="border rounded px-2 py-1 w-full shadow-md" />
                 <ErrorMessage name="last_name" component="p" className="text-red-500 text-sm" />
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-bold">Phone *</label>
+              <label className="block text-gray-800 text-small">Phone *</label>
               <Field
                 name="phone"
                 type="text"
@@ -95,13 +95,13 @@ function VolunteerForm({ type }) {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-bold">Street</label>
+              <label className="block text-gray-800 text-small">Street</label>
               <Field name="address.street" type="text" className="border rounded px-2 py-1 w-full shadow-md" />
-              <label className="block text-sm font-bold mt-2">City</label>
+              <label className="block text-gray-800 text-small mt-2">City</label>
               <Field name="address.city" type="text" className="border rounded px-2 py-1 w-full shadow-md" />
               <div className="flex space-x-4 mt-2">
                 <div className="w-1/2">
-                  <label className="block text-sm font-bold">State</label>
+                  <label className="block text-gray-800 text-small">State</label>
                   <Field name="address.state" as="select" className="border rounded px-2 py-1 w-full shadow-md">
                     <option value="">Select State</option>
                     {states.map((state) => (
@@ -112,13 +112,13 @@ function VolunteerForm({ type }) {
                   </Field>
                 </div>
                 <div className="w-1/2">
-                  <label className="block text-sm font-bold">Zip Code</label>
+                  <label className="block text-gray-800 text-small">Zip Code</label>
                   <Field name="address.zip_code" type="text" className="border rounded px-2 py-1 w-full shadow-md" />
                 </div>
               </div>
             </div>
 
-            <label className="block text-sm font-bold">About *</label>
+            <label className="block text-gray-800 text-small">About *</label>
             <Field name="about" as="textarea" className="border rounded px-2 py-1 w-full shadow-md" />
             <ErrorMessage name="about" component="p" className="text-red-500 text-sm" />
 
@@ -136,14 +136,14 @@ function VolunteerForm({ type }) {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-4 py-2 bg-orangeButton text-white rounded border transition hover:shadow-lg"
+                    className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md border-2 border-red-500 text-red-500 bg-white hover:bg-red-100 hover:border-red-600 hover:text-red-600"
                   >
-                    {isSubmitting ? 'Submitting...' : 'Edit'}
+                    {isSubmitting ? 'Submitting...' : 'Update'}
                   </button>
                   <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    className="px-4 py-2 bg-gray-500 text-white rounded border transition hover:shadow-lg"
+                    className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400 mx-2"
                   >
                     Cancel
                   </button>

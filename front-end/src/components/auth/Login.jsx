@@ -87,14 +87,14 @@ function Login() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-2/5 px-4 py-2 sm:text-xl bg-orange text-white rounded-md hover:bg-orange-600 disabled:bg-gray-400"
+          className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
         >
           {isSubmitting ? 'Loading...' : 'Login'}
         </button>
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+          className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md border-2 border-red-500 text-red-500 bg-white hover:bg-red-100 hover:border-red-600 hover:text-red-600"
         >
           Cancel
         </button>

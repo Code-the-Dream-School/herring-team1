@@ -290,7 +290,7 @@ function OrganizationForm() {
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-light_purple text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
+                    className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
                   >
                     Edit
                   </button>
@@ -305,7 +305,7 @@ function OrganizationForm() {
                     </button>
                     <button
                       type="button"
-                      className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-light_purple text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
+                      className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400 mx-2"
                       onClick={() => setIsEditing(false)}
                     >
                       Cancel
