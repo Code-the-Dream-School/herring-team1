@@ -16,20 +16,31 @@ function Login() {
       localStorage.setItem('x_csrf_token', response.headers.get('x-csrf-token'));
       dispatch({ type: 'SET_USER', payload: auth.user });
       dispatch({ type: 'SET_IS_LOGGED_IN', payload: true });
-      try {
-        if (auth.user.isOrganization) {
-          const response = await getMyOrganization();
-          dispatch({ type: 'SET_MY_ORGANIZATION', payload: response.organization });
-        } else {
-          const response = await getMyVolunteer();
-          dispatch({ type: 'SET_VOLUNTEER', payload: response.volunteer });
+
+      if (auth.user.isOrganization) {
+        const organizationResponse = await getMyOrganization();
+        dispatch({ type: 'SET_MY_ORGANIZATION', payload: organizationResponse.organization });
+        navigate('/dashboard');
+      } else {
+        try {
+          const volunteerResponse = await getMyVolunteer();
+          if (!volunteerResponse.volunteer) {
+            navigate('/create_volunteer');
+          } else {
+            dispatch({ type: 'SET_VOLUNTEER', payload: volunteerResponse.volunteer });
+            navigate('/dashboard');
+          }
+        } catch (volunteerError) {
+          if (volunteerError.message === 'You do not own a volunteer profile') {
+            navigate('/create_volunteer');
+          } else {
+            console.error('Error fetching volunteer profile:', volunteerError);
+            setErrors({ submit: 'Failed to fetch volunteer profile' });
+          }
         }
-      } catch (error) {
-        console.log(error);
       }
-      navigate('/dashboard');
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Login error:', error);
       setErrors({ submit: error.message || 'Login failed' });
     } finally {
       setSubmitting(false);

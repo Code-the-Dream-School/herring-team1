@@ -25,7 +25,7 @@ const ProtectedRoute = ({ children }) => {
     return children;
   }
 
-  if (user.isOrganization === 'false' && !volunteer) {
+  if (user.isOrganization && !volunteer) {
     return <Navigate to="/create_volunteer" replace />;
   } else {
     return children;

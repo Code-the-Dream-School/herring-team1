@@ -1,10 +1,9 @@
 import { useState } from 'react';
-
-// import InfoPage from '../pages/organization/InfoPage.jsx';
 import Application from '../pages/organization/Application.jsx';
 import ApprovedVolunteer from '../pages/organization/ApprovedVolunteer.jsx';
 import Request from '../pages/organization/Requests.jsx';
 import OrganizationForm from '../pages/organization/OrganizationForm.jsx';
+import { useGlobal } from '../../context/useGlobal.jsx';
 
 const organizationDashboard = [
   { text: 'Organization information', link: '/organization' },
@@ -15,6 +14,7 @@ const organizationDashboard = [
 
 function OrganizationDashboard() {
   const [currentPage, setCurrentPage] = useState('Organization information');
+  const { myOrganization } = useGlobal();
 
   const renderContent = () => {
     switch (currentPage) {
@@ -31,6 +31,8 @@ function OrganizationDashboard() {
     }
   };
 
+  const isDisabled = !myOrganization;
+
   return (
     <div>
       <nav id="nav" className="flex justify-center items-center p-10 mb-4 sm:mb-0 w-full overflow-hidden">
@@ -41,9 +43,20 @@ function OrganizationDashboard() {
               style={{ minHeight: '2.5rem', maxWidth: '100%', fontSize: '1rem' }}
             >
               <span
-                className={`cursor-pointer ${currentPage === item.text ? 'text-purple font-bold' : 'font-normal'}  text-sm sm:text-base`}
+                className={`cursor-pointer ${
+                  currentPage === item.text ? 'text-purple font-bold' : 'font-normal'
+                } text-sm sm:text-base ${isDisabled && item.text !== 'Organization information' ? 'text-gray-400 cursor-not-allowed' : ''}`}
                 style={{ textAlign: 'center' }}
-                onClick={() => setCurrentPage(item.text)}
+                onClick={() => {
+                  if (!isDisabled || item.text === 'Organization information') {
+                    setCurrentPage(item.text);
+                  }
+                }}
+                title={
+                  isDisabled && item.text !== 'Organization information'
+                    ? 'Please fill out the organization form first'
+                    : ''
+                }
               >
                 {item.text}
               </span>

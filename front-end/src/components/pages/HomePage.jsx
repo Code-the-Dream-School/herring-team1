@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
+import { useGlobal } from '../../context/useGlobal.jsx';
+
 function HomePage() {
+  const { isLoggedIn } = useGlobal();
   return (
     <div className="bg-background">
       {/*Hero*/}
@@ -14,28 +17,30 @@ function HomePage() {
             </h1>
           </div>
 
-          <div className="space-x-8 justify-end items-end pr-8 pb-8 hidden sm:flex">
-            <Link to="/auth/login">
-              <button
-                className="bg-orangeButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
-    w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
-    h-8 sm:h-10 md:h-14 lg:h-16
-    text-sm sm:text-sm md:text-md lg:text-lg"
-              >
-                Become a Volunteer
-              </button>
-            </Link>
-            <Link to="/auth/login">
-              <button
-                className="bg-yellowButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
-    w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
-    h-8 sm:h-10 md:h-14 lg:h-16
-    text-sm sm:text-sm md:text-md lg:text-lg"
-              >
-                Partner with Us!
-              </button>
-            </Link>
-          </div>
+          {!isLoggedIn && (
+            <div className="space-x-8 justify-end items-end pr-8 pb-8 hidden sm:flex">
+              <Link to="/auth/login">
+                <button
+                  className="bg-orangeButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
+                              w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
+                              h-8 sm:h-10 md:h-14 lg:h-16
+                              text-sm sm:text-sm md:text-md lg:text-lg"
+                >
+                  Become a Volunteer
+                </button>
+              </Link>
+              <Link to="/auth/login">
+                <button
+                  className="bg-yellowButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
+                              w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
+                              h-8 sm:h-10 md:h-14 lg:h-16
+                              text-sm sm:text-sm md:text-md lg:text-lg"
+                >
+                  Partner with Us!
+                </button>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
@@ -113,16 +118,18 @@ function HomePage() {
               assistance. Helping others is proven to boost happiness and provide a sense of purpose, making a positive
               impact on your own life.
             </p>
-            <Link to="/auth/login">
-              <button
-                className="bg-orangeButton text-gray-800  font-bold rounded-lg transition hover:bg-gray-400
-    w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
-    h-8 sm:h-10 md:h-14 lg:h-16
-    text-sm sm:text-sm md:text-md lg:text-lg"
-              >
-                Become a Volunteer
-              </button>
-            </Link>
+            {!isLoggedIn && (
+              <Link to="/auth/login">
+                <button
+                  className="bg-orangeButton text-gray-800  font-bold rounded-lg transition hover:bg-gray-400
+                              w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
+                              h-8 sm:h-10 md:h-14 lg:h-16
+                              text-sm sm:text-sm md:text-md lg:text-lg"
+                >
+                  Become a Volunteer
+                </button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -143,16 +150,18 @@ function HomePage() {
               of support. Collaborating with dedicated volunteers can enhance your services, foster community
               connections, and create a lasting positive impact for both your organization and those you serve.
             </p>
-            <Link to="/auth/login">
-              <button
-                className="bg-yellowButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
-    w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
-    h-8 sm:h-10 md:h-14 lg:h-16
-    text-sm sm:text-sm md:text-md lg:text-lg"
-              >
-                Partner with Us!
-              </button>
-            </Link>
+            {!isLoggedIn && (
+              <Link to="/auth/login">
+                <button
+                  className="bg-yellowButton text-gray-800 font-bold rounded-lg transition hover:bg-gray-400
+                              w-full sm:w-[150px] md:w-[250px] lg:w-[300px]
+                              h-8 sm:h-10 md:h-14 lg:h-16
+                              text-sm sm:text-sm md:text-md lg:text-lg"
+                >
+                  Partner with Us!
+                </button>
+              </Link>
+            )}
           </div>
 
           <div className="flex justify-center">
