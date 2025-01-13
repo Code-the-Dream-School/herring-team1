@@ -226,7 +226,6 @@ export const createOrganization = async (organizationData) => {
         withCredentials: true,
       }
     );
-    console.log('Organization created successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error creating organization:', error.response?.data || error.message);
@@ -300,7 +299,6 @@ export const getMyOrganization = async () => {
     return response.data;
   } catch (error) {
     console.error('Error getting organization:', error);
-    console.log(error);
     throw new Error("You don't have organization");
   }
 };

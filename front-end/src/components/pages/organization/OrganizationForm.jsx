@@ -2,7 +2,12 @@
 import { useState, useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { organizationSchema } from '../../../schemas';
-import { createOrganization, getMyOrganization, updateOrganization } from '../../../utils/apiReqests';
+import {
+  createOrganization,
+  getMyOrganization,
+  updateOrganization,
+  uploadOrganizationLogo,
+} from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { states } from '../../../data/states';
@@ -69,6 +74,42 @@ function OrganizationForm() {
       setIsEditing(false);
     }
   };
+
+  const handleLogoUpload = async (file) => {
+    if (!file) return;
+
+    try {
+      const response = await uploadOrganizationLogo(myOrganization.id, file);
+      setLogo({ url: response.imageUrl });
+
+      setFormValues((prev) => ({
+        ...prev,
+        logo: response.imageUrl,
+      }));
+
+      dispatch({
+        type: 'SET_MY_ORGANIZATION',
+        payload: {
+          ...myOrganization,
+          logo: response.imageUrl,
+        },
+      });
+
+      toast.success('Logo uploaded successfully!');
+    } catch (error) {
+      console.error('Failed to upload logo:', error);
+      toast.error(error.message || 'Failed to upload logo. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    if (logo?.url) {
+      setFormValues((prev) => ({
+        ...prev,
+        logo: logo.url,
+      }));
+    }
+  }, [logo]);
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-background rounded-lg">
@@ -210,7 +251,7 @@ function OrganizationForm() {
               <div className="space-y-4">
                 <div className="mt-4 flex justify-center items-center">
                   <img
-                    src={logo.url || 'src/components/assets/images_default/logo_example.png'}
+                    src={logo?.url || 'src/components/assets/images_default/logo_example.png'}
                     alt="Organization Logo"
                     className="w-40 h-40 mb-2 object-contain border rounded-lg shadow-md"
                   />
@@ -221,7 +262,17 @@ function OrganizationForm() {
                     className="cursor-pointer inline-block bg-light_grey text-gray-800 text-sm px-4 py-2 rounded-md shadow-md hover:shadow-md hover:shadow-gray-400 transition duration-200 ease-in-out"
                   >
                     Change Logo
-                    <Field type="file" id="logo" name="logo" accept="image/*" className="hidden" />
+                    <input
+                      type="file"
+                      id="logo"
+                      name="logo"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(event) => {
+                        const file = event.target.files[0];
+                        handleLogoUpload(file);
+                      }}
+                    />
                   </label>
                 </div>
               </div>
