@@ -1,106 +1,57 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyVolunteer } from '../../../utils/apiReqests';
+
+import { useGlobal } from '../../../context/useGlobal.jsx';
 
 function VolunteerProfile() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    street: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    about: '',
-    profileImg: '',
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchVolunteerData = async () => {
-      try {
-        const volunteerData = await getMyVolunteer();
-
-        setFormData({
-          firstName: volunteerData.first_name || '',
-          lastName: volunteerData.last_name || '',
-          email: volunteerData.email || '',
-          phone: volunteerData.phone || '',
-          street: volunteerData.address?.street || '',
-          city: volunteerData.address?.city || '',
-          state: volunteerData.address?.state || '',
-          zipCode: volunteerData.address?.zip_code || '',
-          about: volunteerData.about || '',
-          profileImg: volunteerData.profile_img?.url || '',
-        });
-      } catch (err) {
-        console.error('Error fetching volunteer data:', err);
-        setError('Failed to load volunteer data. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVolunteerData();
-  }, []);
+  const { volunteer } = useGlobal();
 
   const handleEdit = () => {
     navigate('/edit_volunteer');
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-
   return (
     <div className="p-14">
       <div className="md:mt-6">
-        {/* Name */}
-        {(formData.firstName || formData.lastName) && (
+        {volunteer?.first_name && volunteer?.last_name && (
           <>
-            <label className="block text-sm font-bold">Name</label>
-            <p>
-              {formData.firstName} {formData.lastName}
+            <p className="block text-sm font-bold">Name</p>
+            <p className="py-2">
+              {volunteer.first_name} {volunteer.last_name}
             </p>
           </>
         )}
 
-        {/* Email */}
-        {formData.email && (
+        {volunteer?.email && (
           <>
-            <label className="block text-sm font-bold">Email</label>
-            <p>{formData.email}</p>
+            <p className="block text-sm font-bold">Email</p>
+            <p className="py-2">{volunteer.email}</p>
           </>
         )}
 
-        {/* Phone */}
-        {formData.phone && (
+        {volunteer?.phone && (
           <>
-            <label className="block text-sm font-bold">Phone</label>
-            <p>{formData.phone}</p>
+            <p className="block text-sm font-bold">Phone</p>
+            <p className="py-2">{volunteer.phone}</p>
           </>
         )}
 
-        {/* Address */}
-        {(formData.street || formData.city || formData.state || formData.zipCode) && (
+        {volunteer?.address && (
           <>
-            <label className="block text-sm font-bold">Address</label>
-            <p>
-              {formData.street && `${formData.street}, `}
-              {formData.city && `${formData.city}, `}
-              {formData.state && `${formData.state}, `}
-              {formData.zipCode}
+            <p className="block text-sm font-bold">Address</p>
+            <p className="py-2">
+              {volunteer.address.street && `${volunteer.address.street}, `}
+              {volunteer.address.city && `${volunteer.address.city}, `}
+              {volunteer.address.state && `${volunteer.address.state} `}
+              {volunteer.address.zipCode && `${volunteer.address.zipCode}`}
             </p>
           </>
         )}
 
-        {/* About */}
-        {formData.about && (
+        {volunteer?.about && (
           <>
             <label className="block text-sm font-bold">About</label>
-            <p>{formData.about}</p>
+            <p className="py-2">{volunteer.about}</p>
           </>
         )}
       </div>
@@ -109,7 +60,7 @@ function VolunteerProfile() {
       <div className="mt-6 flex space-x-4 xs:justify-center md:justify-start">
         <button
           onClick={handleEdit}
-          className="px-4 py-2 bg-orangeButton text-white rounded border border-orangeButton transition duration-300 ease-in-out hover:shadow-lg hover:brightness-110"
+          className="w-1/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400 mx-2"
         >
           Edit
         </button>

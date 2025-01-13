@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import VolunteerProfile from '../pages/volunteer/VolunteerProfile.jsx';
 import Volunteering from '../pages/volunteer/Volunteering.jsx';
 import Favorites from '../pages/volunteer/Favorites.jsx';
 import defaultProfileImage from '../assets/images_default/profile_default.jpg';
-import { getMyVolunteer, uploadProfileImage } from '../../utils/apiReqests';
+import { uploadProfileImage } from '../../utils/apiReqests';
+import { useGlobal } from '../../context/useGlobal.jsx';
 
 const volunteerDashboard = [
   { text: 'Profile', link: '/profile' },
@@ -12,32 +13,14 @@ const volunteerDashboard = [
 ];
 
 function VolunteerDashboard() {
+  const { dispatch, volunteer } = useGlobal();
   const [currentPage, setCurrentPage] = useState('Profile');
-  const [userProfileImage, setUserProfileImage] = useState(null);
-  const [registrationDate, setRegistrationDate] = useState('');
+  const [userProfileImage, setUserProfileImage] = useState(volunteer.profile_img.url || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchVolunteerData = async () => {
-      try {
-        setLoading(true);
-        const volunteerData = await getMyVolunteer();
-        setUserProfileImage(volunteerData.profile_img?.url || defaultProfileImage);
-        const formattedDate = new Date(volunteerData.created_at).toLocaleDateString('en-US', {
-          year: 'numeric',
-        });
-        setRegistrationDate(formattedDate);
-      } catch (err) {
-        console.error('Error fetching volunteer data:', err);
-        setError('Failed to load volunteer data. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVolunteerData();
-  }, []);
+  const formattedDate = new Date(volunteer.created_at).toLocaleDateString('en-US', {
+    year: 'numeric',
+  });
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -47,9 +30,18 @@ function VolunteerDashboard() {
     setError(null);
 
     try {
-      const volunteerData = await getMyVolunteer();
-      const response = await uploadProfileImage(volunteerData.id, file);
+      const response = await uploadProfileImage(volunteer.id, file);
       setUserProfileImage(response.imageUrl || defaultProfileImage);
+      console.log(response.imageUrl);
+      if (response) {
+        dispatch({
+          type: 'SET_VOLUNTEER',
+          payload: {
+            ...volunteer,
+            profile_img: response,
+          },
+        });
+      }
     } catch (err) {
       setError(err.error || 'Failed to upload image. Please try again.');
       console.error('Error uploading profile image:', err);
@@ -96,7 +88,7 @@ function VolunteerDashboard() {
         </div>
         {loading && <p className="text-center text-blue-500">Uploading...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
-        <p className="text-center text-xs mt-2 mb-10">Member since {registrationDate}</p>
+        <p className="text-center text-xs mt-2 mb-10">Member since {formattedDate}</p>
         <div className="w-full">
           <nav className="flex flex-col sm:m-10 lg:m-20">
             <ul className="w-full">

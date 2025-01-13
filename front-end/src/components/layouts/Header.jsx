@@ -1,11 +1,11 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/useAuth.jsx';
+import { useGlobal } from '../../context/useGlobal.jsx';
 import { useState, useEffect } from 'react';
 import { logout } from '../../utils/apiReqests';
 import { FaSignOutAlt } from 'react-icons/fa';
 
 export default function Header() {
-  const { user, deleteUser } = useAuth();
+  const { user, dispatch } = useGlobal();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -13,7 +13,10 @@ export default function Header() {
     try {
       await logout();
       localStorage.clear();
-      deleteUser();
+      dispatch({ type: 'SET_USER', payload: null });
+      dispatch({ type: 'SET_MY_ORGANIZATION', payload: null });
+      dispatch({ type: 'SET_VOLUNTEER', payload: null });
+      dispatch({ type: 'SET_IS_LOGGED_IN', payload: null });
       navigate('/auth/login');
     } catch (error) {
       console.error(error);

@@ -1,102 +1,71 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
+import { organizationSchema } from '../../../schemas';
 import { createOrganization, getMyOrganization, updateOrganization } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { states } from '../../../data/states';
 import CustomMultiSelect from './CustomMultiSelect.jsx';
 import { servicesMap } from '../../../data/services.jsx';
+import { useGlobal } from '../../../context/useGlobal.jsx';
 
 function OrganizationForm() {
-  const navigate = useNavigate();
-  const [formValues, setFormValues] = useState({
-    name: '',
-    address: { street: '', city: '', state: '', zip_code: '' },
-    phone: '',
-    website: '',
-    mission: '',
-    description: '',
-    service_ids: [],
-  });
-  const [isEditing, setIsEditing] = useState(false);
-
-  useEffect(() => {
-    const fetchOrganization = async () => {
-      try {
-        const fullData = await getMyOrganization();
-        const data = fullData.organization;
-        const values = {
-          id: data.id || '',
-          name: data.name || '',
+  const { dispatch, myOrganization } = useGlobal();
+  const [formValues, setFormValues] = useState(
+    myOrganization
+      ? {
+          name: myOrganization.name,
           address: {
-            street: data.address?.street || '',
-            city: data.address?.city || '',
-            state: data.address?.state || '',
-            zip_code: data.address?.zip_code || '',
+            street: myOrganization.address?.street,
+            city: myOrganization.address?.city,
+            state: myOrganization.address?.state,
+            zip_code: myOrganization.address?.zip_code,
           },
-          phone: data.phone || '',
-          website: data.website || '',
-          mission: data.mission || '',
-          description: data.description || '',
-          service_ids: data.org_services?.map((service) => service.service_id) || [],
-        };
-        setFormValues(values);
-        setIsEditing(true);
-      } catch (error) {
-        console.error('Failed to fetch organization:', error);
-      }
-    };
-    fetchOrganization();
-  }, []);
+          phone: myOrganization.phone,
+          website: myOrganization.website,
+          mission: myOrganization.mission,
+          description: myOrganization.description,
+          service_ids: myOrganization.org_services?.map((service) => service.service_id),
+        }
+      : {
+          name: '',
+          address: { street: '', city: '', state: '', zip_code: '' },
+          phone: '',
+          website: '',
+          mission: '',
+          description: '',
+          service_ids: [],
+        }
+  );
 
-  const validationSchema = Yup.object({
-    name: Yup.string().required('Organization name is required'),
-    address: Yup.object({
-      street: Yup.string().required('Street is required'),
-      city: Yup.string().required('City is required'),
-      state: Yup.string().required('State is required'),
-      zip_code: Yup.string()
-        .required('Zip Code is required')
-        .matches(/^[0-9]{5}$/, 'Zip Code must be exactly 5 digits'),
-    }),
-    phone: Yup.string()
-      .required('Phone number is required')
-      .matches(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
-    website: Yup.string()
-      .required('Website is required')
-      .matches(/^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/, 'Enter a valid URL'),
-    service_ids: Yup.array().of(Yup.number()).min(1, 'Select at least one service').required('Services are required'),
-    mission: Yup.string().required('Mission statement is required').max(500),
-    description: Yup.string().required('Organization description is required').max(500),
-  });
+  const [isEditing, setIsEditing] = useState(myOrganization ? false : true);
 
   const handleSubmit = async (values) => {
     try {
       let response;
-      if (isEditing) {
-        if (!values.id) {
-          throw new Error('Organization ID is missing');
-        }
-        response = await updateOrganization(values, values);
+      if (myOrganization) {
+        response = await updateOrganization(myOrganization.id, values);
+        dispatch({ type: 'SET_MY_ORGANIZATION', payload: response.organization });
         if (response) {
           toast.success('Organization updated successfully!');
+          setIsEditing(false);
         } else {
           throw new Error('Failed to update organization');
         }
       } else {
         response = await createOrganization(values);
+        dispatch({ type: 'SET_MY_ORGANIZATION', payload: response.organization });
         if (response) {
           toast.success('Organization created successfully!');
-          setFormValues({ ...values, id: response.id });
+          setIsEditing(false);
         } else {
           throw new Error('Failed to create organization');
         }
       }
-      setTimeout(() => navigate('/dashboard'), 3000);
     } catch (error) {
-      toast.error(error.message || 'An error occurred while creating the organization.');
+      toast.error(error.message || 'An error occurred while saving the organization.');
+      setIsEditing(false);
     }
   };
 
@@ -107,8 +76,13 @@ function OrganizationForm() {
         you.
       </p>
 
-      <Formik initialValues={formValues} enableReinitialize validationSchema={validationSchema} onSubmit={handleSubmit}>
-        {({ values, handleChange }) => (
+      <Formik
+        initialValues={formValues}
+        enableReinitialize
+        validationSchema={organizationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ values, handleChange, handleSubmit }) => (
           <Form className="grid gap-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
@@ -123,6 +97,7 @@ function OrganizationForm() {
                     onChange={handleChange}
                     className="w-full text-sm border-gray-300 border rounded-lg p-2 shadow-md"
                     placeholder="Enter organization name"
+                    disabled={!isEditing}
                   />
                   <ErrorMessage name="name" component="div" className="text-red-500 text-xs" />
                 </div>
@@ -138,6 +113,7 @@ function OrganizationForm() {
                     onChange={handleChange}
                     className="w-full text-sm border-gray-300 border rounded-lg p-2 shadow-md"
                     placeholder="Enter street address"
+                    disabled={!isEditing}
                   />
                   <ErrorMessage name="address.street" component="div" className="text-red-500 text-xs" />
                 </div>
@@ -149,8 +125,11 @@ function OrganizationForm() {
                   <Field
                     type="text"
                     name="address.city"
+                    value={values.address.city}
+                    onChange={handleChange}
                     className="w-full text-sm border-gray-300 border rounded-lg shadow-md p-2"
                     placeholder="Enter city"
+                    disabled={!isEditing}
                   />
                   <ErrorMessage name="address.city" component="div" className="text-red-500 text-xs" />
                 </div>
@@ -184,8 +163,11 @@ function OrganizationForm() {
                     <Field
                       type="text"
                       name="address.zip_code"
+                      value={values.address.zip_code}
+                      onChange={handleChange}
                       className="w-full border-gray-300 text-sm border rounded-lg shadow-md p-2"
                       placeholder="Enter zip code"
+                      disabled={!isEditing}
                     />
                     <ErrorMessage name="address.zip_code" component="div" className="text-red-500 text-xs" />
                   </div>
@@ -202,6 +184,7 @@ function OrganizationForm() {
                     onChange={handleChange}
                     className="w-full text-sm border-gray-300 border rounded-lg shadow-md p-2"
                     placeholder="Enter phone number"
+                    disabled={!isEditing}
                   />
                   <ErrorMessage name="phone" component="div" className="text-red-500 text-xs" />
                 </div>
@@ -213,8 +196,11 @@ function OrganizationForm() {
                   <Field
                     type="text"
                     name="website"
+                    value={values.website}
+                    onChange={handleChange}
                     className="w-full text-sm border-gray-300 border rounded-lg shadow-md p-2"
                     placeholder="Enter website URL"
+                    disabled={!isEditing}
                   />
                   <ErrorMessage name="website" component="div" className="text-red-500 text-xs" />
                 </div>
@@ -251,7 +237,10 @@ function OrganizationForm() {
                   options={servicesMap}
                   placeholder="Select services..."
                   isMulti={true}
+                  value={values.service_ids}
+                  onChange={handleChange}
                   className="w-full text-sm bg-white border-gray-300 border rounded-lg shadow-md p-2"
+                  disabled={!isEditing}
                 />
                 <ErrorMessage name="service_ids" component="div" className="text-red-500 text-xs" />
               </div>
@@ -266,9 +255,12 @@ function OrganizationForm() {
                   as="textarea"
                   id="mission"
                   name="mission"
+                  value={values.mission}
+                  onChange={handleChange}
                   rows="4"
                   className="w-full text-sm border-gray-300 border rounded-lg shadow-md p-2"
                   placeholder="Tell potential volunteers the aims and values of your organization"
+                  disabled={!isEditing}
                 />
                 <ErrorMessage name="mission" component="div" className="text-red-500 text-xs" />
               </div>
@@ -281,25 +273,53 @@ function OrganizationForm() {
                   as="textarea"
                   id="description"
                   name="description"
+                  value={values.description}
+                  onChange={handleChange}
                   rows="4"
                   className="w-full text-sm border-gray-300 border rounded-lg shadow-md p-2"
                   placeholder="Describe the work your organization does"
+                  disabled={!isEditing}
                 />
                 <ErrorMessage name="description" component="div" className="text-red-500 text-xs" />
               </div>
             </div>
 
             <div className="flex justify-center mt-8 mb-4">
-              <button
-                type="submit"
-                className={`w-2/5 px-4 py-2 sm:text-xl  lg:text-lg rounded-md ${
-                  isEditing
-                    ? 'border-2 border-red-500 sm:text-xl  lg:text-lg  rounded-md  text-red-500 bg-white hover:bg-red-100 hover:border-red-600 hover:text-red-600'
-                    : 'w-2/5 px-4 py-2 sm:text-xl  lg:text-lg bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400'
-                }`}
-              >
-                {isEditing ? 'Update' : 'Create'}
-              </button>
+              {myOrganization ? (
+                !isEditing ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
+                  >
+                    Edit
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleSubmit()}
+                      className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md border-2 border-red-500 text-red-500 bg-white hover:bg-red-100 hover:border-red-600 hover:text-red-600"
+                    >
+                      Update
+                    </button>
+                    <button
+                      type="button"
+                      className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400 mx-2"
+                      onClick={() => setIsEditing(false)}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )
+              ) : (
+                <button
+                  type="submit"
+                  className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
+                >
+                  Create
+                </button>
+              )}
             </div>
           </Form>
         )}

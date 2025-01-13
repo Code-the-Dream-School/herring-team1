@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { loginSchema } from '../../schemas';
-import { useAuth } from '../../context/useAuth.jsx';
-import { login } from '../../utils/apiReqests';
+import { useGlobal } from '../../context/useGlobal.jsx';
+import { login, getMyOrganization, getMyVolunteer } from '../../utils/apiReqests';
 
 function Login() {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { dispatch } = useGlobal();
 
   const onSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
@@ -14,10 +14,46 @@ function Login() {
       const auth = response.data;
       localStorage.setItem('user', JSON.stringify(auth.user));
       localStorage.setItem('x_csrf_token', response.headers.get('x-csrf-token'));
-      setUser(auth.user);
-      navigate('/dashboard');
+      dispatch({ type: 'SET_USER', payload: auth.user });
+      dispatch({ type: 'SET_IS_LOGGED_IN', payload: true });
+
+      if (auth.user.isOrganization) {
+        try {
+          const organizationResponse = await getMyOrganization();
+          if (!organizationResponse.organization) {
+            navigate('/dashboard');
+          } else {
+            dispatch({ type: 'SET_MY_ORGANIZATION', payload: organizationResponse.organization });
+            navigate('/dashboard');
+          }
+        } catch (orgError) {
+          if (orgError.message === "You don't have organization") {
+            navigate('/dashboard');
+          } else {
+            console.error('Error fetching organization profile:', orgError);
+            setErrors({ submit: 'Failed to fetch organization profile' });
+          }
+        }
+      } else {
+        try {
+          const volunteerResponse = await getMyVolunteer();
+          if (!volunteerResponse.volunteer) {
+            navigate('/create_volunteer');
+          } else {
+            dispatch({ type: 'SET_VOLUNTEER', payload: volunteerResponse.volunteer });
+            navigate('/dashboard');
+          }
+        } catch (volunteerError) {
+          if (volunteerError.message === 'You do not own a volunteer profile') {
+            navigate('/create_volunteer');
+          } else {
+            console.error('Error fetching volunteer profile:', volunteerError);
+            setErrors({ submit: 'Failed to fetch volunteer profile' });
+          }
+        }
+      }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Login error:', error);
       setErrors({ submit: error.message || 'Login failed' });
     } finally {
       setSubmitting(false);
@@ -75,14 +111,14 @@ function Login() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-2/5 px-4 py-2 sm:text-xl bg-orange text-white rounded-md hover:bg-orange-600 disabled:bg-gray-400"
+          className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
         >
           {isSubmitting ? 'Loading...' : 'Login'}
         </button>
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="w-2/5 px-4 py-2 sm:text-xl bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+          className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md border-2 border-red-500 text-red-500 bg-white hover:bg-red-100 hover:border-red-600 hover:text-red-600"
         >
           Cancel
         </button>
