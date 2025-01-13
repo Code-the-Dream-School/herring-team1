@@ -40,6 +40,7 @@ function OrganizationForm() {
   );
 
   const [isEditing, setIsEditing] = useState(myOrganization ? false : true);
+  const [logo, setLogo] = useState(myOrganization?.logo || null);
 
   const handleSubmit = async (values) => {
     try {
@@ -209,9 +210,9 @@ function OrganizationForm() {
               <div className="space-y-4">
                 <div className="mt-4 flex justify-center items-center">
                   <img
-                    src="src/assets/profile_default.jpg"
+                    src={logo.url || 'src/components/assets/images_default/logo_example.png'}
                     alt="Organization Logo"
-                    className="w-40 h-40 mb-2 object-cover border rounded-lg shadow-md"
+                    className="w-40 h-40 mb-2 object-contain border rounded-lg shadow-md"
                   />
                 </div>
                 <div className="mt-2 flex justify-center">

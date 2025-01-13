@@ -413,3 +413,28 @@ export const deleteRequest = async (requestId, orgId) => {
     throw error;
   }
 };
+
+export const uploadOrganizationLogo = async (organizationId, imageFile) => {
+  const csrfToken = localStorage.getItem('x_csrf_token');
+  if (!csrfToken) {
+    throw new Error('CSRF token not found. Ensure you are logged in.');
+  }
+
+  const formData = new FormData();
+  formData.append('logo', imageFile);
+
+  try {
+    const response = await axios.post(`${API_BASE_URL}organizations/${organizationId}/upload_logo`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'X-CSRF-Token': csrfToken,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading organization logo:', error.response?.data || error.message);
+    throw error.response?.data || 'Failed to upload organization logo.';
+  }
+};
