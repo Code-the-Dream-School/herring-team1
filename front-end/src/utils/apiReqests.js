@@ -413,3 +413,30 @@ export const deleteRequest = async (requestId, orgId) => {
     throw error;
   }
 };
+
+export const createVolunteerApplication = async (values, volunteerId, requestId) => {
+  try {
+    const body = {
+      message: values.about,
+      request_id: requestId,
+      volunteer_id: volunteerId,
+    };
+    const csrfToken = localStorage.getItem('x_csrf_token');
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Ensure you are logged in.');
+    }
+
+    const response = await axios.post(`${API_BASE_URL}volunteers/${volunteerId}/volunteer_applications/`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+      },
+      credentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log('Error while submitting form:', error);
+    throw error;
+  }
+};

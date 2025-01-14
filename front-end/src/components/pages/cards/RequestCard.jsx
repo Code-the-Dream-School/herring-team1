@@ -23,7 +23,7 @@ function RequestCard({ request }) {
       </div>
       {/* "I want to help" Button */}
       <div className="flex justify-end">
-        <CreateApplication />
+        <CreateApplication requestId={request.id} status={request.status} />
       </div>
     </div>
   );

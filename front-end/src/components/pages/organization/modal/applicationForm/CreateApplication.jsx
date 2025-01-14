@@ -2,20 +2,31 @@ import { useState } from 'react';
 import VolunteerApplicationForm from './VolunteerApplicationForm.jsx';
 import styles from '../requestForm/CreateRequest.module.css';
 import PropTypes from 'prop-types';
+import { createVolunteerApplication } from '../../../../../utils/apiReqests';
+import { useGlobal } from '../../../../../context/useGlobal.jsx';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
-function CreateApplication() {
+function CreateApplication({ requestId, status }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { volunteer } = useGlobal();
+  const navigate = useNavigate();
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
 
-  const onSave = async (formData) => {
+  const onSave = async (values) => {
     try {
-      console.log('Form Data to Save:', formData);
-      // API POST to volunteer application route
+      const response = await createVolunteerApplication(values, volunteer.id, requestId);
+      console.log(response);
+      if (response) {
+        navigate('/dashboard');
+        toast.success('Form submitted successfully!');
+      }
     } catch (error) {
-      console.error('Error saving data:', error);
+      const errorMessage = error.response?.data?.volunteer_id?.[0] || 'An unexpected error occurred';
+      toast.error(errorMessage);
     }
   };
 
@@ -24,11 +35,9 @@ function CreateApplication() {
       {/* Green Trigger Button */}
       <button
         type="button"
+        disabled={status === 'closed'}
         onClick={toggleModal}
-        className={`${styles.btnSuccess}
-          w-auto sm:text-l py-2 px-5
-          text-500 rounded-md hover:bg-green-800
-          text-xs sm:text-sm md:text-base lg:text-m xl:text-l`}
+        className="px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-green hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400 disabled:opacity-75 disabled:hover:shadow"
       >
         I want to help
       </button>
@@ -54,6 +63,7 @@ function CreateApplication() {
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }
@@ -61,6 +71,8 @@ function CreateApplication() {
 CreateApplication.propTypes = {
   onSave: PropTypes.func,
   toggleModal: PropTypes.func,
+  requestId: PropTypes.string,
+  status: PropTypes.string,
 };
 
 export default CreateApplication;

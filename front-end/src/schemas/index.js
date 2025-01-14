@@ -25,9 +25,7 @@ export const registerSchema = yup.object().shape({
 });
 
 export const applicationSchema = yup.object({
-  firstName: yup.string().required('First Name is required.'),
-  lastName: yup.string().required('Last Name is required.'),
-  about: yup.string().required('About is required.'),
+  about: yup.string().max(1000, 'No more than 1000 symbols').required('About is required.'),
 });
 
 export const organizationSchema = yup.object({
