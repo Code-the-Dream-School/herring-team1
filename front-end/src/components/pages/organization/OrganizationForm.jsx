@@ -251,7 +251,7 @@ function OrganizationForm() {
               <div className="space-y-4">
                 <div className="mt-4 flex justify-center items-center">
                   <img
-                    src={logo?.url || 'src/components/assets/images_default/logo_example.png'}
+                    src={logo?.url || 'src/components/assets/images_default/logo_example.jpg'}
                     alt="Organization Logo"
                     className="w-40 h-40 mb-2 object-contain border rounded-lg shadow-md"
                   />
