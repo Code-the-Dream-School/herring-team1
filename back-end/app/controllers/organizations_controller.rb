@@ -208,7 +208,7 @@ class OrganizationsController < ApplicationController
     if params[:logo].present?
       @organization = Organization.find(params[:id])
       @organization.logo = params[:logo]
-  
+
       if @organization.save
         render json: { imageUrl: @organization.logo.url }, status: :ok
       else
