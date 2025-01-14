@@ -41,12 +41,14 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
 
             {/* Logo */}
             <div className="flex justify-center">
-              {org.logo ? (
-                <img src={org.logo} alt={`logo`} className="w-16 h-16 object-cover rounded-full" />
+              {org.logo?.url ? (
+                <img src={org.logo.url} alt={`Organization logo`} className="w-16 h-16 object-cover rounded-full" />
               ) : (
-                <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span className="text-gray-500">LOGO</span>
-                </div>
+                <img
+                  src="src/components/assets/images_default/logo_example.jpg" // Укажите путь к вашему дефолтному изображению
+                  alt="Default logo"
+                  className="w-16 h-16 object-cover rounded-full"
+                />
               )}
             </div>
 
