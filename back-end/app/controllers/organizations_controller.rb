@@ -204,6 +204,21 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  def upload_logo
+    if params[:logo].present?
+      @organization = Organization.find(params[:id])
+      @organization.logo = params[:logo]
+
+      if @organization.save
+        render json: { imageUrl: @organization.logo.url }, status: :ok
+      else
+        render json: { error: @organization.errors.full_messages }, status: :unprocessable_entity
+      end
+    else
+      render json: { error: 'No logo file provided' }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   # Set the organization for show, edit, update, and destroy actions
