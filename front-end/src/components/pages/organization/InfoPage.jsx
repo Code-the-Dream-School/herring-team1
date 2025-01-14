@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'; //, useRef
 import { useParams } from 'react-router-dom';
 import RequestCard from '../cards/RequestCard.jsx';
-import logoExample from '../../assets/images_default/logo_example.png';
+import logoExample from '../../assets/images_default/logo_example.jpg';
 import { FaEnvelope, FaGlobe, FaHeart, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
 import { fetchMyOrgRequests, getOneOrganizationById } from '../../../utils/apiReqests';
 import formatServices from '../../../utils/FormatServices.jsx';
@@ -162,7 +162,7 @@ function InfoPage() {
                 <div className="flex items-center justify-between lg:ml-7 mt-5 mb-5">
                   <div className="lg:w-20 xs:w-16 md:w-18">
                     <img
-                      src={organization?.logo || logoExample}
+                      src={organization?.logo.url || logoExample}
                       alt={`${organization?.name || 'Organization'} logo`}
                       className="w-full h-full object-contain"
                     />
@@ -178,7 +178,7 @@ function InfoPage() {
                     <FaMapMarkerAlt className="mr-2" />
                     <span>
                       {organization?.address?.street}, {organization?.address?.city}, {organization?.address?.state},{' '}
-                      {organization?.address?.zipCode}
+                      {organization?.address?.zip_code}
                     </span>
                   </div>
                   <div className="flex items-center mb-2">
