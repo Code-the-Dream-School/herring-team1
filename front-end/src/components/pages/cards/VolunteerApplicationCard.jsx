@@ -1,8 +1,24 @@
 import PropTypes from 'prop-types';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { updateVolunteerApplication } from '../../../utils/apiReqests';
+import { ToastContainer, toast } from 'react-toastify';
 
 const VolunteerApplicationCard = ({ application }) => {
   const { message, volunteer, request } = application;
+
+  const updateApplicationStatus = async (status) => {
+    try {
+      await updateVolunteerApplication(application.id, status, null, null);
+      if (status === 1) {
+        toast.success('You accepted application successfully!');
+      } else {
+        toast.success('You declined application successfully!');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    }
+  };
 
   return (
     <div className="grid grid-cols-[1fr_3fr_1fr_1fr] gap-4 bg-white shadow-md rounded-lg p-4 mb-4">
@@ -43,13 +59,22 @@ const VolunteerApplicationCard = ({ application }) => {
       </div>
 
       <div className="flex justify-evenly items-center space-y-2">
-        <button type="button" className="text-blue-500 hover:text-blue-700 m-1">
+        <button
+          type="button"
+          className="text-blue-500 hover:text-blue-700 m-1"
+          onClick={() => updateApplicationStatus(1)}
+        >
           <CheckIcon className="w-6" />
         </button>
-        <button type="button" className="text-red-500 hover:text-red-700 m-1">
+        <button
+          type="button"
+          className="text-red-500 hover:text-red-700 m-1"
+          onClick={() => updateApplicationStatus(2)}
+        >
           <XMarkIcon className="w-6" />
         </button>
       </div>
+      <ToastContainer />
     </div>
   );
 };

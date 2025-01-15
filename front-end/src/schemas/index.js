@@ -67,3 +67,9 @@ export const volunteerSchema = yup.object().shape({
     zip_code: yup.string().trim().required('Zip Code is required'),
   }),
 });
+
+export const requestSchema = yup.object({
+  service: yup.string(),
+  title: yup.string().required('Request is required.'),
+  status: yup.string(),
+});

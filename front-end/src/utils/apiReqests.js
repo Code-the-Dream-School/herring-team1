@@ -508,33 +508,35 @@ export const getOrgApplications = async (organizationId, status) => {
   }
 };
 
-export const updateVolunteerApplication = async (values, volunteerId, requestId, appId) => {
+export const updateVolunteerApplication = async (appId, status, message, volunteerId) => {
   try {
-    const body = {
-      message: values.about,
-      request_id: requestId,
-      volunteer_id: volunteerId,
-    };
+    let url, body;
+    if (volunteerId) {
+      url = `${API_BASE_URL}volunteers/${volunteerId}/volunteer_applications/${appId}`;
+      body = {
+        message: message,
+      };
+    } else {
+      url = `${API_BASE_URL}volunteer_applications/${appId}`;
+      body = { application_status: status };
+    }
+
     const csrfToken = localStorage.getItem('x_csrf_token');
     if (!csrfToken) {
       throw new Error('CSRF token not found. Ensure you are logged in.');
     }
 
-    const response = await axios.post(
-      `${API_BASE_URL}volunteers/${volunteerId}/volunteer_applications/${appId}`,
-      body,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-        credentials: true,
-      }
-    );
+    const response = await axios.patch(url, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+      },
+      credentials: true,
+    });
 
     return response.data;
   } catch (error) {
-    console.log('Error while submitting form:', error);
+    console.error('Error while submitting form:', error);
     throw error;
   }
 };
