@@ -2,9 +2,9 @@
 class VolunteerApplicationsController < ApplicationController
   before_action :set_volunteer_application, only: [:update, :destroy]
   before_action :set_organization, only: [:update]
-  before_action :authorize_organization, only: [:update], if: -> { params[:organization_id].present? }
+  before_action :authorize_user, only: [:update]
   before_action :set_volunteer, only: [:create, :update, :destroy]
-  before_action :authorize_volunteer, only: [:create, :destroy, :update]
+  before_action :authorize_volunteer, only: [:create, :destroy]
 
   def index
     # Filtering
@@ -82,12 +82,29 @@ class VolunteerApplicationsController < ApplicationController
   end
 
   def update
-    return render json: { error: 'Invalid application_status.' }, status: :unprocessable_entity if params[:volunteer_application][:application_status].to_i > 3
-
-    if @volunteer_application.update(volunteer_application_params)
-      render json: @volunteer_application, status: :ok
+    if current_auth.volunteer
+      if @volunteer_application.update(message: params[:volunteer_application][:message])
+        render json: @volunteer_application, status: :ok
+      else
+        render json: { errors: @volunteer_application.errors.full_messages }, status: :unprocessable_entity
+      end
+    elsif current_auth.organization
+      if params[:volunteer_application][:application_status]
+        status = params[:volunteer_application][:application_status].to_i
+        if status >= 0 && status <= 3
+          if @volunteer_application.update(application_status: status)
+            render json: @volunteer_application, status: :ok
+          else
+            render json: { errors: @volunteer_application.errors.full_messages }, status: :unprocessable_entity
+          end
+        else
+          render json: { error: 'Invalid application_status.' }, status: :unprocessable_entity
+        end
+      else
+        render json: { error: 'application_status is required.' }, status: :unprocessable_entity
+      end
     else
-      render json: { errors: @volunteer_application.errors.full_messages }, status: :unprocessable_entity
+      render json: { error: 'Unauthorized user' }, status: :unauthorized
     end
   end
 
@@ -115,32 +132,38 @@ class VolunteerApplicationsController < ApplicationController
   end
 
   def set_organization
-    @organization = Organization.find_by(id: params[:organization_id])
-    render json: { error: 'Organization not found.' }, status: :not_found unless @organization
+    @volunteer_application = VolunteerApplication.find(params[:id])
+    organization_id = @volunteer_application.request&.org_service&.organization_id
+    return if current_auth.organization.id == organization_id
+
+    render json: { error: 'Unauthorized to update this application.' }, status: :unauthorized
   end
 
   def authorize_volunteer
     return true if @volunteer_application.nil?
 
-    return render json: { error: 'Unauthorized access. Volunteer ID does not match the application.' }, status: :unauthorized unless @volunteer_application.volunteer_id == params[:volunteer_id].to_i
+    unless @volunteer_application.volunteer_id == params[:volunteer_id].to_i
+      return render json: { error: 'Unauthorized access. Volunteer ID does not match the application.' },
+                    status: :unauthorized
+    end
 
     render json: { error: 'Volunteer not found.' }, status: :not_found unless @volunteer
     true
   end
 
-  def authorize_organization
-    unless @volunteer_application.request.organization_id == params[:organization_id].to_i
-      return render json: { error: 'Unauthorized access. You do not have permission to update this application.' }, status: :unauthorized
+  def authorize_user
+    if current_auth.organization
+      organization_id = @volunteer_application.request&.org_service&.organization_id
+      render json: { error: 'Unauthorized access. You do not have permission to update this application.' }, status: :unauthorized unless organization_id == current_auth.organization.id
+    elsif current_auth.volunteer
+      unless @volunteer_application.volunteer_id == params[:volunteer_id].to_i
+        return render json: { error: '2 Unauthorized access. Volunteer ID does not match the application.' }, status: :unauthorized
+      end
+
+      render json: { error: 'Volunteer not found.' }, status: :not_found unless @volunteer
+    else
+      render json: { error: 'Unauthorized access. User not found.' }, status: :unauthorized
     end
-
-    if @volunteer_application.volunteer_id != params[:volunteer_id].to_i
-      render json: { error: 'Volunteer ID does not match the application.' }, status: :unprocessable_entity
-      return
-    end
-
-    return true if @organization && @organization.id == params[:organization_id].to_i
-
-    render json: { error: 'Unauthorized access.' }, status: :unauthorized and return false
   end
 
   def volunteer_application_params
