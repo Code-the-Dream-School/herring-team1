@@ -507,3 +507,56 @@ export const getOrgApplications = async (organizationId, status) => {
     throw new Error("You don't have organization");
   }
 };
+
+export const updateVolunteerApplication = async (values, volunteerId, requestId, appId) => {
+  try {
+    const body = {
+      message: values.about,
+      request_id: requestId,
+      volunteer_id: volunteerId,
+    };
+    const csrfToken = localStorage.getItem('x_csrf_token');
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Ensure you are logged in.');
+    }
+
+    const response = await axios.post(
+      `${API_BASE_URL}volunteers/${volunteerId}/volunteer_applications/${appId}`,
+      body,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        credentials: true,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.log('Error while submitting form:', error);
+    throw error;
+  }
+};
+
+export const deleteVolunteerApplication = async (volunteerId, appId) => {
+  try {
+    const csrfToken = localStorage.getItem('x_csrf_token');
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Ensure you are logged in.');
+    }
+
+    const response = await axios.delete(`${API_BASE_URL}volunteers/${volunteerId}/volunteer_applications/${appId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+      },
+      credentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log('Error while submitting form:', error);
+    throw error;
+  }
+};

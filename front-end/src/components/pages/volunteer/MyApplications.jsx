@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
-import { getMyApplications } from '../../../utils/apiReqests';
+import { getMyApplications, deleteVolunteerApplication } from '../../../utils/apiReqests';
 import { useGlobal } from '../.././../context/useGlobal.jsx';
 import { useNavigate } from 'react-router-dom';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { TrashIcon } from '@heroicons/react/24/solid';
+import { ToastContainer, toast } from 'react-toastify';
 
 function MyApplications() {
   const [myApplication, setMyApplication] = useState(null);
   const { volunteer } = useGlobal();
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [appToDelete, setAppToDelete] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,6 +34,32 @@ function MyApplications() {
 
   const handleCardClick = (id) => {
     navigate(`/organizations/${id}`);
+  };
+
+  // const handleEditClick = (applicationId) => {
+  //   console.log(`Edit ${applicationId}`);
+  //   // updateVolunteerApplication(values, volunteerId, requestId, appId);
+  // };
+
+  const handleDeleteClick = (applicationId) => {
+    setAppToDelete(applicationId);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteVolunteerApplication(volunteer.id, appToDelete);
+      setMyApplication((prevApplications) => prevApplications.filter((app) => app.id !== appToDelete));
+      setIsModalOpen(false);
+      toast.success('Application deleted successfully');
+    } catch (error) {
+      console.error('Error deleting application:', error);
+      toast.success('Failed to delete the application');
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -63,11 +92,35 @@ function MyApplications() {
                 >
                   Go to org profile
                 </td>
-                <td className="flex flex-row justify-around items-center">
-                  <button type="button" className="text-blue-500 hover:text-blue-700 m-1">
+                <td className="border border-gray-300 px-4 py-2 items-center">
+                  {/* <button
+                    type="button"
+                    className="text-blue-500 hover:text-blue-700 m-1"
+                    onClick={() => handleEditClick(app.id)}
+                  >
                     <PencilIcon className="w-5 h-5 sm:w-4 sm:h-4" />
-                  </button>
-                  <button type="button" className="text-red-500 hover:text-red-700">
+                  </button> */}
+                  {isModalOpen && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+                      <div className="bg-white p-6 rounded-lg shadow-lg">
+                        <p>Are you sure you want to delete this application?</p>
+                        <div className="mt-4 flex justify-end space-x-4">
+                          <button className="px-4 py-2 bg-gray-500 text-white rounded" onClick={handleCloseModal}>
+                            Cancel
+                          </button>
+                          <button className="px-4 py-2 bg-red-500 text-white rounded" onClick={handleConfirmDelete}>
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => handleDeleteClick(app.id)}
+                  >
                     <TrashIcon className="w-5 h-5 sm:w-4 sm:h-4" />
                   </button>
                 </td>
@@ -78,6 +131,7 @@ function MyApplications() {
       ) : (
         <p>No applications found.</p>
       )}
+      <ToastContainer />
     </div>
   );
 }
