@@ -9,25 +9,30 @@ class VolunteerApplicationsController < ApplicationController
     if params[:organization_id]
       @volunteer_applications = VolunteerApplication.joins(request: :org_service)
                                                     .where(org_services: { organization_id: params[:organization_id] })
-                                                    .includes(request: :org_service)
-
+                                                    .includes(request: :org_service, volunteer: {})
       if @volunteer_applications.empty?
         render json: { error: 'No volunteer applications found for this organization' }, status: :not_found
         return
       end
     else
-      @volunteer_applications = VolunteerApplication.includes(request: :org_service).all
+      @volunteer_applications = VolunteerApplication.includes(request: :org_service, volunteer: {}).all
     end
 
     render json: @volunteer_applications.map { |application|
       {
         id: application.id,
         volunteer_id: application.volunteer_id,
-        request_id: application.request_id,
         application_status: application.application_status,
         message: application.message,
         created_at: application.created_at,
         updated_at: application.updated_at,
+        volunteer: {
+          first_name: application.volunteer&.first_name,
+          last_name: application.volunteer&.last_name,
+          phone: application.volunteer&.phone,
+          about: application.volunteer&.about,
+          profile_img: application.volunteer&.profile_img
+        },
         request: {
           id: application.request&.id,
           title: application.request&.title,
@@ -39,7 +44,7 @@ class VolunteerApplicationsController < ApplicationController
       }
     }, status: :ok
   end
-
+  
   def create
     @volunteer_application = VolunteerApplication.new(volunteer_application_params)
     @volunteer_application.application_status = 0 # Default status
