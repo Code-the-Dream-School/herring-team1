@@ -2,7 +2,7 @@
 class VolunteerApplicationsController < ApplicationController
   before_action :set_volunteer_application, only: [:update, :destroy]
   before_action :set_organization, only: [:update]
-  before_action :authorize_user, only: [:update]
+  before_action :authorize_user, only: [:update, :show]
   before_action :set_volunteer, only: [:create, :update, :destroy]
   before_action :authorize_volunteer, only: [:create, :destroy]
 
@@ -68,6 +68,11 @@ class VolunteerApplicationsController < ApplicationController
     end
 
     render json: { applications: applications, total_count: total_count }, status: :ok
+  end
+
+  # GET /volunteer_applications/:id
+  def show
+    render json: @volunteer_application, status: :ok
   end
 
   def create
