@@ -92,7 +92,7 @@ function VolunteerDashboard() {
         </div>
         {loading && <p className="text-center text-blue-500">Uploading...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
-        <p className="text-center text-xs mt-2 mb-10">Member since {formattedDate}</p>
+        <p className="text-center text-xs mt-2">Member since {formattedDate}</p>
         <div className="w-full">
           <nav className="flex flex-col sm:m-10 lg:m-20">
             <ul className="w-full">

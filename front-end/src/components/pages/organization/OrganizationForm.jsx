@@ -49,9 +49,11 @@ function OrganizationForm() {
 
   const handleSubmit = async (values) => {
     try {
+      // delete logo
+      const { logo, ...updatedValues } = values;
       let response;
       if (myOrganization) {
-        response = await updateOrganization(myOrganization.id, values);
+        response = await updateOrganization(myOrganization.id, updatedValues);
         dispatch({ type: 'SET_MY_ORGANIZATION', payload: response.organization });
         if (response) {
           toast.success('Organization updated successfully!');
@@ -60,7 +62,7 @@ function OrganizationForm() {
           throw new Error('Failed to update organization');
         }
       } else {
-        response = await createOrganization(values);
+        response = await createOrganization(updatedValues);
         dispatch({ type: 'SET_MY_ORGANIZATION', payload: response.organization });
         if (response) {
           toast.success('Organization created successfully!');
