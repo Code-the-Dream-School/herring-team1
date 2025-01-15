@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getMyApplications } from '../../../utils/apiReqests';
 import { useGlobal } from '../.././../context/useGlobal.jsx';
 import { useNavigate } from 'react-router-dom';
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 
 function MyApplications() {
   const [myApplication, setMyApplication] = useState(null);
@@ -12,8 +13,8 @@ function MyApplications() {
     const fetchData = async () => {
       try {
         const response = await getMyApplications(volunteer.id);
-        console.log('Fetched applications:', response);
-        setMyApplication(response);
+        console.log('Fetched applications:', response.applications);
+        setMyApplication(response.applications);
       } catch (error) {
         console.error('Error fetching applications:', error);
       }
@@ -45,6 +46,7 @@ function MyApplications() {
               <th className="border border-gray-300 px-4 py-2">Status</th>
               <th className="border border-gray-300 px-4 py-2">When Applied</th>
               <th className="border border-gray-300 px-4 py-2">Organization</th>
+              <th className="border border-gray-300 px-4 py-2">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -60,6 +62,14 @@ function MyApplications() {
                   onClick={() => handleCardClick(app.request.organization_id)}
                 >
                   Go to org profile
+                </td>
+                <td className="flex flex-row justify-around items-center">
+                  <button type="button" className="text-blue-500 hover:text-blue-700 m-1">
+                    <PencilIcon className="w-5 h-5 sm:w-4 sm:h-4" />
+                  </button>
+                  <button type="button" className="text-red-500 hover:text-red-700">
+                    <TrashIcon className="w-5 h-5 sm:w-4 sm:h-4" />
+                  </button>
                 </td>
               </tr>
             ))}

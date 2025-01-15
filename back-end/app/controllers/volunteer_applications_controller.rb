@@ -9,6 +9,12 @@ class VolunteerApplicationsController < ApplicationController
   def index
     # Filtering
     query_object = VolunteerApplication.includes(request: :org_service, volunteer: {})
+    
+    if params[:volunteer_id]
+      query_object = query_object.where(volunteer_id: params[:volunteer_id])
+    else
+      render json: { error: 'volunteer_id is required' }, status: :unprocessable_entity and return
+    end
 
     if params[:organization_id]
       query_object = query_object.joins(request: :org_service)

@@ -48,8 +48,8 @@ export const organizationSchema = yup.object({
     .required('Website is required')
     .matches(/^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/, 'Enter a valid URL'),
   service_ids: yup.array().of(yup.number()).min(1, 'Select at least one service').required('Services are required'),
-  mission: yup.string().required('Mission statement is required').max(500),
-  description: yup.string().required('Organization description is required').max(500),
+  mission: yup.string().required('Mission statement is required').max(255),
+  description: yup.string().required('Organization description is required').max(255),
 });
 
 export const volunteerSchema = yup.object().shape({
