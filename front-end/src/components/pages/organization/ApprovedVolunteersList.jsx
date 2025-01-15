@@ -3,7 +3,7 @@ import { getOrgApplications } from '../../../utils/apiReqests';
 import { useGlobal } from '../../../context/useGlobal.jsx';
 import VolunteerApplicationCard from '../cards/VolunteerApplicationCard.jsx';
 
-function PendingApplicationsList() {
+function ApprovedVolunteersList() {
   const [orgApplications, setOrgApplications] = useState([]);
   const { myOrganization } = useGlobal();
   const [needUpdate, setNeedUpdate] = useState(false);
@@ -11,7 +11,7 @@ function PendingApplicationsList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getOrgApplications(myOrganization.id, 'pending');
+        const response = await getOrgApplications(myOrganization.id, 'approved');
         setOrgApplications(response.applications);
         setNeedUpdate(false);
       } catch (error) {
@@ -32,7 +32,7 @@ function PendingApplicationsList() {
               key={application.id}
               application={application}
               setNeedUpdate={setNeedUpdate}
-              status="pending"
+              status="approved"
             />
           ))}
         </div>
@@ -43,4 +43,4 @@ function PendingApplicationsList() {
   );
 }
 
-export default PendingApplicationsList;
+export default ApprovedVolunteersList;

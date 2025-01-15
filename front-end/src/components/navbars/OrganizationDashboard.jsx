@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PendingApplicationsList from '../pages/organization/PendingApplicationsList.jsx';
-import ApprovedVolunteer from '../pages/organization/ApprovedVolunteer.jsx';
+import ApprovedVolunteersList from '../pages/organization/ApprovedVolunteersList.jsx';
 import Request from '../pages/organization/Requests.jsx';
 import OrganizationForm from '../pages/organization/OrganizationForm.jsx';
 import { useGlobal } from '../../context/useGlobal.jsx';
@@ -23,7 +23,7 @@ function OrganizationDashboard() {
       case 'Requests':
         return <Request />;
       case 'Approved Volunteers':
-        return <ApprovedVolunteer />;
+        return <ApprovedVolunteersList />;
       case 'Pending Volunteers':
         return <PendingApplicationsList />;
       default:

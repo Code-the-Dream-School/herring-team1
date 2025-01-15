@@ -3,7 +3,7 @@ import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { updateVolunteerApplication } from '../../../utils/apiReqests';
 import { ToastContainer, toast } from 'react-toastify';
 
-const VolunteerApplicationCard = ({ application }) => {
+const VolunteerApplicationCard = ({ application, setNeedUpdate, status }) => {
   const { message, volunteer, request } = application;
 
   const updateApplicationStatus = async (status) => {
@@ -11,8 +11,10 @@ const VolunteerApplicationCard = ({ application }) => {
       await updateVolunteerApplication(application.id, status, null, null);
       if (status === 1) {
         toast.success('You accepted application successfully!');
+        setNeedUpdate(true);
       } else {
         toast.success('You declined application successfully!');
+        setNeedUpdate(true);
       }
     } catch (error) {
       console.error(error);
@@ -36,14 +38,12 @@ const VolunteerApplicationCard = ({ application }) => {
           <p className="text-sm text-gray-500">✉️ {volunteer.address.city || ''}</p>
         </div>
       </div>
-
       {/* Column 2: About section */}
       <div className="flex flex-col justify-center">
         <h4 className="text-sm font-semibold text-gray-700">About</h4>
         <p className="text-sm text-gray-600">{volunteer.about || 'No information provided'}</p>
         <p className="text-sm text-gray-600 font-bold mt-2">{`How I can help: ${message}`}</p>
       </div>
-
       {/* Column 3: Request details */}
       <div className="flex flex-col justify-center">
         <h4 className="text-sm font-semibold text-gray-700">Request</h4>
@@ -59,13 +59,15 @@ const VolunteerApplicationCard = ({ application }) => {
       </div>
 
       <div className="flex justify-evenly items-center space-y-2">
-        <button
-          type="button"
-          className="text-blue-500 hover:text-blue-700 m-1"
-          onClick={() => updateApplicationStatus(1)}
-        >
-          <CheckIcon className="w-6" />
-        </button>
+        {status === 'pending' && (
+          <button
+            type="button"
+            className="text-blue-500 hover:text-blue-700 m-1"
+            onClick={() => updateApplicationStatus(1)}
+          >
+            <CheckIcon className="w-6" />
+          </button>
+        )}
         <button
           type="button"
           className="text-red-500 hover:text-red-700 m-1"
@@ -74,6 +76,7 @@ const VolunteerApplicationCard = ({ application }) => {
           <XMarkIcon className="w-6" />
         </button>
       </div>
+
       <ToastContainer />
     </div>
   );
@@ -81,6 +84,8 @@ const VolunteerApplicationCard = ({ application }) => {
 
 VolunteerApplicationCard.propTypes = {
   application: PropTypes.object.isRequired,
+  setNeedUpdate: PropTypes.func.isRequired,
+  status: PropTypes.string.isRequired,
 };
 
 export default VolunteerApplicationCard;
