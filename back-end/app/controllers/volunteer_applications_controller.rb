@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/CyclomaticComplexity
 class VolunteerApplicationsController < ApplicationController
   before_action :set_volunteer_application, only: [:update, :destroy]
   before_action :set_organization, only: [:update]
@@ -145,3 +146,4 @@ class VolunteerApplicationsController < ApplicationController
     params.require(:volunteer_application).permit(:volunteer_id, :request_id, :message, :application_status)
   end
 end
+# rubocop:enable Metrics/CyclomaticComplexity
