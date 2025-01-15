@@ -83,26 +83,13 @@ class VolunteerApplicationsController < ApplicationController
 
   def update
     if current_auth.volunteer
-      if @volunteer_application.update(message: params[:volunteer_application][:message])
-        render json: @volunteer_application, status: :ok
-      else
-        render json: { errors: @volunteer_application.errors.full_messages }, status: :unprocessable_entity
-      end
+      return update_message if @volunteer_application.update(message: params[:volunteer_application][:message])
+
+      render json: { errors: @volunteer_application.errors.full_messages }, status: :unprocessable_entity
     elsif current_auth.organization
-      if params[:volunteer_application][:application_status]
-        status = params[:volunteer_application][:application_status].to_i
-        if status >= 0 && status <= 3
-          if @volunteer_application.update(application_status: status)
-            render json: @volunteer_application, status: :ok
-          else
-            render json: { errors: @volunteer_application.errors.full_messages }, status: :unprocessable_entity
-          end
-        else
-          render json: { error: 'Invalid application_status.' }, status: :unprocessable_entity
-        end
-      else
-        render json: { error: 'application_status is required.' }, status: :unprocessable_entity
-      end
+      return update_status if valid_status?
+
+      render json: { error: 'Invalid or missing application_status.' }, status: :unprocessable_entity
     else
       render json: { error: 'Unauthorized user' }, status: :unauthorized
     end
@@ -168,6 +155,24 @@ class VolunteerApplicationsController < ApplicationController
 
   def volunteer_application_params
     params.require(:volunteer_application).permit(:volunteer_id, :request_id, :message, :application_status)
+  end
+
+  def update_message
+    render json: @volunteer_application, status: :ok
+  end
+
+  def valid_status?
+    status = params[:volunteer_application][:application_status].to_i
+    status >= 0 && status <= 3
+  end
+
+  def update_status
+    status = params[:volunteer_application][:application_status].to_i
+    if @volunteer_application.update(application_status: status)
+      render json: @volunteer_application, status: :ok
+    else
+      render json: { errors: @volunteer_application.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 end
 # rubocop:enable Metrics/CyclomaticComplexity
