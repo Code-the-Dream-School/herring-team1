@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Application from '../pages/organization/Application.jsx';
+import PendingApplicationsList from '../pages/organization/PendingApplicationsList.jsx';
 import ApprovedVolunteer from '../pages/organization/ApprovedVolunteer.jsx';
 import Request from '../pages/organization/Requests.jsx';
 import OrganizationForm from '../pages/organization/OrganizationForm.jsx';
@@ -25,7 +25,7 @@ function OrganizationDashboard() {
       case 'Approved Volunteers':
         return <ApprovedVolunteer />;
       case 'Pending Volunteers':
-        return <Application />;
+        return <PendingApplicationsList />;
       default:
         return <div>Select a page from the navigation.</div>;
     }

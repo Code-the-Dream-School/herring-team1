@@ -3,7 +3,7 @@ import { getOrgApplications } from '../../../utils/apiReqests';
 import { useGlobal } from '../../../context/useGlobal.jsx';
 import VolunteerApplicationCard from '../cards/VolunteerApplicationCard.jsx';
 
-function Application() {
+function PendingApplicationsList() {
   const [orgApplications, setOrgApplications] = useState([]);
   const { myOrganization } = useGlobal();
 
@@ -36,4 +36,4 @@ function Application() {
   );
 }
 
-export default Application;
+export default PendingApplicationsList;
