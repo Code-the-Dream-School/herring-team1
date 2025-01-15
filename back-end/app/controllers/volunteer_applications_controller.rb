@@ -9,12 +9,8 @@ class VolunteerApplicationsController < ApplicationController
   def index
     # Filtering
     query_object = VolunteerApplication.includes(request: :org_service, volunteer: {})
-    
-    if params[:volunteer_id]
-      query_object = query_object.where(volunteer_id: params[:volunteer_id])
-    else
-      render json: { error: 'volunteer_id is required' }, status: :unprocessable_entity and return
-    end
+
+    query_object = query_object.where(volunteer_id: params[:volunteer_id]) if params[:volunteer_id]
 
     if params[:organization_id]
       query_object = query_object.joins(request: :org_service)
@@ -36,7 +32,7 @@ class VolunteerApplicationsController < ApplicationController
       query_object = query_object.order(created_at: :desc)
     end
 
-    # Paggination
+    # Pagination
     page = params[:page].to_i.positive? ? params[:page].to_i : 1
     limit = params[:limit].to_i.positive? ? params[:limit].to_i : 12
     offset = (page - 1) * limit
@@ -57,7 +53,8 @@ class VolunteerApplicationsController < ApplicationController
           last_name: application.volunteer&.last_name,
           phone: application.volunteer&.phone,
           about: application.volunteer&.about,
-          profile_img: application.volunteer&.profile_img
+          profile_img: application.volunteer&.profile_img,
+          address: application.volunteer&.address
         },
         request: {
           id: application.request&.id,
@@ -118,10 +115,8 @@ class VolunteerApplicationsController < ApplicationController
   end
 
   def set_organization
-    @organization = Organization.find_by(id: @volunteer_application.request.organization_id)
-    return if Organization
-
-    render json: { error: 'Organization not found for this request.' }, status: :not_found
+    @organization = Organization.find_by(id: params[:organization_id])
+    render json: { error: 'Organization not found.' }, status: :not_found unless @organization
   end
 
   def authorize_volunteer

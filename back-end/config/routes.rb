@@ -1,4 +1,3 @@
-# This file contains the routing configuration for the application.
 Rails.application.routes.draw do
   devise_for :auth, path: 'auth', path_names: { sign_in: 'login', sign_out: 'logout' },
              controllers: {
@@ -25,7 +24,7 @@ Rails.application.routes.draw do
     resources :volunteer_applications, only: [:index, :show, :create, :update, :destroy]
   end
 
-  resources :volunteer_applications, only: [:index, :show, :create, :update, :destroy]
+  resources :volunteer_applications, only: [:index, :show, :update]
   resources :requests, only: [:index, :show]
 
   # Universal search
