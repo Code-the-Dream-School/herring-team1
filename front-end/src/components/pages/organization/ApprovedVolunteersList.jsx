@@ -23,8 +23,8 @@ function ApprovedVolunteersList() {
   }, [myOrganization, needUpdate]);
 
   return (
-    <div className="mt-20">
-      <h2 className="text-lg font-bold mb-4">Volunteer Applications</h2>
+    <div className="mt-2">
+      {/* <h2 className="text-lg font-bold mb-4">Volunteer Applications</h2> */}
       {orgApplications && orgApplications.length > 0 ? (
         <div className="bg-beige p-6">
           {orgApplications.map((application) => (

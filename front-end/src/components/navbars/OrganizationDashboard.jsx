@@ -35,9 +35,9 @@ function OrganizationDashboard() {
 
   return (
     <div>
-      <nav id="nav" className="flex justify-center items-center p-10 mb-4 sm:mb-0 w-full overflow-hidden">
+      <nav id="nav" className="flex justify-center items-center pt-4 w-full overflow-hidden">
         {organizationDashboard.map((item, index) => (
-          <div key={index} className="flex items-center justify-center mb-4 sm:mb-0" style={{ minHeight: '2.5rem' }}>
+          <div key={index} className="flex items-center justify-center" style={{ minHeight: '2.5rem' }}>
             <div
               className="flex items-center justify-center min-w-[4rem] sm:min-w-[6rem] md:min-w-[8rem]"
               style={{ minHeight: '2.5rem', maxWidth: '100%', fontSize: '1rem' }}

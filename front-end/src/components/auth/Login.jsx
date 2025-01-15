@@ -38,6 +38,7 @@ function Login() {
         try {
           const volunteerResponse = await getMyVolunteer();
           if (!volunteerResponse.volunteer) {
+            dispatch({ type: 'SET_VOLUNTEER', payload: null });
             navigate('/create_volunteer');
           } else {
             dispatch({ type: 'SET_VOLUNTEER', payload: volunteerResponse.volunteer });
@@ -45,6 +46,7 @@ function Login() {
           }
         } catch (volunteerError) {
           if (volunteerError.message === 'You do not own a volunteer profile') {
+            dispatch({ type: 'SET_VOLUNTEER', payload: null });
             navigate('/create_volunteer');
           } else {
             console.error('Error fetching volunteer profile:', volunteerError);

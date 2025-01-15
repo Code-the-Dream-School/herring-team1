@@ -41,12 +41,13 @@ function VolunteerForm({ type }) {
     };
   }
 
-  const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
+  const handleSubmit = async (values, { setSubmitting, setFieldError, resetForm }) => {
     try {
       if (type === 'create') {
         const res = await createVolunteer(values);
         dispatch({ type: 'SET_VOLUNTEER', payload: res.volunteer });
         navigate('/dashboard');
+        resetForm();
       } else if (type === 'edit') {
         const res = await updateVolunteerById(volunteer.id, values);
         dispatch({ type: 'SET_VOLUNTEER', payload: res.volunteer });
