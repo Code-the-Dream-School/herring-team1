@@ -10,8 +10,8 @@ function Application() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getOrgApplications(myOrganization.id);
-        setOrgApplications(response);
+        const response = await getOrgApplications(myOrganization.id, 'pending');
+        setOrgApplications(response.applications);
       } catch (error) {
         console.error('Error fetching applications:', error);
       }

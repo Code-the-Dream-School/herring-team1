@@ -6,19 +6,38 @@ class VolunteerApplicationsController < ApplicationController
   before_action :authorize_volunteer, only: [:create, :destroy, :update]
 
   def index
+    # Filtering
+    query_object = VolunteerApplication.includes(request: :org_service, volunteer: {})
+
     if params[:organization_id]
-      @volunteer_applications = VolunteerApplication.joins(request: :org_service)
-                                                    .where(org_services: { organization_id: params[:organization_id] })
-                                                    .includes(request: :org_service, volunteer: {})
-      if @volunteer_applications.empty?
-        render json: { error: 'No volunteer applications found for this organization' }, status: :not_found
-        return
-      end
-    else
-      @volunteer_applications = VolunteerApplication.includes(request: :org_service, volunteer: {}).all
+      query_object = query_object.joins(request: :org_service)
+                                 .where(org_services: { organization_id: params[:organization_id] })
     end
 
-    render json: @volunteer_applications.map { |application|
+    query_object = query_object.where(application_status: params[:application_status]) if params[:application_status]
+
+    if params[:volunteer_name]
+      query_object = query_object.joins(:volunteer)
+                                 .where('volunteers.first_name ILIKE ? OR volunteers.last_name ILIKE ?', "%#{params[:volunteer_name]}%", "%#{params[:volunteer_name]}%")
+    end
+
+    # Sorting
+    if params[:sort]
+      sort_params = params[:sort].split(',').join(' ')
+      query_object = query_object.order(sort_params)
+    else
+      query_object = query_object.order(created_at: :desc)
+    end
+
+    # Paggination
+    page = params[:page].to_i.positive? ? params[:page].to_i : 1
+    limit = params[:limit].to_i.positive? ? params[:limit].to_i : 12
+    offset = (page - 1) * limit
+    query_object = query_object.limit(limit).offset(offset)
+
+    total_count = query_object.count
+
+    applications = query_object.map do |application|
       {
         id: application.id,
         volunteer_id: application.volunteer_id,
@@ -42,9 +61,11 @@ class VolunteerApplicationsController < ApplicationController
           organization_id: application.request&.org_service&.organization_id
         }
       }
-    }, status: :ok
+    end
+
+    render json: { applications: applications, total_count: total_count }, status: :ok
   end
-  
+
   def create
     @volunteer_application = VolunteerApplication.new(volunteer_application_params)
     @volunteer_application.application_status = 0 # Default status
