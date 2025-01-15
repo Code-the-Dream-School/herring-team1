@@ -5,9 +5,11 @@ import Favorites from '../pages/volunteer/Favorites.jsx';
 import defaultProfileImage from '../assets/images_default/profile_default.jpg';
 import { uploadProfileImage } from '../../utils/apiReqests';
 import { useGlobal } from '../../context/useGlobal.jsx';
+import MyApplications from '../pages/volunteer/MyApplications.jsx';
 
 const volunteerDashboard = [
   { text: 'Profile', link: '/profile' },
+  { text: 'MyApplications', link: '/myApplications' },
   { text: 'Volunteering', link: '/organizations' },
   { text: 'Favorites', link: '/favorites' },
 ];
@@ -54,6 +56,8 @@ function VolunteerDashboard() {
     switch (currentPage) {
       case 'Profile':
         return <VolunteerProfile />;
+      case 'MyApplications':
+        return <MyApplications />;
       case 'Volunteering':
         return <Volunteering />;
       case 'Favorites':

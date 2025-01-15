@@ -7,15 +7,37 @@ class VolunteerApplicationsController < ApplicationController
 
   def index
     if params[:organization_id]
-      @volunteer_applications = VolunteerApplication.joins(:request)
-                                                    .where(requests: { organization_id: params[:organization_id] })
-                                                    .includes(:request)
-      return render json: { error: 'No volunteer applications found for this organization' }, status: :not_found if @volunteer_applications.empty?
+      @volunteer_applications = VolunteerApplication.joins(request: :org_service)
+                                                    .where(org_services: { organization_id: params[:organization_id] })
+                                                    .includes(request: :org_service)
 
-      render json: @volunteer_applications.as_json(include: :request)
+      if @volunteer_applications.empty?
+        render json: { error: 'No volunteer applications found for this organization' }, status: :not_found
+        return
+      end
     else
-      render json: VolunteerApplication.all
+      @volunteer_applications = VolunteerApplication.includes(request: :org_service).all
     end
+
+    render json: @volunteer_applications.map { |application|
+      {
+        id: application.id,
+        volunteer_id: application.volunteer_id,
+        request_id: application.request_id,
+        application_status: application.application_status,
+        message: application.message,
+        created_at: application.created_at,
+        updated_at: application.updated_at,
+        request: {
+          id: application.request&.id,
+          title: application.request&.title,
+          description: application.request&.description,
+          status: application.request&.status,
+          org_service_id: application.request&.org_service_id,
+          organization_id: application.request&.org_service&.organization_id
+        }
+      }
+    }, status: :ok
   end
 
   def create

@@ -463,3 +463,47 @@ export const createVolunteerApplication = async (values, volunteerId, requestId)
     throw error;
   }
 };
+
+export const getMyApplications = async ({ volunteerId }) => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const url = `${API_BASE_URL}volunteers/${volunteerId}/volunteer_applications`;
+    const response = await axios.get(url, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error getting organization:', error);
+    throw new Error("You don't have organization");
+  }
+};
+
+export const getOrgApplications = async (organizationId) => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const url = `${API_BASE_URL}volunteer_applications?organization_id=${organizationId}`;
+    const response = await axios.get(url, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error getting organization appliccations:', error);
+    throw new Error("You don't have organization");
+  }
+};
