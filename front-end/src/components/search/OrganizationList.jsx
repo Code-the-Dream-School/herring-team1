@@ -45,7 +45,7 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
                 <img src={org.logo.url} alt={`Organization logo`} className="w-16 h-16 object-cover rounded-full" />
               ) : (
                 <img
-                  src="src/components/assets/images_default/logo_example.jpg" // Укажите путь к вашему дефолтному изображению
+                  src="src/components/assets/images_default/logo_example.jpg"
                   alt="Default logo"
                   className="w-16 h-16 object-cover rounded-full"
                 />
