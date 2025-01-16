@@ -5,9 +5,11 @@ import Favorites from '../pages/volunteer/Favorites.jsx';
 import defaultProfileImage from '../assets/images_default/profile_default.jpg';
 import { uploadProfileImage } from '../../utils/apiReqests';
 import { useGlobal } from '../../context/useGlobal.jsx';
+import MyApplications from '../pages/volunteer/MyApplications.jsx';
 
 const volunteerDashboard = [
   { text: 'Profile', link: '/profile' },
+  { text: 'MyApplications', link: '/myApplications' },
   { text: 'Volunteering', link: '/organizations' },
   { text: 'Favorites', link: '/favorites' },
 ];
@@ -18,9 +20,11 @@ function VolunteerDashboard() {
   const [userProfileImage, setUserProfileImage] = useState(volunteer.profile_img.url || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const formattedDate = new Date(volunteer.created_at).toLocaleDateString('en-US', {
-    year: 'numeric',
-  });
+  const formattedDate = volunteer?.created_at
+    ? new Date(volunteer.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+      })
+    : 'Unknown. Try later.';
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -54,6 +58,8 @@ function VolunteerDashboard() {
     switch (currentPage) {
       case 'Profile':
         return <VolunteerProfile />;
+      case 'MyApplications':
+        return <MyApplications />;
       case 'Volunteering':
         return <Volunteering />;
       case 'Favorites':

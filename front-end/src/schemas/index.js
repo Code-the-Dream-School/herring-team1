@@ -25,9 +25,7 @@ export const registerSchema = yup.object().shape({
 });
 
 export const applicationSchema = yup.object({
-  firstName: yup.string().required('First Name is required.'),
-  lastName: yup.string().required('Last Name is required.'),
-  about: yup.string().required('About is required.'),
+  about: yup.string().max(1000, 'No more than 1000 symbols').required('About is required.'),
 });
 
 export const organizationSchema = yup.object({
@@ -50,8 +48,8 @@ export const organizationSchema = yup.object({
     .required('Website is required')
     .matches(/^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/, 'Enter a valid URL'),
   service_ids: yup.array().of(yup.number()).min(1, 'Select at least one service').required('Services are required'),
-  mission: yup.string().required('Mission statement is required').max(500),
-  description: yup.string().required('Organization description is required').max(500),
+  mission: yup.string().required('Mission statement is required').max(255),
+  description: yup.string().required('Organization description is required').max(255),
 });
 
 export const volunteerSchema = yup.object().shape({
@@ -68,4 +66,10 @@ export const volunteerSchema = yup.object().shape({
     state: yup.string().trim().required('State is required'),
     zip_code: yup.string().trim().required('Zip Code is required'),
   }),
+});
+
+export const requestSchema = yup.object({
+  service: yup.string(),
+  title: yup.string().required('Request is required.'),
+  status: yup.string(),
 });

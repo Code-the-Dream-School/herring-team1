@@ -14,7 +14,8 @@ export default {
         orange: '#F15B2D',
         light_grey: '#D9D9D9',
         purple: '#5F3E97',
-        light_purple: '#8E78AA'
+        light_purple: '#8E78AA',
+        green: '#25b39e',
       },
       textColor: {
         'custom-red': '#E53E3E',
