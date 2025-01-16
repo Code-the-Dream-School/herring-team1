@@ -92,7 +92,7 @@ class SearchController < ApplicationController
     {
       id: org.id, # Ensure to include the organization ID
       name: org.name,
-      logo: org.logo&.present ? org.logo.url : 'https://via.placeholder.com/100?text=Logo',
+      logo: org.logo ? org.logo.url : 'https://via.placeholder.com/100?text=Logo',
       description: org.description,
       request: requests,
       services: services
