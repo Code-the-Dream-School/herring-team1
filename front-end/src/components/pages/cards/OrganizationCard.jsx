@@ -37,6 +37,7 @@ function OrganizationCard() {
       ) : error ? (
         <p>Error: {error}</p>
       ) : (
+        /* eslint-disable-next-line react/jsx-no-useless-fragment */
         <>
           {Array.isArray(organizations) && organizations.length > 0
             ? organizations.map((org) => (
