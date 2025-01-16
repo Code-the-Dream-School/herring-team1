@@ -1,37 +1,6 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import DropdownMenu from './DropdownMenu.jsx';
-import OrganizationList from '../search/OrganizationList.jsx';
-import { searchOrganizations } from '../../utils/apiReqests';
-import { getServiceIcon } from '../../utils/FormatServices.jsx';
-
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('Error caught in ErrorBoundary: ', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
-    }
-
-    return this.props.children;
-  }
-}
-
-ErrorBoundary.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 const SearchForm = ({
   searchParams = { services: [], zip_code: '', keyword: '' },
@@ -39,37 +8,11 @@ const SearchForm = ({
   handleServiceChange,
   onSearch,
 }) => {
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchPerformed, setSearchPerformed] = useState(false);
-
-  const handleSearch = async () => {
-    setSearchPerformed(true);
-    try {
-      console.log('Searching organizations with params:', searchParams);
-      const data = await searchOrganizations(searchParams);
-      console.log('Search results:', data.organizations);
-      setSearchResults(
-        data.organizations.map((org) => ({
-          ...org,
-          org_services: org.services.split(',').map((serviceName) => ({
-            name: serviceName.trim(),
-            icon: getServiceIcon(serviceName.trim()),
-          })),
-        }))
-      );
-      if (onSearch) {
-        onSearch(searchParams);
-      }
-    } catch (error) {
-      console.error('Error fetching search results:', error);
-    }
-  };
-
   const handleServiceChangeAndSearch = (services) => {
     const newSearchParams = { ...searchParams, services };
     setSearchParams(newSearchParams);
     handleServiceChange(services);
-    handleSearch();
+    onSearch(newSearchParams);
   };
 
   const handleZipCodeChange = (e) => {
@@ -83,7 +26,7 @@ const SearchForm = ({
   };
 
   const handleSearchClick = () => {
-    handleSearch();
+    onSearch(searchParams);
   };
 
   return (
@@ -123,16 +66,6 @@ const SearchForm = ({
           />
         </div>
       </div>
-      <div className="w-full mt-4">
-        {searchPerformed && searchResults.length > 0 && (
-          <OrganizationList
-            organizations={searchResults}
-            toggleFavorite={() => {}}
-            handleCardClick={() => {}}
-            favorites={[]}
-          />
-        )}
-      </div>
     </div>
   );
 };
@@ -148,10 +81,4 @@ SearchForm.propTypes = {
   onSearch: PropTypes.func.isRequired,
 };
 
-const WrappedSearchForm = (props) => (
-  <ErrorBoundary>
-    <SearchForm {...props} />
-  </ErrorBoundary>
-);
-
-export default WrappedSearchForm;
+export default SearchForm;

@@ -306,7 +306,7 @@ export const searchOrganizations = async (params) => {
   try {
     console.log('API request to search organizations with params:', params);
     const response = await axios.get(`${API_BASE_URL}search`, { params });
-    console.log('API response:', response.data);
+    console.log('API response:', response);
     return response.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {

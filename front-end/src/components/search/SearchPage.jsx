@@ -120,7 +120,7 @@ const SearchPage = () => {
           searchParams={searchParams}
           setSearchParams={setSearchParams}
           handleServiceChange={(services) => setSearchParams({ ...searchParams, services })}
-          onSearch={() => handleSearch(searchParams)}
+          onSearch={handleSearch}
         />
         <SelectedFilters
           searchParams={searchParams}

@@ -64,7 +64,7 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
                 <ul>
                   {org.requests.map((request, index) => (
                     <li key={index} className="text-sm">
-                      {request}
+                      {request.title}
                     </li>
                   ))}
                 </ul>
@@ -105,10 +105,21 @@ OrganizationList.propTypes = {
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       name: PropTypes.string.isRequired,
-      logo: PropTypes.string,
+      logo: PropTypes.shape({
+        url: PropTypes.string,
+      }),
       description: PropTypes.string,
-      request: PropTypes.string,
-      services: PropTypes.string,
+      requests: PropTypes.arrayOf(
+        PropTypes.shape({
+          title: PropTypes.string,
+          description: PropTypes.string,
+        })
+      ),
+      org_services: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string,
+        })
+      ),
     })
   ).isRequired,
   toggleFavorite: PropTypes.func.isRequired,
