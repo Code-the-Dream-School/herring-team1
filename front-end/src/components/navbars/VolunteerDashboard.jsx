@@ -20,9 +20,11 @@ function VolunteerDashboard() {
   const [userProfileImage, setUserProfileImage] = useState(volunteer.profile_img.url || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const formattedDate = new Date(volunteer.created_at).toLocaleDateString('en-US', {
-    year: 'numeric',
-  });
+  const formattedDate = volunteer?.created_at
+    ? new Date(volunteer.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+      })
+    : 'Unknown. Try later.';
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
