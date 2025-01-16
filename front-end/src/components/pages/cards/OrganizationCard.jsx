@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaGlobe } from 'react-icons/fa';
 import { fetchOrganizations } from '../../../utils/apiReqests';
-import logoExample from '../../assets/images_default/logo_example.png';
+import logoExample from '../../assets/images_default/logo_example.jpg';
 import formatServices from '../../../utils/FormatServices.jsx';
 
 function OrganizationCard() {
@@ -11,7 +11,6 @@ function OrganizationCard() {
   const [error, setError] = useState(null);
 
   const toggleFavorite = (id) => {
-    console.log('Favorite ID:', id);
     setFavorites((prevFavorites) =>
       prevFavorites.includes(id) ? prevFavorites.filter((favId) => favId !== id) : [...prevFavorites, id]
     );
@@ -39,18 +38,16 @@ function OrganizationCard() {
         <p>Error: {error}</p>
       ) : (
         <>
-          <div>{console.log('organizations', organizations)}</div>
           {Array.isArray(organizations) && organizations.length > 0
             ? organizations.map((org) => (
                 <div key={org.id} className="flex flex-col bg-white border shadow-lg rounded-lg w-full p-4">
                   {/* Organization Card Header */}
                   <div className="flex items-center justify-between lg:ml-10 mt-1 mb-8">
                     {/* Logo */}
-                    {/*{console.log('org', org, 'id', org.id)}*/}
                     {org.logo ? (
                       <div className="lg:w-1/6 xs:w-1/3 md:w-1/4">
                         <img
-                          src={logoExample || org.logo}
+                          src={org?.logo.url || logoExample}
                           alt={`${org.name || 'Unknown Organization'} logo`}
                           className="w-full h-full object-contain"
                         />
@@ -99,9 +96,9 @@ function OrganizationCard() {
                       {org.address ? (
                         <div className="flex items-start">
                           <FaMapMarkerAlt className="mr-3" />
-                          <p>
+                          <div>
                             {org.address.street}, {org.address.city}, {org.address.state} {org.address.zip_code}
-                          </p>
+                          </div>
                         </div>
                       ) : (
                         <div className="flex items-center">
