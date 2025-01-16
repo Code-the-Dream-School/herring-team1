@@ -16,8 +16,6 @@ function Register() {
       localStorage.setItem('x_csrf_token', response.headers.get('x-csrf-token'));
       dispatch({ type: 'SET_USER', payload: auth.user });
       dispatch({ type: 'SET_IS_LOGGED_IN', payload: true });
-      dispatch({ type: 'SET_VOLUNTEER', payload: null });
-      dispatch({ type: 'SET_VOLUNTEER', payload: null });
       if (!auth.user.isOrganization) {
         navigate('/create_volunteer');
       } else {

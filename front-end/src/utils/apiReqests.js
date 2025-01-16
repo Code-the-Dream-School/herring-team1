@@ -83,7 +83,6 @@ export const createVolunteer = async (volunteerData) => {
       }
     );
 
-    console.log('Volunteer created successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error creating volunteer:', error.response?.data || error.message);
