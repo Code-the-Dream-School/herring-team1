@@ -3,12 +3,6 @@ class SearchController < ApplicationController
   include Pagination
 
   def search
-    # Check if all parameters are blank
-    if params_blank?
-      render_error('At least one search parameter is required', :bad_request)
-      return
-    end
-
     organizations = Organization.all
     organizations = filter_by_zip_code(organizations) if zip_code.present?
     organizations = filter_by_keyword(organizations) if keyword.present?
@@ -87,14 +81,14 @@ class SearchController < ApplicationController
   end
 
   def format_organization(org)
-    services = org.services.pluck(:name).join(', ')
+    services = org.org_services.map { |os| os.service.name }.join(', ')
     requests = org.requests.pluck(:title).join(', ')
     {
-      id: org.id, # Ensure to include the organization ID
+      id: org.id,
       name: org.name,
       logo: org.logo ? org.logo.url : 'https://via.placeholder.com/100?text=Logo',
       description: org.description,
-      request: requests,
+      requests: requests,
       services: services
     }
   end
