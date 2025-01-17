@@ -65,6 +65,10 @@ const SearchPage = () => {
               name: serviceName.trim(),
               icon: getServiceIcon(serviceName.trim()),
             })),
+            requests: org.requests.split(',').map((requestTitle) => ({
+              title: requestTitle.trim(),
+            })),
+            logo: org.logo ? { url: org.logo } : null,
           }))
         );
         setCurrentPage(data.current_page || 1);
