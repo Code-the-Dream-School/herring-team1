@@ -29,9 +29,7 @@ const SearchPage = () => {
   const fetchOrganizations = async (page = 1) => {
     setLoading(true);
     try {
-      console.log('Fetching organizations for page', page);
       const data = await getAllOrganizations(page);
-      console.log('Organizations data:', data);
       if (data && data.organizations) {
         setOrganizations(data.organizations);
         setCurrentPage(data.current_page || 1);
@@ -56,10 +54,8 @@ const SearchPage = () => {
     setLoading(true);
     setSearchPerformed(true);
     try {
-      console.log('Searching organizations with params:', { ...params, page });
       const data = await searchOrganizations({ ...params, page });
       if (data && data.organizations) {
-        console.log('Fetched organizations:', data.organizations);
         setOrganizations(
           data.organizations.map((org) => ({
             ...org,
