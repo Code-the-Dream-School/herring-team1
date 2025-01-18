@@ -6,7 +6,7 @@ class SearchController < ApplicationController
     organizations = Organization.all
     organizations = filter_by_zip_code(organizations) if zip_code.present?
     organizations = filter_by_keyword(organizations) if keyword.present?
-    organizations = filter_by_service(organizations) if service.present?
+    organizations = filter_by_service(organizations) if services.present?
 
     # Paginate the organizations collection
     paginated_organizations = paginate(organizations)
@@ -49,9 +49,8 @@ class SearchController < ApplicationController
 
   # Filter organizations by service
   def filter_by_service(organizations)
-    service = params[:service].to_s.downcase
-    service_pattern = "%#{service}%"
-    service_ids = Service.where('LOWER(name) LIKE ?', service_pattern).pluck(:id)
+    services = params[:services].map(&:downcase)
+    service_ids = Service.where('LOWER(name) IN (?)', services).pluck(:id)
     return organizations.none if service_ids.empty?
 
     organizations.joins(:org_services).where(org_services: { service_id: service_ids })
@@ -111,6 +110,10 @@ class SearchController < ApplicationController
   # Retrieve service parameter
   def service
     params[:service]
+  end
+
+  def services
+    params[:services] || []
   end
 
   def render_error(message, status)
