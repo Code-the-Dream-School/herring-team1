@@ -54,15 +54,6 @@ export const logout = async () => {
   }
 };
 
-// export const fetchOrganizations = async () => {
-//   try {
-//     const response = await axios.get(`${API_BASE_URL}organizations`, {});
-//     return response;
-//   } catch (error) {
-//     throw error.response.data;
-//   }
-// };
-
 //create volunteer
 export const createVolunteer = async (volunteerData) => {
   const csrfToken = localStorage.getItem('x_csrf_token');
@@ -236,7 +227,6 @@ export const fetchOrganizations = async (params = {}) => {
   try {
     const endpoint = Object.keys(params).length > 0 ? 'search' : 'organizations';
     const response = await axios.get(`${API_BASE_URL}${endpoint}`, { params });
-    console.log('Response data:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching organizations:', error.response?.data || error.message);
@@ -304,13 +294,10 @@ export const getMyOrganization = async () => {
 //get filtered organizations
 export const searchOrganizations = async (params) => {
   try {
-    console.log('API request to search organizations with params:', params);
     const response = await axios.get(`${API_BASE_URL}search`, { params });
-    console.log('API response:', response.data);
     return response.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      console.error('No search results found:', error.response.data);
       return { organizations: [], total_count: 0, total_pages: 0 };
     } else {
       console.error('Error searching organizations:', error.response?.data || error.message);
@@ -324,7 +311,6 @@ export const getAllOrganizations = async (page = 1, perPage = 6) => {
     const response = await axios.get(`${API_BASE_URL}organizations`, {
       params: { page, per_page: perPage },
     });
-    console.log('All organizations response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching all organizations:', error);

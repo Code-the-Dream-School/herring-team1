@@ -1,6 +1,7 @@
-//This page is the main search page where users can search for organizations based on services, zip code, and keyword.
-//  It displays a list of organizations and allows users to navigate through the pages of results.
-//  Users can also add organizations to their favorites and view more details about an organization by clicking on a card.
+// This page is the main search page where users can search for organizations based on services, zip code, and keyword.
+// It displays a list of organizations and allows users to navigate through the pages of results.
+// Users can also add organizations to their favorites and view more details about an organization by clicking on a card.
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchForm from './SearchForm.jsx';
@@ -24,12 +25,11 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [searchPerformed, setSearchPerformed] = useState(false);
 
+  // Fetch organizations for the current page
   const fetchOrganizations = async (page = 1) => {
     setLoading(true);
     try {
-      console.log('Fetching organizations for page', page);
       const data = await getAllOrganizations(page);
-      console.log('Organizations data:', data);
       if (data && data.organizations) {
         setOrganizations(data.organizations);
         setCurrentPage(data.current_page || 1);
@@ -44,27 +44,33 @@ const SearchPage = () => {
     }
   };
 
+  // Fetch organizations when the component mounts or the current page changes
   useEffect(() => {
-    if (!searchParams.zip_code && !searchParams.keyword && searchParams.services.length === 0) {
-      fetchOrganizations(currentPage);
-    }
-  }, [currentPage, searchParams]);
+    fetchOrganizations(currentPage);
+  }, [currentPage]);
 
+  // Handle search with the given parameters and page
   const handleSearch = async (params, page = 1) => {
     setLoading(true);
     setSearchPerformed(true);
     try {
-      console.log('Searching organizations with params:', { ...params, page });
       const data = await searchOrganizations({ ...params, page });
       if (data && data.organizations) {
-        console.log('Fetched organizations:', data.organizations);
         setOrganizations(
           data.organizations.map((org) => ({
             ...org,
-            org_services: org.services.split(',').map((serviceName) => ({
-              name: serviceName.trim(),
-              icon: getServiceIcon(serviceName.trim()),
-            })),
+            org_services: org.services
+              ? org.services.split(',').map((serviceName) => ({
+                  name: serviceName.trim(),
+                  icon: getServiceIcon(serviceName.trim()),
+                }))
+              : [],
+            requests: org.requests
+              ? org.requests.split(',').map((requestTitle) => ({
+                  title: requestTitle.trim(),
+                }))
+              : [],
+            logo: org.logo ? { url: org.logo } : null,
           }))
         );
         setCurrentPage(data.current_page || 1);
@@ -81,6 +87,7 @@ const SearchPage = () => {
     }
   };
 
+  // Handle page change
   const handlePageChange = (page) => {
     setCurrentPage(page);
     if (searchParams.zip_code || searchParams.keyword || searchParams.services.length > 0) {
@@ -90,6 +97,7 @@ const SearchPage = () => {
     }
   };
 
+  // Handle removing a service from the search parameters
   const handleRemoveService = (service) => {
     const updatedServices = searchParams.services.filter((s) => s !== service);
     const updatedParams = { ...searchParams, services: updatedServices };
@@ -97,14 +105,23 @@ const SearchPage = () => {
     handleSearch(updatedParams);
   };
 
+  // Toggle favorite status for an organization
   const toggleFavorite = (id) => {
     setFavorites((prevFavorites) =>
       prevFavorites.includes(id) ? prevFavorites.filter((favId) => favId !== id) : [...prevFavorites, id]
     );
   };
 
+  // Handle card click to navigate to the organization's details page
   const handleCardClick = (id) => {
     navigate(`/organizations/${id}`);
+  };
+
+  // Handle service change in the search form
+  const handleServiceChange = (services) => {
+    const updatedParams = { ...searchParams, services };
+    setSearchParams(updatedParams);
+    handleSearch(updatedParams);
   };
 
   if (loading) {
@@ -119,8 +136,8 @@ const SearchPage = () => {
         <SearchForm
           searchParams={searchParams}
           setSearchParams={setSearchParams}
-          handleServiceChange={(services) => setSearchParams({ ...searchParams, services })}
-          onSearch={() => handleSearch(searchParams)}
+          handleServiceChange={handleServiceChange}
+          onSearch={handleSearch}
         />
         <SelectedFilters
           searchParams={searchParams}

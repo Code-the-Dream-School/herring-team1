@@ -3,16 +3,10 @@ class SearchController < ApplicationController
   include Pagination
 
   def search
-    # Check if all parameters are blank
-    if params_blank?
-      render_error('At least one search parameter is required', :bad_request)
-      return
-    end
-
     organizations = Organization.all
     organizations = filter_by_zip_code(organizations) if zip_code.present?
     organizations = filter_by_keyword(organizations) if keyword.present?
-    organizations = filter_by_service(organizations) if service.present?
+    organizations = filter_by_service(organizations) if services.present?
 
     # Paginate the organizations collection
     paginated_organizations = paginate(organizations)
@@ -55,9 +49,8 @@ class SearchController < ApplicationController
 
   # Filter organizations by service
   def filter_by_service(organizations)
-    service = params[:service].to_s.downcase
-    service_pattern = "%#{service}%"
-    service_ids = Service.where('LOWER(name) LIKE ?', service_pattern).pluck(:id)
+    services = params[:services].map(&:downcase)
+    service_ids = Service.where('LOWER(name) IN (?)', services).pluck(:id)
     return organizations.none if service_ids.empty?
 
     organizations.joins(:org_services).where(org_services: { service_id: service_ids })
@@ -87,14 +80,14 @@ class SearchController < ApplicationController
   end
 
   def format_organization(org)
-    services = org.services.pluck(:name).join(', ')
+    services = org.org_services.map { |os| os.service.name }.join(', ')
     requests = org.requests.pluck(:title).join(', ')
     {
-      id: org.id, # Ensure to include the organization ID
+      id: org.id,
       name: org.name,
-      logo: org.logo&.attached? ? org.logo.url : 'https://via.placeholder.com/100?text=Logo',
+      logo: org.logo ? org.logo.url : 'https://via.placeholder.com/100?text=Logo',
       description: org.description,
-      request: requests,
+      requests: requests,
       services: services
     }
   end
@@ -117,6 +110,10 @@ class SearchController < ApplicationController
   # Retrieve service parameter
   def service
     params[:service]
+  end
+
+  def services
+    params[:services] || []
   end
 
   def render_error(message, status)

@@ -10,7 +10,7 @@ class OrganizationsController < ApplicationController
 
   # GET all organizations
   def index
-    @organizations = Organization.includes(:auth, :org_services, :address, org_services: :service)
+    @organizations = Organization.includes(:auth, :org_services, :address, :requests, org_services: :service)
     paginated_organizations = paginate(@organizations)
 
     render json: {
@@ -35,7 +35,16 @@ class OrganizationsController < ApplicationController
               name: org_service.service.name
             }
           end,
-          address: organization.address&.as_json(only: [:id, :street, :city, :state, :zip_code])
+          address: organization.address&.as_json(only: [:id, :street, :city, :state, :zip_code]),
+          requests: organization.requests.map do |request|
+            {
+              id: request.id,
+              title: request.title,
+              description: request.description,
+              status: request.status,
+              service_name: request.org_service.service.name
+            }
+          end
         }
       end
     }, status: :ok
