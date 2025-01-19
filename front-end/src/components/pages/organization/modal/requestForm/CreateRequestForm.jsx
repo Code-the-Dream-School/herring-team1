@@ -1,7 +1,7 @@
 import { useFormik } from 'formik';
 import InputWithLabel from './InputWithLabel.jsx';
 import PropTypes from 'prop-types';
-import * as Yup from 'yup';
+import { requestSchema } from '../../../../../schemas';
 import { postRequests, patchRequest } from '../../../../../utils/apiReqests';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,11 +15,7 @@ const CreateRequestForm = ({ onSave, onCancel, initialData, orgId, services }) =
       status: initialData?.status || '',
     },
     enableReinitialize: true,
-    validationSchema: Yup.object({
-      service: Yup.string(),
-      title: Yup.string().required('Request is required.'),
-      status: Yup.string(),
-    }),
+    validationSchema: requestSchema,
     onSubmit: async (values) => {
       try {
         // pick up data for selected from all org services

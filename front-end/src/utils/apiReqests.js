@@ -54,15 +54,6 @@ export const logout = async () => {
   }
 };
 
-// export const fetchOrganizations = async () => {
-//   try {
-//     const response = await axios.get(`${API_BASE_URL}organizations`, {});
-//     return response;
-//   } catch (error) {
-//     throw error.response.data;
-//   }
-// };
-
 //create volunteer
 export const createVolunteer = async (volunteerData) => {
   const csrfToken = localStorage.getItem('x_csrf_token');
@@ -83,7 +74,6 @@ export const createVolunteer = async (volunteerData) => {
       }
     );
 
-    console.log('Volunteer created successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error creating volunteer:', error.response?.data || error.message);
@@ -237,7 +227,6 @@ export const fetchOrganizations = async (params = {}) => {
   try {
     const endpoint = Object.keys(params).length > 0 ? 'search' : 'organizations';
     const response = await axios.get(`${API_BASE_URL}${endpoint}`, { params });
-    console.log('Response data:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching organizations:', error.response?.data || error.message);
@@ -305,13 +294,10 @@ export const getMyOrganization = async () => {
 //get filtered organizations
 export const searchOrganizations = async (params) => {
   try {
-    console.log('API request to search organizations with params:', params);
     const response = await axios.get(`${API_BASE_URL}search`, { params });
-    console.log('API response:', response.data);
     return response.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      console.error('No search results found:', error.response.data);
       return { organizations: [], total_count: 0, total_pages: 0 };
     } else {
       console.error('Error searching organizations:', error.response?.data || error.message);
@@ -325,7 +311,6 @@ export const getAllOrganizations = async (page = 1, perPage = 6) => {
     const response = await axios.get(`${API_BASE_URL}organizations`, {
       params: { page, per_page: perPage },
     });
-    console.log('All organizations response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching all organizations:', error);
@@ -434,5 +419,131 @@ export const uploadOrganizationLogo = async (organizationId, imageFile) => {
   } catch (error) {
     console.error('Error uploading organization logo:', error.response?.data || error.message);
     throw error.response?.data || 'Failed to upload organization logo.';
+  }
+};
+
+export const createVolunteerApplication = async (values, volunteerId, requestId) => {
+  try {
+    const body = {
+      message: values.about,
+      request_id: requestId,
+      volunteer_id: volunteerId,
+    };
+    const csrfToken = localStorage.getItem('x_csrf_token');
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Ensure you are logged in.');
+    }
+
+    const response = await axios.post(`${API_BASE_URL}volunteers/${volunteerId}/volunteer_applications/`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+      },
+      credentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log('Error while submitting form:', error);
+    throw error;
+  }
+};
+
+export const getMyApplications = async (volunteerId) => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const url = `${API_BASE_URL}volunteer_applications?volunteer_id=${volunteerId}`;
+    const response = await axios.get(url, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error getting organization:', error);
+    throw new Error("You don't have organization");
+  }
+};
+
+export const getOrgApplications = async (organizationId, status) => {
+  const x_csrf_token = localStorage.getItem('x_csrf_token') ? localStorage.getItem('x_csrf_token') : null;
+
+  if (!x_csrf_token) {
+    throw new Error('CSRF token not found. Ensure it is set correctly in cookies.');
+  }
+  try {
+    const url = `${API_BASE_URL}volunteer_applications?organization_id=${organizationId}&application_status=${status}`;
+    const response = await axios.get(url, {
+      headers: {
+        'X-CSRF-Token': x_csrf_token,
+      },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error getting organization appliccations:', error);
+    throw new Error("You don't have organization");
+  }
+};
+
+export const updateVolunteerApplication = async (appId, status, message, volunteerId) => {
+  try {
+    let url, body;
+    if (volunteerId) {
+      url = `${API_BASE_URL}volunteers/${volunteerId}/volunteer_applications/${appId}`;
+      body = {
+        message: message,
+      };
+    } else {
+      url = `${API_BASE_URL}volunteer_applications/${appId}`;
+      body = { application_status: status };
+    }
+
+    const csrfToken = localStorage.getItem('x_csrf_token');
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Ensure you are logged in.');
+    }
+
+    const response = await axios.patch(url, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+      },
+      credentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error while submitting form:', error);
+    throw error;
+  }
+};
+
+export const deleteVolunteerApplication = async (volunteerId, appId) => {
+  try {
+    const csrfToken = localStorage.getItem('x_csrf_token');
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Ensure you are logged in.');
+    }
+
+    const response = await axios.delete(`${API_BASE_URL}volunteers/${volunteerId}/volunteer_applications/${appId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+      },
+      credentials: true,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log('Error while submitting form:', error);
+    throw error;
   }
 };

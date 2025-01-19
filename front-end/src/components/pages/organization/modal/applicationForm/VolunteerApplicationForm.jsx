@@ -1,117 +1,77 @@
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useFormik } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import PropTypes from 'prop-types';
 import { applicationSchema } from '../../../../../schemas';
-import InputWithLabel from '../requestForm/InputWithLabel.jsx';
+import { useGlobal } from '../../../../../context/useGlobal.jsx';
 
-function VolunteerApplicationForm({ onSave, toggleModal, initialData }) {
-  const navigate = useNavigate();
+function VolunteerApplicationForm({ onSave, toggleModal }) {
+  const { volunteer } = useGlobal();
 
-  const onSubmit = async (values, { setSubmitting, setErrors }) => {
+  const initialValues = {
+    about: '',
+  };
+
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
       await onSave(values);
       toggleModal();
-      alert('Form submitted successfully!');
-      navigate('/dashboard');
-      // navigate to <Volunteering />;
     } catch (error) {
       console.warn('Error while submitting form:', error);
-      alert('An error occurred while saving the form. Please try again.');
       setErrors({ general: 'An error occurred while saving the form.' });
     } finally {
       setSubmitting(false);
     }
   };
 
-  const { values, errors, touched, isSubmitting, handleBlur, handleChange, handleSubmit } = useFormik({
-    initialValues: {
-      firstName: initialData?.firstName || '',
-      lastName: initialData?.lastName || '',
-      requestStatus: 'Pending',
-      about: initialData?.about || '',
-    },
-    validationSchema: applicationSchema,
-    onSubmit,
-  });
-
-  // Update form values if initialData changes
-  useEffect(() => {
-    if (initialData) {
-      handleSubmit.setValues(initialData);
-    }
-  }, [initialData, handleSubmit]);
-
   return (
     <div className="container mt-5">
-      <form onSubmit={handleSubmit} className="grid px-5 gap-5 grid-cols-1">
-        {/* First Name Field */}
-        <div className="grid mb-3">
-          <InputWithLabel
-            id="firstName"
-            name="firstName"
-            value={values.firstName}
-            onChange={handleChange}
-            className="w-full text-sm border-gray-300 border rounded-lg p-2"
-            placeholder="Enter first name"
-            autoFocus
-          >
-            <span className="block text-sm mb-1">First Name</span>
-          </InputWithLabel>
-          {touched.firstName && errors.firstName && <div className="text-red-500 text-sm">{errors.firstName}</div>}
-        </div>
+      <Formik
+        className="grid px-5 gap-5 grid-cols-1"
+        initialValues={initialValues}
+        validationSchema={applicationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ isSubmitting }) => (
+          <Form className="grid mb-3">
+            <div className="flex justify-between pb-4">
+              <p className="w-full text-sm ">
+                <strong>First Name: </strong> {volunteer.first_name}
+              </p>
+              <p className="w-full text-sm">
+                <strong>Last Name: </strong> {volunteer.last_name}
+              </p>
+            </div>
 
-        {/* Last Name Field */}
-        <div className="mb-3">
-          <InputWithLabel
-            id="lastName"
-            name="lastName"
-            value={values.lastName}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className="w-full text-sm border-gray-300 border rounded-lg p-2"
-            placeholder="Enter last name"
-          >
-            <span className="block text-sm mb-1">Last Name</span>
-          </InputWithLabel>
-          {touched.lastName && errors.lastName && <div className="text-red-500 text-sm">{errors.lastName}</div>}
-        </div>
+            <div>
+              <label htmlFor="about">How can you help us?</label>
+              <Field
+                className="w-full h-60 text-sm border-gray-300 border rounded-lg p-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none"
+                id="about"
+                name="about"
+                as="textarea"
+                placeholder="Tell us about yourself"
+              />
 
-        {/* About Text Area */}
-        <div className="mb-3">
-          <label htmlFor="about" className="block text-gray-800 text-sm mb-1">
-            About
-          </label>
-          <textarea
-            id="about"
-            name="about"
-            rows="4"
-            value={values.about}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className="w-full text-sm border-gray-300 border rounded-lg p-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none"
-            placeholder="Tell us about yourself"
-          />
-          {touched.about && errors.about && <div className="text-red-500 text-sm">{errors.about}</div>}
-        </div>
-        {/* Submit and Cancel Buttons */}
-        <div className="flex justify-center gap-3">
-          <button
-            type="submit"
-            className="w-full sm:w-[10rem] px-4 py-2 text-sm bg-orange text-white rounded-md hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400"
-            disabled={isSubmitting}
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            onClick={toggleModal}
-            className="w-full sm:w-[10rem] px-4 py-2 text-sm bg-white border border-red-500 text-red-500 rounded-md hover:bg-red-50"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+              <ErrorMessage name="about" component="div" className="text-red-500 text-sm" />
+            </div>
+
+            <div className="flex justify-center mt-8 mb-4">
+              <button
+                type="submit"
+                className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md border-2 border-red-500 text-red-500 bg-white hover:bg-red-100 hover:border-red-600 hover:text-red-600"
+              >
+                {isSubmitting ? 'Submitting...' : 'Save'}
+              </button>
+              <button
+                type="button"
+                onClick={toggleModal}
+                className="w-2/5 px-4 py-2 sm:text-xl lg:text-lg rounded-md bg-orange text-white hover:bg-orange-600 hover:shadow-md hover:shadow-gray-400 mx-2"
+              >
+                Cancel
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 }

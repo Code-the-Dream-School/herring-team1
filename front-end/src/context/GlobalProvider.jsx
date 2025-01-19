@@ -25,7 +25,7 @@ const reducer = (state, action) => {
     case SET_IS_LOGGED_IN:
       return { ...state, isLoggedIn: action.payload };
     case SET_VOLUNTEER:
-      return { ...state, volunteer: action.payload };
+      return { ...state, volunteer: action.payload || state.volunteer };
     default:
       return state;
   }
@@ -38,12 +38,17 @@ export const GlobalProvider = ({ children }) => {
     const fetchData = async () => {
       try {
         if (state.user) {
-          if (state.user.isOrganization) {
-            const response = await getMyOrganization();
-            dispatch({ type: SET_MY_ORGANIZATION, payload: response.organization });
-          } else {
-            const response = await getMyVolunteer();
-            dispatch({ type: SET_VOLUNTEER, payload: response.volunteer });
+          if (state.user.isOrganization && !state.myOrganization) {
+            if (!state.myOrganization) {
+              const response = await getMyOrganization();
+              dispatch({ type: SET_MY_ORGANIZATION, payload: response.organization });
+            }
+          } else if (!state.user.isOrganization && !state.volunteer) {
+            if (!state.volunteer) {
+              const response = await getMyVolunteer();
+              dispatch({ type: SET_VOLUNTEER, payload: response.volunteer });
+              console.log('Volunteer in context updated:', state.volunteer);
+            }
           }
         }
       } catch (error) {
@@ -52,7 +57,7 @@ export const GlobalProvider = ({ children }) => {
     };
 
     fetchData();
-  }, [state.user]);
+  }, [state.user, state.volunteer, state.myOrganization]);
 
   return <GlobalStateContext.Provider value={{ ...state, dispatch }}>{children}</GlobalStateContext.Provider>;
 };

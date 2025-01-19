@@ -41,12 +41,14 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
 
             {/* Logo */}
             <div className="flex justify-center">
-              {org.logo ? (
-                <img src={org.logo} alt={`logo`} className="w-16 h-16 object-cover rounded-full" />
+              {org.logo?.url ? (
+                <img src={org.logo.url} alt={`Organization logo`} className="w-16 h-16 object-cover rounded-full" />
               ) : (
-                <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span className="text-gray-500">LOGO</span>
-                </div>
+                <img
+                  src="src/components/assets/images_default/logo_example.jpg"
+                  alt="Default logo"
+                  className="w-16 h-16 object-cover rounded-full"
+                />
               )}
             </div>
 
@@ -62,7 +64,7 @@ const OrganizationList = ({ organizations, toggleFavorite, handleCardClick, favo
                 <ul>
                   {org.requests.map((request, index) => (
                     <li key={index} className="text-sm">
-                      {request}
+                      {request.title}
                     </li>
                   ))}
                 </ul>
@@ -103,10 +105,21 @@ OrganizationList.propTypes = {
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       name: PropTypes.string.isRequired,
-      logo: PropTypes.string,
+      logo: PropTypes.shape({
+        url: PropTypes.string,
+      }),
       description: PropTypes.string,
-      request: PropTypes.string,
-      services: PropTypes.string,
+      requests: PropTypes.arrayOf(
+        PropTypes.shape({
+          title: PropTypes.string,
+          description: PropTypes.string,
+        })
+      ),
+      org_services: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string,
+        })
+      ),
     })
   ).isRequired,
   toggleFavorite: PropTypes.func.isRequired,

@@ -1,4 +1,5 @@
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { volunteerSchema } from '../../../schemas/index';
 import { createVolunteer, updateVolunteerById } from '../../../utils/apiReqests';
@@ -9,36 +10,41 @@ import PropTypes from 'prop-types';
 function VolunteerForm({ type }) {
   const navigate = useNavigate();
   const { dispatch, volunteer } = useGlobal();
-  let initialValues;
 
-  if (volunteer) {
-    initialValues = {
-      first_name: volunteer.first_name,
-      last_name: volunteer.last_name,
-      email: volunteer.email,
-      phone: volunteer.phone,
-      about: volunteer.about,
-      address: {
-        street: volunteer.address?.street,
-        city: volunteer.address?.city,
-        state: volunteer.address?.state,
-        zip_code: volunteer.address?.zip_code,
-      },
-    };
-  } else {
-    initialValues = {
-      first_name: '',
-      last_name: '',
-      email: '',
-      phone: '',
-      about: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zip_code: '',
-      },
-    };
+  const [initialValues, setInitialValues] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    about: '',
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      zip_code: '',
+    },
+  });
+
+  useEffect(() => {
+    if (type === 'edit' && volunteer) {
+      setInitialValues({
+        first_name: volunteer.first_name || '',
+        last_name: volunteer.last_name || '',
+        email: volunteer.email || '',
+        phone: volunteer.phone || '',
+        about: volunteer.about || '',
+        address: {
+          street: volunteer.address?.street || '',
+          city: volunteer.address?.city || '',
+          state: volunteer.address?.state || '',
+          zip_code: volunteer.address?.zip_code || '',
+        },
+      });
+    }
+  }, [volunteer, type]);
+
+  if (type === 'edit' && !volunteer) {
+    return <p>Loading volunteer data...</p>;
   }
 
   const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
@@ -66,7 +72,12 @@ function VolunteerForm({ type }) {
         <h1 className="text-2xl font-semibold mb-4">Please add your information</h1>
         <p className="text-gray-600">Ensure all details are correct and up-to-date to help us serve you better.</p>
       </div>
-      <Formik initialValues={initialValues} validationSchema={volunteerSchema} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={volunteerSchema}
+        onSubmit={handleSubmit}
+        enableReinitialize={true}
+      >
         {({ isSubmitting, errors }) => (
           <Form>
             {errors.general && <p className="text-red-500 text-center mb-4">{errors.general}</p>}

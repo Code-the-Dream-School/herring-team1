@@ -30,6 +30,18 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/requests/, "/requests"),
       },
+      '/volunteer_applications': {
+        target: 'http://127.0.0.1:3000/',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/volunteer_applications/, "/volunteer_applications"),
+      },
+      '/search': {
+        target: 'http://127.0.0.1:3000/',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/search/, '/search'),
+      },
     },
   },
   build: {

@@ -30,6 +30,10 @@ const DropdownMenu = ({ selectedServices, handleServiceChange }) => {
       ? selectedServices.filter((s) => s !== service)
       : [...selectedServices, service];
     handleServiceChange(newSelectedServices);
+    // Trigger search when services are selected
+    if (newSelectedServices.length > 0) {
+      console.log('Triggering search with selected services:', newSelectedServices);
+    }
   };
 
   return (
