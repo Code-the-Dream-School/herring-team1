@@ -30,7 +30,7 @@ At the heart of CareConnect lies the belief that people are the greatest value i
 
 ## 🛠️ Tech Stack
 
-### **Back End**
+### **Back End** 
 - **Ruby on Rails**: Server-side functionality.
 - **Postman**: API testing and integration.
 - **Cloudinary**: Image upload management.
@@ -68,7 +68,7 @@ At the heart of CareConnect lies the belief that people are the greatest value i
 
 This journey wouldn’t have been possible without the incredible people who made it happen:
 - **Mentors**: John McGarvey and KJ Loving, for their invaluable guidance and encouragement.
-- **Development Team**: Ira, Vera, Oksana, Maria, and Oksana – a hard-working team that turned vision into reality.
+- **Development Full Stack Team**: Iryna Kolhanova, Vera Fesianava, Oxana Michkasova, Mariya Doronkina, and Oksana Feterovskaya – a hard-working team that turned vision into reality.
 
 ---
 
@@ -84,7 +84,11 @@ Video Presentation
  https://drive.google.com/file/d/1EqqC4ubPirfEq-2iks95pOabDM89hEan/view
 
 ---
+BACK END repository 
+https://github.com/Code-the-Dream-School/herring-team1/tree/dev/back-end
 
+FRONT END repository
+https://github.com/Code-the-Dream-School/herring-team1/tree/dev/front-end
 ## 📞 Contact
 
 Have questions or want to collaborate? Reach out to us at rubypracticum@gmail.com.
