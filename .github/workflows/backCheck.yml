@@ -25,7 +25,7 @@ jobs:
       - name: setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2.1'
+          ruby-version: '3.3.4'
 
       - name: install dependencies
         working-directory: back-end
