@@ -74,9 +74,14 @@ This journey wouldn’t have been possible without the incredible people who mad
 
 ## 📸 Sneak Peek
 
-Powerpoint presentation https://docs.google.com/presentation/d/1XShEEP2OOUySA_Tl_UYrFqLN9FuXhGvQ/edit#slide=id.p6
-Figma mock up https://www.figma.com/design/pEcdxRPuyowqz9twKSo9NW/Care-Connect?node-id=1-3&p=f&t=XMBJCo1RIE0ehzIj-0
-Video Presentation https://drive.google.com/file/d/1EqqC4ubPirfEq-2iks95pOabDM89hEan/view
+Powerpoint presentation
+ https://docs.google.com/presentation/d/1XShEEP2OOUySA_Tl_UYrFqLN9FuXhGvQ/edit#slide=id.p6
+
+Figma mock up 
+https://www.figma.com/design/pEcdxRPuyowqz9twKSo9NW/Care-Connect?node-id=1-3&p=f&t=XMBJCo1RIE0ehzIj-0
+
+Video Presentation
+ https://drive.google.com/file/d/1EqqC4ubPirfEq-2iks95pOabDM89hEan/view
 
 ---
 
