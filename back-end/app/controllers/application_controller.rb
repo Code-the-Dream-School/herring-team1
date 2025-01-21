@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
     # rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_authenticity_token
 
     def set_cors_headers
-        allowed_origins = ['http://127.0.0.1:5173', 'http://localhost:5173']
+        allowed_origins = ['http://127.0.0.1:5173', 'http://localhost:5173', 'http://careconnectproject.onrender.com:3000', 'https://careconnectproject.onrender.com:3000']
         origin = request.headers['Origin']
       
         if allowed_origins.include?(origin)
