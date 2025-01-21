@@ -10,14 +10,23 @@ Create a dev branch: git checkout -b dev
 
 Creating your Dotenv file
 In your root directory, create a new file named ".env"
+
 VITE_REACT_URL=http://127.0.0.1:3000/
+
 DB_USERNAME=
+
 DB_PASSWORD=
+
 DB_HOST=
+
 DB_PORT=
+
 CLOUDINARY_CLOUD_NAME=
+
 CLOUDINARY_API_KEY=
+
 CLOUDINARY_API_SECRET=
+
 
 Setting up the master key for the development environment
 MASTER_KEY =
@@ -27,8 +36,8 @@ Dependencies
 Installing
 To get the application up and running after cloning:
 
-you'll need to run Ruby v3.1.2
-** ruby -v or ** rbenv install 3.1.2
+you'll need to run Ruby v3.3.4
+** ruby -v or ** rbenv install 3.3.4
 
 bundle update
 
