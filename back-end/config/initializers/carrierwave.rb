@@ -1,4 +1,3 @@
-module CarrierWave; module Storage; class Fog; end; end; end
 CarrierWave.configure do |config|
   config.fog_credentials = {
     provider: 'Cloudinary',
